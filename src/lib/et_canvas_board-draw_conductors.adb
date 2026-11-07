@@ -116,8 +116,8 @@ procedure draw_conductors is
 				-- while the operator is moving the tool:
 				point := get_primary_tool_position;
 
-				preliminary_text.text.position :=
-					type_position (to_position (point, zero_rotation));
+				preliminary_text.text.set_place (point);
+				preliminary_text.text.set_rotation (zero_rotation);
 
 				-- Draw the text:
 				draw_vector_text (preliminary_text.text);

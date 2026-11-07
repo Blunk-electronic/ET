@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,7 +35,8 @@
 --
 --   history of changes:
 --
---   ToDo:
+-- To Do:
+--
 --
 
 with et_sheets;							use et_sheets;
@@ -70,6 +71,7 @@ package et_schematic_text is
 	-- Instantiation of the text package:
 	package pac_text_schematic is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
+		pac_basic_objects	=> pac_basic_objects,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default);
@@ -81,6 +83,7 @@ package et_schematic_text is
 	package pac_text_schematic_vectorized is
 		new et_text_vectorized.generic_pac_text_vectorized (
 		pac_geometry		=> pac_geometry_2,
+		pac_basic_objects	=> pac_basic_objects,
 		pac_text			=> pac_text_schematic,
 		pac_polygons		=> pac_polygons,
 		pac_offsetting		=> pac_polygon_offsetting,

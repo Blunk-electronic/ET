@@ -550,7 +550,8 @@ package body et_stopmask is
 		procedure query_text (c : in pac_stop_texts.cursor) is
 			text : type_stop_text := element (c);
 		begin
-			move_text_to (text, offset); -- CS should be move_text_by
+			-- move_text_to (text, offset); -- CS should be move_text_by
+			move_to (text, offset); -- CS correct ?
 			result.append (text);
 		end query_text;
 

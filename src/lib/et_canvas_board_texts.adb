@@ -333,7 +333,7 @@ package body et_canvas_board_texts is
 		--put_line (to_string (rotation));
 		-- CS validate. output error in status bar
 
-		set_rotation (preliminary_text.text.position, rotation);
+		set_rotation (preliminary_text.text, rotation);
 		--put_line (to_string (preliminary_text.text.position));
 		et_canvas_board.redraw_board;
 	end apply_rotation;
@@ -700,7 +700,7 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_rotation.get_child).set_width_chars (rotation_length_min);
 
 			-- Set the text size according to the value used last:
-			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (get_rotation (preliminary_text.text.position)), left));
+			gtk_entry (cbox_rotation.get_child).set_text (trim (to_string (get_rotation (preliminary_text.text)), left));
 
 			-- The rotation is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_rotation.get_child).on_key_press_event (rotation_key_pressed'access);
@@ -766,7 +766,7 @@ package body et_canvas_board_texts is
 	procedure place_text (
 		point : in type_vector_model)
 	is begin
-		move_to (preliminary_text.text.position.place, point);
+		move_to (preliminary_text.text, point);
 
 		case object_layer_category is
 			when LAYER_CAT_ASSY =>

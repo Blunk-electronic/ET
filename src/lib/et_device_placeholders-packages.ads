@@ -281,7 +281,8 @@ package et_device_placeholders.packages is
 
 
 
-	-- Rotates the placeholder given by meaning, layer, face and index.
+	-- Rotates the placeholder given by meaning, layer, face and index
+	-- about its own anchor point.
 	-- NOTE: Index identifies the targeted placeholder in connection
 	--       with its meaning. For example, if meaning is "value" and index is 3
 	--       then the 3rd value placeholder is adressed.

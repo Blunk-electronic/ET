@@ -1553,16 +1553,16 @@ package body et_kicad.pcb is
 					case section.name is
 						when SEC_AT =>
 							--package_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set_rotation (package_text.position, zero_rotation);
+							package_text.set_rotation (zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set (point => package_text.position.place, axis => AXIS_X, value => to_distance (to_string (arg)));
+									package_text.set_x (to_distance (to_string (arg)));
 								when 2 =>
-									set (point => package_text.position.place, axis => AXIS_Y, value => to_distance (to_string (arg)));
+									package_text.set_y (to_distance (to_string (arg)));
 								when 3 =>
 									--package_text.angle := to_angle (to_string (arg));
-									set_rotation (package_text.position, to_rotation (to_string (arg)));
+									package_text.set_rotation (to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1598,16 +1598,16 @@ package body et_kicad.pcb is
 					case section.name is
 						when SEC_AT =>
 							--board_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set_rotation (board_text.position, zero_rotation);
+							board_text.set_rotation (zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set (axis => AXIS_X, point => board_text.position.place, value => to_distance (to_string (arg)));
+									board_text.set_x (to_distance (to_string (arg)));
 								when 2 =>
-									set (axis => AXIS_Y, point => board_text.position.place, value => to_distance (to_string (arg)));
+									board_text.set_y (to_distance (to_string (arg)));
 								when 3 =>
 									--board_text.angle := to_angle (to_string (arg));
-									set_rotation (board_text.position, to_rotation (to_string (arg)));
+									board_text.set_rotation (to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 

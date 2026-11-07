@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -98,7 +98,7 @@ package body et_module_write_text_board is
 				parameters => to_string (text.content));
 
 			write (keyword => keyword_position, parameters =>
-				to_string (get_position (text), FORMAT_2));
+				get_position (text, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,
@@ -176,7 +176,7 @@ package body et_module_write_text_board is
 				parameters => to_string (element (cursor).content));
 
 			write (keyword => keyword_position, parameters =>
-				to_string (get_position (text), FORMAT_2));
+				get_position (text, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,
@@ -206,7 +206,7 @@ package body et_module_write_text_board is
 				parameters => to_string (element (cursor).content));
 
 			write (keyword => keyword_position, parameters =>
-				to_string (get_position (text), FORMAT_2));
+				get_position (text, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,
@@ -236,7 +236,7 @@ package body et_module_write_text_board is
 				parameters => to_string (element (cursor).content));
 
 			write (keyword => keyword_position, parameters =>
-				to_string (get_position (text), FORMAT_2));
+				get_position (text, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,
@@ -338,7 +338,7 @@ package body et_module_write_text_board is
 
 			---
 			write (keyword => keyword_position, parameters =>
-				to_string (get_position (ph), FORMAT_2));
+				get_position (ph, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,
@@ -415,7 +415,7 @@ package body et_module_write_text_board is
 
 			---
 			write (keyword => keyword_position, parameters =>
-				to_string (get_position (ph), FORMAT_2));
+				get_position (ph, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,

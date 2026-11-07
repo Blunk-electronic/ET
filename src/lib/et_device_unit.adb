@@ -402,36 +402,30 @@ package body et_device_unit is
 				case coordinates is
 					when ABSOLUTE =>
 						--log (text => "pos " & to_string (point));
-						unit.placeholders.name.position := pos_abs;
+						move_to (unit.placeholders.name, pos_abs);
 
 					when RELATIVE =>
-						move_by (
-							point	=> unit.placeholders.name.position,
-							offset	=> point);
+						move_by (unit.placeholders.name, point);
 				end case;
 
 
 			when VALUE =>
 				case coordinates is
 					when ABSOLUTE =>
-						unit.placeholders.value.position := pos_abs;
+						move_to (unit.placeholders.value, pos_abs);
 
 					when RELATIVE =>
-						move_by (
-							point	=> unit.placeholders.value.position,
-							offset	=> point);
+						move_by (unit.placeholders.value, point);
 				end case;
 
 
 			when PURPOSE =>
 				case coordinates is
 					when ABSOLUTE =>
-						unit.placeholders.purpose.position := pos_abs;
+						move_to (unit.placeholders.purpose, pos_abs);
 
 					when RELATIVE =>
-						move_by (
-							point	=> unit.placeholders.purpose.position,
-							offset	=> point);
+						move_by (unit.placeholders.purpose, point);
 				end case;
 
 		end case;

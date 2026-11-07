@@ -1509,16 +1509,17 @@ package body et_kicad_packages is
 
 						when SEC_FP_TEXT =>
 							--text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set_rotation (text.position, pac_geometry_2.zero_rotation);
+							set_rotation (text, pac_geometry_2.zero_rotation);
+
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set (axis => AXIS_X, point => text.position.place, value => to_distance (to_string (arg)));
+									set_x (text, to_distance (to_string (arg)));
 								when 2 =>
-									set (axis => AXIS_Y, point => text.position.place, value => to_distance (to_string (arg)));
+									set_y (text, to_distance (to_string (arg)));
 								when 3 =>
 									--text.angle := to_angle (to_string (arg));
-									set_rotation (text.position, to_rotation (to_string (arg)));
+									set_rotation (text, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 

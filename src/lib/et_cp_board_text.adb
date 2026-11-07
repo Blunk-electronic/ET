@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -178,7 +178,10 @@ package body et_cp_board_text is
 				pos_xy := to_vector_model (get_field (cmd, 9), get_field (cmd, 10));
 
 				rotation := to_rotation (get_field (cmd, 11)); -- 0
-				text.position := type_position (to_position (pos_xy, rotation));
+
+				-- text.position := type_position (to_position (pos_xy, rotation));
+				set_place (text, pos_xy);
+				set_rotation (text, rotation);
 
 				text.content := to_content (get_field (cmd, 12));
 				-- CS check length
@@ -237,7 +240,7 @@ package body et_cp_board_text is
 
 	procedure place_text_placeholder (
 		module			: in pac_generic_modules.cursor;
-		cmd			: in out type_single_cmd;
+		cmd				: in out type_single_cmd;
 		log_threshold	: in type_log_level)
 	is
 		-- Contains the number of fields given by the caller of this procedure:
@@ -262,7 +265,11 @@ package body et_cp_board_text is
 			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (cmd, 12));
-			ph.position := type_position (to_position (pos_xy, rotation));
+
+			--ph.position := type_position (to_position (pos_xy, rotation));
+			set_place (ph, pos_xy);
+			set_rotation (ph, rotation);
+
 			ph.line_width := linewidth;
 			ph.size := size;
 
@@ -285,7 +292,11 @@ package body et_cp_board_text is
 			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (cmd, 12));
-			ph.position := type_position (to_position (pos_xy, rotation));
+
+			--ph.position := type_position (to_position (pos_xy, rotation));
+			set_place (ph, pos_xy);
+			set_rotation (ph, rotation);
+
 			ph.line_width := linewidth;
 			ph.size := size;
 
@@ -308,7 +319,11 @@ package body et_cp_board_text is
 			ph : type_placeholder_non_conductor; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (get_field (cmd, 12));
-			ph.position := type_position (to_position (pos_xy, rotation));
+
+			--ph.position := type_position (to_position (pos_xy, rotation));
+			set_place (ph, pos_xy);
+			set_rotation (ph, rotation);
+
 			ph.line_width := linewidth;
 			ph.size := size;
 
@@ -333,7 +348,11 @@ package body et_cp_board_text is
 		begin
 			ph.layer := to_signal_layer (get_field (cmd, 6));  -- 5
 			ph.meaning := to_meaning (get_field (cmd, 12));
-			ph.position := type_position (to_position (pos_xy, rotation));
+
+			-- ph.position := type_position (to_position (pos_xy, rotation));
+			set_place (ph, pos_xy);
+			set_rotation (ph, rotation);
+
 			ph.line_width := linewidth;
 			ph.size := size;
 

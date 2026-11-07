@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -63,7 +63,7 @@ package body et_package_read_text is
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
-			pac_text.position := to_position (line, 2);
+			set_position (pac_text, line, 2);
 
 		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
@@ -103,7 +103,7 @@ package body et_package_read_text is
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
-			pac_text_placeholder.position := to_position (line, 2);
+			set_position (pac_text_placeholder, line, 2);
 
 		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);

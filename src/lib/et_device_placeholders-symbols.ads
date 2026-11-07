@@ -55,9 +55,9 @@ package et_device_placeholders.symbols is
 	-- The position is just x/y relative to the symbol origin.
 	type type_text_placeholder (
 		meaning : type_placeholder_meaning)
-	is new type_text_basic with record
-		position : type_vector_model;
-	end record;
+	is new type_text_basic with null record;
+		-- position : type_vector_model;
+	-- end record;
 
 
 	-- Returns true if the given placeholder is in

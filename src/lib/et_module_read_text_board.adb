@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -97,7 +97,7 @@ package body et_module_read_text_board is
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
-			board_text_placeholder.position := to_position (line, 2);
+			set_position (board_text_placeholder, line, 2);
 
 		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
@@ -136,7 +136,7 @@ package body et_module_read_text_board is
 			expect_field_count (line, 7);
 
 			-- extract position starting at field 2
-			board_text.position := to_position (line, 2);
+			set_position (board_text, line, 2);
 
 		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
@@ -178,6 +178,7 @@ package body et_module_read_text_board is
 	procedure read_board_text_conductor (
 		line : in type_fields_of_line)
 	is
+		use et_conductor_text.boards;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -185,7 +186,7 @@ package body et_module_read_text_board is
 			expect_field_count (line, 7);
 
 			-- extract position starting at field 2
-			board_text_conductor.position := to_position (line, 2);
+			set_position (board_text_conductor, line, 2);
 
 		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
@@ -237,7 +238,7 @@ package body et_module_read_text_board is
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
-			board_text_conductor_placeholder.position := to_position (line, 2);
+			set_position (board_text_conductor_placeholder, line, 2);
 
 		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
@@ -283,7 +284,7 @@ package body et_module_read_text_board is
 			expect_field_count (line, 7);
 
 			-- extract position starting at field 2
-			board_text.position := to_position (line, 2);
+			set_position (board_text, line, 2);
 
 		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
@@ -568,8 +569,8 @@ package body et_module_read_text_board is
 			board_text_conductor.vectors := vectorize_text (
 				content			=> board_text_conductor.content,
 				size			=> board_text_conductor.size,
-				rotation		=> get_rotation (board_text_conductor.position),
-				position		=> board_text_conductor.position.place,
+				rotation		=> get_rotation (board_text_conductor),
+				position		=> get_place (board_text_conductor),
 				mirror			=> mirror,
 				line_width		=> board_text_conductor.line_width,
 				make_border		=> true,

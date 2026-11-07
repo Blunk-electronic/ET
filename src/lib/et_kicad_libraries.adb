@@ -2115,8 +2115,8 @@ package body et_kicad_libraries is
 
 				end case;
 
-				set (text.position, AXIS_X, mil_to_distance (mil => f (line, 3)));
-				set (text.position, AXIS_Y, mil_to_distance (mil => f (line, 4)));
+				text.set_x (mil_to_distance (mil => f (line, 3)));
+				text.set_y (mil_to_distance (mil => f (line, 4)));
 
 				text.size := mil_to_distance (mil => f (line, 5));
 
@@ -2576,11 +2576,12 @@ package body et_kicad_libraries is
 			procedure set_text_placeholder_properties is
 			-- Sets the properties of placeholders in all units of the component indicated by comp_cursor.
 
-				procedure set (
 				-- Sets the properties of the placeholders in the current unit.
+				procedure set (
 					key		: in type_unit_name;
-					unit	: in out type_unit_library) is
-				pragma unreferenced (key);
+					unit	: in out type_unit_library)
+				is
+					pragma unreferenced (key);
 				begin
 					-- For the unit we are interested in the properties of the component text fields.
 					-- The component text fields as given in the component section look like "F0 "IC" 0 50 50 H V C BIB".
@@ -2592,7 +2593,7 @@ package body et_kicad_libraries is
 					unit.symbol.name := (
 						status		=> get_default_status,
 						meaning		=> et_device_placeholders.NAME,
-						position	=> field_reference.position,
+						place		=> field_reference.get_place,
 						--style		=> field_reference.style,
 						rotation	=> to_rotation_doc (field_reference.rotation),
 						size		=> field_reference.size,
@@ -2602,7 +2603,7 @@ package body et_kicad_libraries is
 					unit.symbol.value := (
 						status		=> get_default_status,
 						meaning		=> et_device_placeholders.VALUE,
-						position	=> field_value.position,
+						place		=> field_value.get_place,
 						--style		=> field_value.style,
 						rotation	=> to_rotation_doc (field_value.rotation),
 						size		=> field_value.size,

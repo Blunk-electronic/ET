@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -132,19 +132,19 @@ package body et_symbol_write_text is
 
 			section_mark (section_placeholder, HEADER);
 			write (keyword => keyword_meaning, parameters => to_string (symbol.placeholders.name.meaning));
-			write (keyword => keyword_position, parameters => to_string (symbol.placeholders.name.position, FORMAT_2));
+			write (keyword => keyword_position, parameters => symbol.placeholders.name.get_position (FORMAT_2));
 			write_text_properties (symbol.placeholders.name);
 			section_mark (section_placeholder, FOOTER);
 
 			section_mark (section_placeholder, HEADER);
 			write (keyword => keyword_meaning, parameters => to_string (symbol.placeholders.value.meaning));
-			write (keyword => keyword_position, parameters => to_string (symbol.placeholders.value.position, FORMAT_2));
+			write (keyword => keyword_position, parameters => symbol.placeholders.value.get_position (FORMAT_2));
 			write_text_properties (symbol.placeholders.value);
 			section_mark (section_placeholder, FOOTER);
 
 			section_mark (section_placeholder, HEADER);
 			write (keyword => keyword_meaning, parameters => to_string (symbol.placeholders.purpose.meaning));
-			write (keyword => keyword_position, parameters => to_string (symbol.placeholders.purpose.position, FORMAT_2));
+			write (keyword => keyword_position, parameters => symbol.placeholders.purpose.get_position (FORMAT_2));
 			write_text_properties (symbol.placeholders.purpose);
 			section_mark (section_placeholder, FOOTER);
 

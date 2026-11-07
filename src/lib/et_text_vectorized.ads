@@ -43,6 +43,7 @@ with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.offsetting;
 
 with et_geometry_2a;
+with et_basic_objects;
 with et_logging;				use et_logging;
 with et_mirroring;				use et_mirroring;
 with et_alignment;				use et_alignment;
@@ -73,6 +74,7 @@ package et_text_vectorized is
 
 	generic
 		with package pac_geometry	is new et_geometry_2a (<>);
+		with package pac_basic_objects is new et_basic_objects (pac_geometry);
 		with package pac_text		is new et_text.generic_pac_text (pac_geometry, others => <>);
 		with package pac_polygons   is new pac_geometry.pac_geometry_1.et_polygons;
 		with package pac_offsetting is new pac_polygons.offsetting;
@@ -88,8 +90,9 @@ package et_text_vectorized is
 
 
 	package generic_pac_text_vectorized is
-		pragma unreferenced (size_min, size_max, size_default);
+		pragma unreferenced (size_min, size_max);
 
+		use pac_basic_objects;
 		use pac_text;
 		use pac_geometry;
 
@@ -108,36 +111,30 @@ package et_text_vectorized is
 		procedure validate_text_line_width (width : in pac_geometry.type_distance);
 
 
+-- TEXT FAB:
 
-		type type_text_fab is new type_text with record
-			position	: pac_geometry.type_position; -- x/y/rotation
+		--type type_text_fab is new type_text with record
+		type type_text_fab is new
+			type_object_with_rotation
+		with record
 			line_width	: type_text_line_width := type_text_line_width'first; -- CS rename to linewidth
+			size		: type_text_size := size_default;
+			alignment	: type_text_alignment;
 		end record;
 
 
 		-- Resets size, alignment, status, position
 		-- and linewidth to default:
-		overriding procedure reset_text (
+		procedure reset_text (
 			text : in out type_text_fab);
 
 
 		-- Returns the x/y coordinates and the rotation of a text:
-		function get_position (text : in type_text_fab)
-			return pac_geometry.type_position;
-
-		-- Returns the x/y coordinates of a text:
-		function get_place (text : in type_text_fab)
-			return type_vector_model;
+		function get_position (
+			text : in type_text_fab)
+			return type_object_with_rotation;
 
 
-		procedure set_place (
-			text	: in out type_text_fab;
-			place	: in type_vector_model);
-
-
-		-- Returns the rotation of a text:
-		function get_rotation (text : in type_text_fab)
-			return type_rotation;
 
 
 		-- Returns the properties of the given text:
@@ -147,23 +144,12 @@ package et_text_vectorized is
 
 
 
-		-- Mirrors a text along the given axis:
-		procedure mirror_text (
-			text	: in out type_text_fab;
-			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 
 
 
-
-		-- Rotates a text to the given angle about
-		-- its own origin:
-		procedure rotate_text_to (
-			text	: in out type_text_fab;
-			angle	: in type_rotation);
-
-
-		-- Rotates a text by the given angle about the origin:
+		-- Rotates a text by the given angle about the origin
+		-- and rotates the text about its own anchor point:
 		procedure rotate_text_by (
 			text	: in out type_text_fab;
 			angle	: in type_rotation);
@@ -171,23 +157,23 @@ package et_text_vectorized is
 
 		-- Rotates a text by the given angle about
 		-- its own origin:
-		procedure rotate_text_by_2 (
-			text	: in out type_text_fab;
-			angle	: in type_rotation);
+		-- procedure rotate_text_by_2 (
+		-- 	text	: in out type_text_fab;
+		-- 	angle	: in type_rotation);
 
 
 
 
 
 		-- Moves a text by the given offset:
-		procedure move_text_by (
-			text	: in out type_text_fab;
-			offset	: in type_vector_model);
+		-- procedure move_text_by (
+		-- 	text	: in out type_text_fab;
+		-- 	offset	: in type_vector_model);
 
 		-- Moves a text to the given point:
-		procedure move_text_to (
-			text	: in out type_text_fab;
-			point	: in type_vector_model);
+		-- procedure move_text_to (
+		-- 	text	: in out type_text_fab;
+		-- 	point	: in type_vector_model);
 
 
 		-- Returns the properties of the given text in a long single string.
@@ -1621,9 +1607,17 @@ package et_text_vectorized is
 			return pac_character_lines.list;
 
 
-		type type_text_fab_with_content is new type_text_fab with record
+
+
+
+-- TEXT WITH CONTENT
+
+		type type_text_fab_with_content is new
+			type_text_fab
+		with record
 			content	: type_text_content;
 		end record;
+
 
 
 		overriding procedure reset_text (

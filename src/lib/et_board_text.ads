@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -55,6 +55,7 @@ package et_board_text is
 
 	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
+		pac_basic_objects	=> pac_basic_objects,
 		size_min			=> 0.01,
 		size_max			=> 100.0,
 		size_default		=> 1.0);
@@ -62,6 +63,7 @@ package et_board_text is
 
 	package pac_text_board_vectorized is new et_text_vectorized.generic_pac_text_vectorized (
 		pac_geometry		=> pac_geometry_2,
+		pac_basic_objects	=> pac_basic_objects,
 		pac_text			=> pac_text_board,
 		pac_polygons		=> pac_polygons,
 		pac_offsetting		=> pac_polygon_offsetting,

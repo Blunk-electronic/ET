@@ -1234,9 +1234,9 @@ package body et_kicad_v6_to_native is
 							-- same as extract_purpose above:
 							plc : type_text_placeholders := (others => <>);
 						begin
-							plc.name.position    := placeholder_position (sym, "Reference");
-							plc.value.position   := placeholder_position (sym, "Value");
-							plc.purpose.position := placeholder_position (sym, "Name");
+							plc.name.set_place (placeholder_position (sym, "Reference"));
+							plc.value.set_place (placeholder_position (sym, "Value"));
+							plc.purpose.set_place (placeholder_position (sym, "Name"));
 
 							plc.name.alignment    := placeholder_alignment (sym, "Reference");
 							plc.value.alignment   := placeholder_alignment (sym, "Value");

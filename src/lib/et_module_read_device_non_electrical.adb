@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -398,7 +398,9 @@ package body et_module_read_device_non_electrical is
 		use et_device_placeholders.packages;
 		use et_pcb_sides;
 	begin
-		text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (text_placeholder_position);
+		-- text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (text_placeholder_position);
+		set_place (text_placeholder, get_place (text_placeholder_position));
+		set_rotation (text_placeholder, get_rotation (text_placeholder_position));
 
 		case text_placeholder_layer is
 			when SILKSCREEN =>

@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -772,18 +772,24 @@ package body et_module_read_device_electrical is
 		case unit_placeholder_meaning is
 			when NAME =>
 				unit_placeholder_reference := (unit_placeholder with
-					meaning		=> NAME,
-					position	=> unit_placeholder_position);
+					meaning		=> NAME);
+
+				unit_placeholder_reference.set_place (unit_placeholder_position);
+
 
 			when VALUE =>
 				unit_placeholder_value := (unit_placeholder with
-					meaning		=> VALUE,
-					position	=> unit_placeholder_position);
+					meaning		=> VALUE);
+
+				unit_placeholder_value.set_place (unit_placeholder_position);
+
 
 			when PURPOSE =>
 				unit_placeholder_purpose := (unit_placeholder with
-					meaning		=> PURPOSE,
-					position	=> unit_placeholder_position);
+					meaning		=> PURPOSE);
+
+				unit_placeholder_purpose.set_place (unit_placeholder_position);
+
 
 			when others =>
 				log (SEVERITY_ERROR, "meaning of placeholder not supported !", console => true);
@@ -883,7 +889,9 @@ package body et_module_read_device_electrical is
 		use et_pcb_sides;
 		use et_board_coordinates;
 	begin
-		device_text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (device_text_placeholder_position);
+		-- device_text_placeholder.position := et_board_geometry.pac_geometry_2.type_position (device_text_placeholder_position);
+		set_place (device_text_placeholder, get_place (device_text_placeholder_position));
+		set_rotation (device_text_placeholder, get_rotation (device_text_placeholder_position));
 
 		case device_text_placeholder_layer is
 			when SILKSCREEN =>

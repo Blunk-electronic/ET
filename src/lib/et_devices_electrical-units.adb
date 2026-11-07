@@ -619,6 +619,8 @@ package body et_devices_electrical.units is
 		category	: in type_placeholder_meaning)
 		return type_vector_model
 	is
+		-- CS: use renames for unit
+
 		placeholder_position : type_vector_model; -- to be returned
 
 		unit_position : type_schematic_object;
@@ -636,13 +638,13 @@ package body et_devices_electrical.units is
 			-- get the coordinates of the placeholder:
 			case category is
 				when NAME =>
-					placeholder_position := element (unit).placeholders.name.position;
+					placeholder_position := get_place (element (unit).placeholders.name);
 
 				when PURPOSE =>
-					placeholder_position := element (unit).placeholders.purpose.position;
+					placeholder_position := get_place (element (unit).placeholders.purpose);
 
 				when VALUE =>
-					placeholder_position := element (unit).placeholders.value.position;
+					placeholder_position := get_place (element (unit).placeholders.value);
 			end case;
 
 			move_by (placeholder_position, unit_position.place);

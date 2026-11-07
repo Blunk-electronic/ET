@@ -61,85 +61,59 @@ package body et_text_vectorized is
 
 
 
-		overriding procedure reset_text (
+		procedure reset_text (
 			text : in out type_text_fab)
-		is begin
-			reset_text (type_text (text));
-			reset_position (text.position);
-			text.line_width := line_width_default;
+		is
+			t : type_text_fab;
+		begin
+			text := t;
 		end reset_text;
 
 
 
-		function get_position (text : in type_text_fab)
-			return pac_geometry.type_position
-		is (text.position);
-
-
-		function get_place (text : in type_text_fab)
-			return type_vector_model
-		is (text.position.place);
-
-
-		procedure set_place (
-			text	: in out type_text_fab;
-			place	: in type_vector_model)
-		is begin
-			text.position.place := place;
-		end set_place;
+		function get_position (
+			text : in type_text_fab)
+			return type_object_with_rotation
+		is (type_object_with_rotation (text));
 
 
 
-		function get_rotation (text : in type_text_fab)
-			return type_rotation
-		is (text.position.rotation);
+
 
 
 		function to_string (
 			text : in type_text_fab)
 			return string
 		is begin
-			return "position" & to_string (get_position (text))
+			return "position" & get_position (text)
 				& " linewidth" & to_string (text.line_width);
 				-- CS size and alignment ?
 		end to_string;
 
 
-		procedure mirror_text (
-			text	: in out type_text_fab;
-			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
-		is begin
-			mirror_point (text.position.place, axis);
-		end mirror_text;
 
 
 
 
-
-
-		procedure rotate_text_to (
-			text	: in out type_text_fab;
-			angle	: in type_rotation)
-		is begin
-			text.position.rotation := angle;
-		end rotate_text_to;
 
 
 		procedure rotate_text_by (
 			text	: in out type_text_fab;
 			angle	: in type_rotation)
 		is begin
-			rotate_by (text.position.place, angle);
-			text.position.rotation := add (text.position.rotation, angle);
+			-- rotate_by (text.position.place, angle);
+			-- text.position.rotation := add (text.position.rotation, angle);
+			rotate_about_origin (text, angle);
+			rotate_by (text, angle);
 		end rotate_text_by;
 
 
-		procedure rotate_text_by_2 (
-			text	: in out type_text_fab;
-			angle	: in type_rotation)
-		is begin
-			text.position.rotation := add (text.position.rotation, angle);
-		end rotate_text_by_2;
+		-- procedure rotate_text_by_2 (
+		-- 	text	: in out type_text_fab;
+		-- 	angle	: in type_rotation)
+		-- is begin
+		-- 	text.position.rotation := add (text.position.rotation, angle);
+		-- end rotate_text_by_2;
 
 
 
@@ -147,31 +121,30 @@ package body et_text_vectorized is
 
 
 
-		procedure move_text_by (
-			text	: in out type_text_fab;
-			offset	: in type_vector_model)
-		is begin
-			move_by (text.position.place, offset);
-		end move_text_by;
+		-- procedure move_text_by (
+		-- 	text	: in out type_text_fab;
+		-- 	offset	: in type_vector_model)
+		-- is begin
+		-- 	move_by (text.position.place, offset);
+		-- end move_text_by;
 
 
-		procedure move_text_to (
-			text	: in out type_text_fab;
-			point	: in type_vector_model)
-		is begin
-			text.position.place := point;
-		end move_text_to;
+		-- procedure move_text_to (
+		-- 	text	: in out type_text_fab;
+		-- 	point	: in type_vector_model)
+		-- is begin
+		-- 	text.position.place := point;
+		-- end move_text_to;
 
 
 		function text_properties (
 			text : in type_text_fab)
 			return string
 		is begin
-			return text_properties (type_text (text))
-				--& " pos " & to_string (type_vector_model (text.position))
-				& " pos " & to_string (text.position.place)
-				& " line width" & to_string (text.line_width)
-				& " rotation" & to_string (get_rotation (text.position));
+			return
+				" pos " & get_position (text)
+				& " line width" & to_string (text.line_width);
+				-- size, alignment
 		end text_properties;
 
 
@@ -225,9 +198,12 @@ package body et_text_vectorized is
 
 		overriding procedure reset_text (
 			text : in out type_text_fab_with_content)
-		is begin
-			reset_text (type_text_fab (text));
-			clear_content (text.content);
+		is
+			t : type_text_fab_with_content;
+		begin
+			-- reset_text (type_text_fab (text));
+			-- clear_content (text.content);
+			text := t;
 		end reset_text;
 
 

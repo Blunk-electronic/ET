@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -2367,7 +2367,7 @@ package body et_board_ops_assy_doc is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " place text in assembly documentation at "
-			& to_string (text.position)
+			& get_position (text)
 			& " face " & to_string (face),
 			level => log_threshold);
 
@@ -2423,9 +2423,9 @@ package body et_board_ops_assy_doc is
 			begin
 				if in_catch_zone (
 					zone	=> catch_zone,
-					point	=> text.position.place)
+					point	=> get_place (text))
 				then
-					log (text => to_string (text.position.place)
+					log (text => to_string (get_place (text))
 						& " content " & enclose_in_quotes (to_string (text.content)),
 						level => log_threshold + 2);
 
@@ -2493,7 +2493,8 @@ package body et_board_ops_assy_doc is
 			text_cursor : pac_doc_texts.cursor;
 
 			procedure query_text (text : in out type_doc_text) is begin
-				move_text_to (text, offset); -- CS should be move_text_by ?
+				--move_text_to (text, offset); -- CS should be move_text_by ?
+				move_to (text, offset); -- CS correct ?
 			end query_text;
 
 		begin
@@ -2699,7 +2700,7 @@ package body et_board_ops_assy_doc is
 			pragma unreferenced (module_name);
 
 			procedure query_text (text : in out type_doc_text) is begin
-				move_text_to (text, destination);
+				move_to (text, destination);
 			end query_text;
 
 		begin
@@ -3208,7 +3209,7 @@ package body et_board_ops_assy_doc is
 			procedure query_placeholder (
 				ph : in out type_placeholder_non_conductor)
 			is begin
-				move_text_to (ph, destination);
+				move_to (ph, destination);
 			end query_placeholder;
 
 		begin

@@ -38,6 +38,7 @@
 
 
 with et_geometry_2a;
+with et_basic_objects;
 with et_alignment;				use et_alignment;
 with et_object_status;			use et_object_status;
 with et_rotation_docu;			use et_rotation_docu;
@@ -47,6 +48,7 @@ package et_text is
 
 	generic
 		with package pac_geometry is new et_geometry_2a (<>);
+		with package pac_basic_objects is new et_basic_objects (pac_geometry);
 		size_min		: pac_geometry.type_distance_positive;
 		size_max		: pac_geometry.type_distance_positive;
 		size_default	: pac_geometry.type_distance_positive;
@@ -81,11 +83,11 @@ package et_text is
 
 
 		-- This is the root type of all text types:
-		--type type_text is abstract tagged record
-		type type_text is tagged record
+		type type_text is new
+			pac_basic_objects.type_abstract_object
+		with record
 			size		: type_text_size := size_default;
 			alignment	: type_text_alignment;
-			status		: et_object_status.type_object_status;
 		end record;
 
 
@@ -97,51 +99,6 @@ package et_text is
 		-- CS procedures to get size and alignment
 
 
-
-		function is_proposed (
-			text : in type_text)
-			return boolean;
-
-		procedure set_proposed (
-			text : in out type_text);
-
-		procedure clear_proposed (
-			text : in out type_text);
-
-
-
-		function is_moving (
-			text : in type_text)
-			return boolean;
-
-		procedure set_moving (
-			text : in out type_text);
-
-		procedure clear_moving (
-			text : in out type_text);
-
-
-
-		function is_selected (
-			text : in type_text)
-			return boolean;
-
-		procedure set_selected (
-			text : in out type_text);
-
-		procedure clear_selected (
-			text : in out type_text);
-
-
-
-		procedure modify_status (
-			text		: in out type_text;
-			operation	: in et_object_status.type_status_operation);
-
-
-		-- Clears all status flags of the given text:
-		procedure reset_status (
-		   text		: in out type_text);
 
 
 		-- Returns the properties of the given text in a long single string.

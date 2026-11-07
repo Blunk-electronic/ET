@@ -128,6 +128,7 @@ package et_kicad_libraries is
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
 		pac_geometry		=> pac_geometry_2,
+		pac_basic_objects	=> pac_basic_objects,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default);
@@ -143,9 +144,9 @@ package et_kicad_libraries is
 		rotation	: et_schematic_geometry.type_rotation_model := 0.0;
 	end record;
 
-	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
-		position	: type_vector_model;
-	end record;
+	type type_text_placeholder (
+		meaning : type_placeholder_meaning)
+		is new type_text_basic with null record;
 
 	-- A text/note in the schematic:
 	type type_text is new type_text_basic with record

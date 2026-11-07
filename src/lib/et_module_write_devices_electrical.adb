@@ -144,7 +144,7 @@ package body et_module_write_devices_electrical is
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => keyword_meaning, parameters => to_string (ph.meaning));
-				write (keyword => keyword_position, parameters => to_string (ph.position, FORMAT_2));
+				write (keyword => keyword_position, parameters => get_position (ph, FORMAT_2));
 				write_text_properties (ph);
 				section_mark (section_placeholder, FOOTER);
 			end write_placeholder;
@@ -221,7 +221,10 @@ package body et_module_write_devices_electrical is
 				-- CS rework:
 
 				-- Assemble the text position:
-				set_position (position, get_position (ph));
+				-- set_position (position, get_position (ph));
+				set_place (position, get_place (ph));
+				set_rotation (position, get_rotation (ph));
+
 				set_face (position, face);
 
 				write (keyword => keyword_position,

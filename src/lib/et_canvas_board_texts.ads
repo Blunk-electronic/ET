@@ -70,9 +70,10 @@ package et_canvas_board_texts is
 	-- collect preliminary information using this type:
 	type type_preliminary_text is record
 		text : type_text_fab_with_content := (
+			place		=> origin,
+			rotation	=> 0.0,
 			size		=> 10.0,
 			line_width	=> 1.0,
-			position	=> origin_zero_rotation,
 			status		=> et_object_status.get_default_status,
 			alignment	=> text_alignment_default,
 			content		=> empty_text_content);

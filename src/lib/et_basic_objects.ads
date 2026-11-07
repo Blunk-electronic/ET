@@ -261,9 +261,17 @@ package et_basic_objects is
 		return type_rotation;
 
 
+	-- Sets the absolute rotation.
+	-- Preserves x/y. Changes rotation only.
 	procedure set_rotation (
 		object		: in out type_object_with_rotation;
 		rotation	: in type_rotation);
+
+
+	procedure rotate_to (
+		object		: in out type_object_with_rotation;
+		rotation	: in type_rotation)
+		renames set_rotation;
 
 
 	-- Changes the rotation of the object by the given

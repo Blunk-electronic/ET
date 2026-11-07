@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -293,7 +293,7 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);
 		begin
-			mirror_text (ph, axis);
+			mirror_along_axis (ph, axis);
 			result.append (ph);
 		end query_placeholder;
 
@@ -333,7 +333,8 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_text_placeholders.cursor) is
 			ph : type_text_placeholder := element (c);
 		begin
-			move_text_to (ph, offset); -- CS should be move_text_by ?
+			-- move_text_to (ph, offset); -- CS should be move_text_by ?
+			move_to (ph, offset); -- CS correct ?
 			result.append (ph);
 		end query_placeholder;
 
@@ -357,7 +358,7 @@ package body et_device_placeholders.packages is
 			 & " for " & to_string (placeholder.meaning), level => log_threshold);
 
 		log_indentation_up;
-		log (text => text_properties (type_text (placeholder)), level => log_threshold + 1);
+		log (text => text_properties (placeholder), level => log_threshold + 1);
 		log_indentation_down;
 	end placeholder_properties;
 
@@ -606,10 +607,10 @@ package body et_device_placeholders.packages is
 		is begin
 			case coordinates is
 				when ABSOLUTE =>
-					rotate_text_to (p, rotation);
+					rotate_to (p, rotation);
 
 				when RELATIVE =>
-					rotate_text_by_2 (p, rotation);
+					rotate_by (p, rotation);
 			end case;
 		end query_placeholder;
 

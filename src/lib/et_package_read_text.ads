@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -38,15 +38,15 @@
 --
 -- DESCRIPTION:
 --
--- This is about lines, arcs and circles in the stopmask.
 --
---   do do:
+--
+-- To Do:
 --
 --
 
 with et_string_processing;				use et_string_processing;
 
-with et_board_text;				use et_board_text;
+with et_board_text;						use et_board_text;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 -- with et_pcb_sides;						use et_pcb_sides;
 
@@ -60,9 +60,9 @@ package et_package_read_text is
 
 	--pac_text				: et_packages.type_text_with_content;
 	--pac_text				: pac_text_fab.type_text_fab;
-	pac_text				: type_text_fab_with_content; -- CS rename
+	pac_text				: type_text_fab_with_content; -- CS rename to package_text ?
 	--content					: et_text.type_text_content;
-	pac_text_placeholder	: type_text_placeholder; -- CS rename
+	pac_text_placeholder	: type_text_placeholder; -- CS rename to package_text_placeholder ?
 
 
 

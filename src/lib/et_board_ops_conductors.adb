@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -4895,8 +4895,8 @@ package body et_board_ops_conductors is
 			v_text := vectorize_text (
 				content			=> text.content,
 				size			=> text.size,
-				rotation		=> get_rotation (text.position),
-				position		=> text.position.place,
+				rotation		=> get_rotation (text),
+				position		=> get_place (text),
 				mirror			=> mirror,
 				line_width		=> text.line_width,
 				make_border		=> true, -- CS should be false for restrict layers
@@ -4918,7 +4918,7 @@ package body et_board_ops_conductors is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " place text in conductor layer at "
-			& to_string (text.position)
+			& get_position (text)
 			& " signal layer " & to_string (signal_layer),
 			level => log_threshold);
 
@@ -5668,7 +5668,7 @@ package body et_board_ops_conductors is
 			procedure query_placeholder (
 				ph : in out type_placeholder_conductor)
 			is begin
-				move_text_to (ph, destination);
+				move_to (ph, destination);
 			end query_placeholder;
 
 		begin

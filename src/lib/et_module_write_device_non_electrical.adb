@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -118,7 +118,10 @@ package body et_module_write_device_non_electrical is
 					-- CS rework:
 
 					-- Assemble the text position:
-					set_position (position, get_position (ph));
+					--set_position (position, get_position (ph));
+					set_place (position, get_place (ph));
+					set_rotation (position, get_rotation (ph));
+
 					set_face (position, face);
 
 					write (keyword => keyword_position,

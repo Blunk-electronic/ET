@@ -2104,7 +2104,7 @@ is
 				rotation	=> to_field_orientation (f (element (line_cursor), 4)),
 
 				-- read coordinates
-				position	=> text_position,
+				place		=> text_position,
 
 				size		=> size,
 				--style		=> to_text_style (style_in => f (element (line_cursor), 10), text => false),
@@ -2653,7 +2653,7 @@ is
 							reference		=> (
 									status		=> status,
 									meaning		=> et_device_placeholders.NAME,
-									position	=> field_reference.position,
+									place		=> get_place (field_reference),
 									--style		=> field_reference.style,
 									rotation	=> to_rotation_doc (field_reference.rotation),
 									size		=> field_reference.size,
@@ -2662,7 +2662,7 @@ is
 							value			=> (
 									status		=> status,
 									meaning		=> et_device_placeholders.VALUE,
-									position	=> field_value.position,
+									place		=> get_place (field_value),
 									--style		=> field_value.style,
 									rotation	=> to_rotation_doc (field_value.rotation),
 									size		=> field_value.size,
@@ -2692,7 +2692,7 @@ is
 							reference		=> (
 								status		=> status,
 								meaning		=> et_device_placeholders.NAME,
-								position	=> field_reference.position,
+								place		=> get_place (field_reference),
 								--style		=> field_reference.style,
 								rotation	=> to_rotation_doc (field_reference.rotation),
 								size		=> field_reference.size,
@@ -2701,7 +2701,7 @@ is
 							value			=> (
 								status		=> status,
 								meaning		=> et_device_placeholders.VALUE,
-								position	=> field_value.position,
+								place		=> get_place (field_value),
 								--style		=> field_value.style,
 								rotation	=> to_rotation_doc (field_value.rotation),
 								size		=> field_value.size,

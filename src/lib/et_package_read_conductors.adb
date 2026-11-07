@@ -282,8 +282,8 @@ package body et_package_read_conductors is
 		vectors := vectorize_text (
 			content			=> pac_text.content,
 			size			=> pac_text.size,
-			rotation		=> pac_text.position.rotation,
-			position		=> pac_text.position.place,
+			rotation		=> get_rotation (pac_text),
+			position		=> get_place (pac_text),
 			mirror			=> MIRROR_ALONG_Y_AXIS,
 			line_width		=> pac_text.line_width,
 			alignment		=> pac_text.alignment,

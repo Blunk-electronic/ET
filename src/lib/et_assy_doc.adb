@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -487,7 +487,7 @@ package body et_assy_doc is
 		procedure query_text (c : in pac_doc_texts.cursor) is
 			text : type_doc_text := element (c);
 		begin
-			mirror_text (text, axis);
+			mirror_along_axis (text, axis);
 			result.append (text);
 		end query_text;
 
@@ -530,7 +530,8 @@ package body et_assy_doc is
 		procedure query_text (c : in pac_doc_texts.cursor) is
 			text : type_doc_text := element (c);
 		begin
-			move_text_to (text, offset); -- CS should be move_text_by ?
+			--move_text_to (text, offset); -- CS should be move_text_by ?
+			move_by (text, offset); -- CS correct ?
 			result.append (text);
 		end query_text;
 

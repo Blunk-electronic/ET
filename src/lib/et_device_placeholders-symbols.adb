@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -52,7 +52,7 @@ package body et_device_placeholders.symbols is
 		zone			: in type_catch_zone)
 		return boolean
 	is
-		point : type_vector_model := placeholder.position;
+		point : type_vector_model := get_place (placeholder);
 	begin
 		move_by (point, unit_position);
 
@@ -88,9 +88,9 @@ package body et_device_placeholders.symbols is
 	is begin
 		-- Rotate the POSITIONS	of the placeholders about
 		-- the origin of the symbol:
-		rotate_by (placeholders.name.position, rotation);
-		rotate_by (placeholders.value.position, rotation);
-		rotate_by (placeholders.purpose.position, rotation);
+		rotate_about_origin (placeholders.name, rotation);
+		rotate_about_origin (placeholders.value, rotation);
+		rotate_about_origin (placeholders.purpose, rotation);
 
 		-- Rotate the placeholders about THEIR OWN ORIGIN.
 		-- The resulting angle is the sum of the initial
@@ -137,7 +137,7 @@ package body et_device_placeholders.symbols is
 		log_indentation_up;
 
 		-- position
-		log (text => to_string (placeholder.position), level => log_threshold);
+		log (text => to_string (get_place (placeholder)), level => log_threshold);
 
 		-- size
 		log (text => to_string (placeholder.size), level => log_threshold);

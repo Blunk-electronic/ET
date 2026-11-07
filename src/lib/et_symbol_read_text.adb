@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -199,18 +199,24 @@ package body et_symbol_read_text is
 		case symbol_placeholder_meaning is
 			when NAME =>
 				symbol.placeholders.name := (symbol_text_base with
-					position	=> symbol_text_position,
 					meaning		=> symbol_placeholder_meaning);
+
+				symbol.placeholders.name.set_place (symbol_text_position);
+
 
 			when VALUE =>
 				symbol.placeholders.value := (symbol_text_base with
-					position	=> symbol_text_position,
 					meaning		=> symbol_placeholder_meaning);
+
+				symbol.placeholders.value.set_place (symbol_text_position);
+
 
 			when PURPOSE =>
 				symbol.placeholders.purpose := (symbol_text_base with
-					position	=> symbol_text_position,
 					meaning		=> symbol_placeholder_meaning);
+
+				symbol.placeholders.purpose.set_place (symbol_text_position);
+
 
 			-- Default meaning causes an error:
 			when others =>

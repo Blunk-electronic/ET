@@ -1021,15 +1021,19 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out type_silk_text) is
 					use et_board_geometry.pac_geometry_2;
+					place : type_vector_model;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => before & get_position (text), level => log_threshold + log_threshold_add);
 
-					move (text.position.place);
+					-- move (text.position.place);
+					place := get_place (text);
+					move (place);
+					set_place (text, place);
 
-					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => now & get_position (text), level => log_threshold + log_threshold_add);
 
 					log_indentation_down;
 				end move_text;
@@ -1240,15 +1244,19 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out type_doc_text) is
 					use et_board_geometry.pac_geometry_2;
+					place : type_vector_model;
 				begin
 					log (text => doc & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => before & get_position (text), level => log_threshold + log_threshold_add);
 
-					move (text.position.place);
+					-- move (text.position.place);
+					place := get_place (text);
+					move (place);
+					set_place (text, place);
 
-					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => now & get_position (text), level => log_threshold + log_threshold_add);
 
 					log_indentation_down;
 				end move_text;
@@ -1633,15 +1641,19 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out type_stop_text) is
 					use et_board_geometry.pac_geometry_2;
+					place : type_vector_model;
 				begin
 					log (text => stop & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => before & get_position (text), level => log_threshold + log_threshold_add);
 
-					move (text.position.place);
+					-- move (text.position.place);
+					place := get_place (text);
+					move (place);
+					set_place (text, place);
 
-					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => now & get_position (text), level => log_threshold + log_threshold_add);
 
 					log_indentation_down;
 				end move_text;
@@ -2019,15 +2031,19 @@ package body et_kicad_to_native is
 					text : in out et_conductor_text.boards.type_conductor_text_board)
 				is
 					use et_board_geometry.pac_geometry_2;
+					place : type_vector_model;
 				begin
 					log (text => board_copper & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => before & get_position (text), level => log_threshold + log_threshold_add);
 
-					move (text.position.place);
+					-- move (text.position.place);
+					place := get_place (text);
+					move (place);
+					set_place (text, place);
 
-					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => now & get_position (text), level => log_threshold + log_threshold_add);
 
 					log_indentation_down;
 				end move_text;
@@ -2035,15 +2051,19 @@ package body et_kicad_to_native is
 
 				procedure move_placeholder (text : in out type_placeholder_conductor) is
 					use et_board_geometry.pac_geometry_2;
+					place : type_vector_model;
 				begin
 					log (text => board_copper & "text placeholder", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => before & get_position (text), level => log_threshold + log_threshold_add);
 
-					move (text.position.place);
+					-- move (text.position.place);
+					place := get_place (text);
+					move (place);
+					set_place (text, place);
 
-					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
+					log (text => now & get_position (text), level => log_threshold + log_threshold_add);
 
 					log_indentation_down;
 				end move_placeholder;

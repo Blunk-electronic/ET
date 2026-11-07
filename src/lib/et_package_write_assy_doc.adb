@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -130,7 +130,7 @@ package body et_package_write_assy_doc is
 			-- CS rework:
 
 			write (keyword => keyword_position,
-				parameters => to_string (get_position (ph), FORMAT_2));
+				parameters => get_position (ph, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,
@@ -162,7 +162,7 @@ package body et_package_write_assy_doc is
 			-- CS rework:
 
 			write (keyword => keyword_position,
-				parameters => to_string (get_position (t), FORMAT_2));
+				parameters => get_position (t, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00
 
 			write (keyword => keyword_size,
