@@ -51,7 +51,7 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_board_geometry;				use et_board_geometry;
 with et_via;						use et_via;
 with et_vias;
-with et_drills;						use et_drills;
+with et_drill;						use et_drill;
 
 with et_module_read_nets;
 

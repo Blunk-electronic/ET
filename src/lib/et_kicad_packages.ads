@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -41,7 +41,7 @@ with ada.containers;			use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
-with et_drills;
+with et_drill;
 with et_assembly_technology;	use et_assembly_technology;
 with et_terminals;				-- use et_terminals;
 
@@ -258,7 +258,7 @@ package et_kicad_packages is
 	-- "Slotted drills" or "plated millings" for terminals are limited by drill sizes because
 	-- the PCB manufacturer starts the milling with a drill.
 	subtype type_pad_milling_size is type_distance_positive
-		range et_drills.drill_size_min .. et_drills.drill_size_max;
+		range et_drill.drill_size_min .. et_drill.drill_size_max;
 
 
 	-- Converts the given position and dimensions of a rectangular slotted hole

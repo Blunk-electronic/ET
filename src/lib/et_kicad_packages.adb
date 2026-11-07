@@ -437,7 +437,7 @@ package body et_kicad_packages is
 		return type_package_library
 	is
 		use pac_lines_of_file;
-		use et_drills;
+		use et_drill;
 		use et_terminals;
 
 		use pac_geometry_brd;

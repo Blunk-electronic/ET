@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -49,7 +49,7 @@ with et_board_geometry;				use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
 with et_logging;					use et_logging;
-with et_drills;						use et_drills;
+with et_drill;						use et_drill;
 
 
 with et_bounded_string_helpers;

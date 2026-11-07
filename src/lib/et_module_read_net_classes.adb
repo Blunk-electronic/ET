@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -55,7 +55,7 @@ with et_net_class_name;				use et_net_class_name;
 with et_net_class_description;		use et_net_class_description;
 with et_net_classes;				use et_net_classes;
 
-with et_drills;
+with et_drill;
 with et_design_rules_board;			use et_design_rules_board;
 
 
@@ -87,7 +87,7 @@ package body et_module_read_net_classes is
 		line			: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
-		use et_drills;
+		use et_drill;
 		use et_board_geometry.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin

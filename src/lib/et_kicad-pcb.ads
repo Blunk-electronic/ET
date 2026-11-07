@@ -59,7 +59,7 @@ with et_net_class_name;				use et_net_class_name;
 with et_terminal_name;				use et_terminal_name;
 with et_terminals;					use et_terminals;
 with et_package_model_name;			use et_package_model_name;
-with et_device_value;					use et_device_value;
+with et_device_value;				use et_device_value;
 
 with et_module;
 with et_module_board;
@@ -73,9 +73,9 @@ with et_text_content;				use et_text_content;
 with et_board_text;					use et_board_text;
 
 with et_via;						use et_via;
-with et_drills;						use et_drills;
+with et_drill;						use et_drill;
 
-with et_device_name;					use et_device_name;
+with et_device_name;				use et_device_name;
 with et_drawing_frame;
 with et_design_rules_board;			use et_design_rules_board;
 

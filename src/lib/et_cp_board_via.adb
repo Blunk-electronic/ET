@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -56,7 +56,7 @@ with et_board_ops_signal_layers;		use et_board_ops_signal_layers;
 with et_module_board_user_settings;		use et_module_board_user_settings;
 with et_board_ops_user_settings;		use et_board_ops_user_settings;
 with et_net_names;
-with et_drills;
+with et_drill;
 with et_design_rules_board;
 with et_via;							use et_via;
 with et_vias;
@@ -246,7 +246,7 @@ package body et_cp_board_via is
 		log_threshold	: in type_log_level)
 	is
 		use et_net_names;
-		use et_drills;
+		use et_drill;
 		use et_vias;
 		use et_design_rules_board;
 

@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                              DRILLS                                      --
+--                            DRILL MODEL                                   --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -43,14 +43,14 @@
 --   history of changes:
 --
 -- to do:
--- 1. rename the package to et_drill
+--
 --
 
 with et_board_geometry;			use et_board_geometry;
 with et_object_status;			use et_object_status;
 
 
-package et_drills is
+package et_drill is
 	use pac_geometry_2;
 
 	use pac_basic_objects;
@@ -97,7 +97,7 @@ package et_drills is
 	subtype type_drill_size_tht is type_drill_size range 0.8 .. 5.0;
 
 
-end et_drills;
+end et_drill;
 
 -- Soli Deo Gloria
 
