@@ -59,7 +59,9 @@ package et_canvas_board_vias is
 
 	type type_preliminary_via is record
 		category			: type_via_category := type_via_category'first;
-		drill				: type_drill;
+
+		place				: type_vector_model;
+		diameter			: type_drill_size := type_drill_size'first;
 
 		-- for blind via:
 		destination_blind	: type_via_layer := type_via_layer'first;

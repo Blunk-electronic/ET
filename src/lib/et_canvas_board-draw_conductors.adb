@@ -1162,7 +1162,7 @@ procedure draw_conductors is
 			via : type_via (THROUGH);
 		begin
 			set_place (via, position);
-			set_diameter (via, preliminary_via.drill.diameter);
+			set_diameter (via, preliminary_via.diameter);
 			set_restring_inner (via, preliminary_via.restring_inner);
 			set_restring_outer (via, preliminary_via.restring_outer);
 
@@ -1177,7 +1177,7 @@ procedure draw_conductors is
 			via : type_via (BLIND_DRILLED_FROM_TOP);
 		begin
 			set_place (via, position);
-			set_diameter (via, preliminary_via.drill.diameter);
+			set_diameter (via, preliminary_via.diameter);
 			set_restring_inner (via, preliminary_via.restring_inner);
 			set_restring_top (via, preliminary_via.restring_outer);
 			set_bottom_layer (via, preliminary_via.destination_blind);
@@ -1193,7 +1193,7 @@ procedure draw_conductors is
 			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
 		begin
 			set_place (via, position);
-			set_diameter (via, preliminary_via.drill.diameter);
+			set_diameter (via, preliminary_via.diameter);
 			set_restring_inner (via, preliminary_via.restring_inner);
 			set_restring_bottom (via, preliminary_via.restring_outer);
 			set_top_layer (via, preliminary_via.destination_blind);
@@ -1209,7 +1209,7 @@ procedure draw_conductors is
 			via : type_via (BURIED);
 		begin
 			set_place (via, position);
-			set_diameter (via, preliminary_via.drill.diameter);
+			set_diameter (via, preliminary_via.diameter);
 			set_buried_layers (via, preliminary_via.layers_buried);
 			set_restring_inner (via, preliminary_via.restring_inner);
 

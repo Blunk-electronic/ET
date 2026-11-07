@@ -201,7 +201,7 @@ package body et_canvas_board_vias is
 		size := to_distance (text);
 
 		-- CS validate. output error in status bar
-		preliminary_via.drill.diameter := size;
+		preliminary_via.diameter := size;
 
 		et_canvas_board.redraw_board;
 	end apply_drill_size;
@@ -385,9 +385,9 @@ package body et_canvas_board_vias is
 
 		-- set drill size:
 		if settings.vias.drill.active then
-			preliminary_via.drill.diameter	:= settings.vias.drill.size;
+			preliminary_via.diameter	:= settings.vias.drill.size;
 		else
-			preliminary_via.drill.diameter	:= rules.sizes.drills;
+			preliminary_via.diameter	:= rules.sizes.drills;
 		end if;
 
 		-- set outer restring:
@@ -395,7 +395,7 @@ package body et_canvas_board_vias is
 			preliminary_via.restring_outer	:= settings.vias.restring_outer.width;
 		else
 			preliminary_via.restring_outer	:= auto_set_restring (
-				OUTER, preliminary_via.drill.diameter);
+				OUTER, preliminary_via.diameter);
 		end if;
 
 		-- set inner restring:
@@ -403,7 +403,7 @@ package body et_canvas_board_vias is
 			preliminary_via.restring_inner	:= settings.vias.restring_inner.width;
 		else
 			preliminary_via.restring_inner	:= auto_set_restring (
-				INNER, preliminary_via.drill.diameter, rules.sizes.restring.delta_size);
+				INNER, preliminary_via.diameter, rules.sizes.restring.delta_size);
 		end if;
 
 	end init_preliminary_via;
@@ -745,7 +745,7 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_drill.get_child).set_width_chars (drill_size_length_min);
 
 			-- Set the text size according to the value used last:
-			gtk_entry (cbox_drill.get_child).set_text (trim (to_string (preliminary_via.drill.diameter), left));
+			gtk_entry (cbox_drill.get_child).set_text (trim (to_string (preliminary_via.diameter), left));
 
 			-- The size is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_drill.get_child).on_key_press_event (drill_key_pressed'access);
@@ -853,8 +853,8 @@ package body et_canvas_board_vias is
 
 		via : type_via (category => preliminary_via.category);
 	begin
-		set_place (via, get_place (preliminary_via.drill));
-		set_diameter (via, preliminary_via.drill.diameter);
+		set_place (via, preliminary_via.place);
+		set_diameter (via, preliminary_via.diameter);
 
 		set_restring_inner (via, preliminary_via.restring_inner);
 
