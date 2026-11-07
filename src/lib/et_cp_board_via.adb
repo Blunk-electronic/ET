@@ -256,7 +256,6 @@ package body et_cp_board_via is
 
 
 		net_name		: type_net_name;
-		-- drill			: type_drill;
 		place			: type_vector_model;
 		diameter		: type_drill_size;
 		restring_outer	: type_restring_width;

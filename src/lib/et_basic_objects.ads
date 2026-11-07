@@ -252,7 +252,7 @@ package et_basic_objects is
 
 
 	type type_object_with_rotation is new type_abstract_object with record
-		rotation	: type_rotation;
+		rotation : type_rotation := 0.0;
 	end record;
 
 
