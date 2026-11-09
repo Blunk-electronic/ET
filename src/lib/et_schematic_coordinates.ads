@@ -67,9 +67,13 @@ package et_schematic_coordinates is
 	type type_schematic_object
 		is new type_object_with_rotation with private;
 
+	-- CS subtype type_schematic_position is type_schematic_object
+	-- This could be helpful to distinguish between schematic
+	-- object and schematic position.
 
 	type type_object_position_relative_2
 		is new type_object_with_rotation with private;
+	-- CS rename type_object_position_relative
 
 
 	-- function to_schematic_object (
