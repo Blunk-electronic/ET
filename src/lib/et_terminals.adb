@@ -42,13 +42,14 @@ with ada.text_io;				use ada.text_io;
 package body et_terminals is
 
 
-	overriding function to_position (
+	function to_position (
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0 face top"
 		from : in type_field_count_positive)
 		return type_terminal_position
 	is
 		result : type_terminal_position (THT);
 	begin
+		-- CS
 		return result;
 	end to_position;
 

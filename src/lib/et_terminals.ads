@@ -157,27 +157,35 @@ package et_terminals is
 	end record;
 
 
+	-- CS: overriding set_position ?
+
+
 
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
 	-- NOTE: This type is used in a package model. It uses fixed point numbers for
 	-- the terminal positions because the package model is man-made.
-	type type_terminal_position (technology	: type_assembly_technology)
-	is new pac_geometry_2.type_position with record
+	type type_terminal_position (
+		technology	: type_assembly_technology)
+	-- is new pac_geometry_2.type_position with record
+	is new type_object_with_rotation with record
 		case technology is
 			when SMT => face : type_face;
 			when THT => null;
 		end case;
 	end record;
-	-- CS rework. must be derived from type_abstract_object ?
-
+	-- CS rework ? derive from type_abstract_object ?
+	-- already tried: subtype type_terminal_position is type_terminal;
+	-- CS: makeshift. leave it as it is ? This was we distiguish
+	-- between a terminal and a terminal position.
 
 
 	-- CS: incomplete !
-	overriding function to_position (
+	function to_position (
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0 face top"
 		from : in type_field_count_positive)
 		return type_terminal_position;
+
 
 
 
