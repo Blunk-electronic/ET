@@ -2594,13 +2594,14 @@ package body et_kicad_to_native is
 
 
 			procedure query_texts (cursor : in et_kicad.schematic.pac_texts.cursor) is
-				text_kicad : constant et_kicad.schematic.type_text := et_kicad.schematic.pac_texts.element (cursor);
+				use et_kicad.schematic.pac_texts;
+				text_kicad : et_kicad.schematic.type_text renames element (cursor);
 				text_native : et_schematic_text.type_text;
 			begin
 				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
 				--text_native.position := to_native_coordinates (text_kicad.position);
 				--text_native.position := et_schematic_coordinates.pac_geometry_2.type_vector_model (text_kicad.position);
-				text_native.position := et_kicad_coordinates.get_point (text_kicad.position);
+				set_place (text_native, et_kicad_coordinates.get_point (text_kicad.position));
 				text_native.sheet := et_kicad_coordinates.sheet (text_kicad.position);
 				text_native.rotation := to_rotation_doc (text_kicad.rotation);
 

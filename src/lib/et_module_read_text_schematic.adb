@@ -81,7 +81,7 @@ package body et_module_read_text_schematic is
 				pos : type_schematic_object;
 			begin
 				set_position (pos, line, 2);
-				schematic_text.position := get_place (pos);
+				set_place (schematic_text, get_place (pos));
 				schematic_text.sheet := get_sheet (pos);
 			end;
 

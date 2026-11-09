@@ -1587,10 +1587,10 @@ package body et_kicad_v6_to_native is
 		begin
 			et_schematic_text.pac_texts.append (module.texts, (
 				pac_text_schematic.type_text'(
+					place		=> flip_sheet_y (txt.position, paper_height),
 					alignment	=> to_alignment (txt.justify_h, txt.justify_v),
 					others		=> <>)
 				with
-					position	=> flip_sheet_y (txt.position, paper_height),
 					rotation	=> (if txt.orientation = 90.0 or txt.orientation = 270.0
 									then VERTICAL else HORIZONTAL),
 					sheet		=> sheet_num,
@@ -1658,10 +1658,10 @@ package body et_kicad_v6_to_native is
 
 				et_schematic_text.pac_texts.append (module.texts, (
 					pac_text_schematic.type_text'(
+						place		=> flip_sheet_y (abs_position, paper_height),
 						alignment	=> alignment,
 						others		=> <>)
 					with
-						position	=> flip_sheet_y (abs_position, paper_height),
 						rotation	=> (if orientation = 90.0 or orientation = 270.0
 										then VERTICAL else HORIZONTAL),
 						sheet		=> sheet_num,

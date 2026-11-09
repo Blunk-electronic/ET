@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -55,21 +55,22 @@ procedure draw_texts is
 
 	procedure query_text (cursor : in pac_texts.cursor) is
 		use pac_draw_text;
+		text : type_text renames element (cursor);
 	begin
 		-- We want to draw only those texts which are on the active sheet:
-		if element (cursor).sheet = active_sheet then
+		if text.sheet = active_sheet then
 
 			draw_text (
-				content		=> element (cursor).content,
-				size		=> element (cursor).size,
+				content		=> text.content,
+				size		=> text.size,
 				font		=> text_font,
-				anchor		=> element (cursor).position,
+				anchor		=> get_place (text),
 				origin		=> true,
 
 				-- This is documentational text. It is readable from the front or the right.
-				rotation	=> pac_text.to_rotation (element (cursor).rotation),
+				rotation	=> pac_text.to_rotation (text.rotation),
 
-				alignment	=> element (cursor).alignment);
+				alignment	=> text.alignment);
 
 		end if;
 	end query_text;

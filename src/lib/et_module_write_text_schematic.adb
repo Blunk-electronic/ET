@@ -24,7 +24,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -77,26 +77,27 @@ package body et_module_write_text_schematic is
 
 
 		procedure write (text_cursor : in pac_texts.cursor) is
+			text : et_schematic_text.type_text renames element (text_cursor);
 		begin
 			section_mark (section_text, HEADER);
 			write
 				(
 				keyword		=> keyword_position,
-				parameters	=> keyword_sheet & to_string (element (text_cursor).sheet)
-								& space & to_string (element (text_cursor).position, FORMAT_2)
+				parameters	=> keyword_sheet & to_string (text.sheet)
+								& space & get_position (text, FORMAT_2)
 				); -- position sheet 1 x 30 y 180
 
 			write (keyword => keyword_rotation,
-					parameters => to_string (to_rotation (element (text_cursor).rotation)));
+					parameters => to_string (to_rotation (text.rotation)));
 
 			write (keyword => keyword_content, wrap => true,
-					parameters => to_string (element (text_cursor).content));
+					parameters => to_string (text.content));
 
-			write (keyword => keyword_size, parameters => to_string (element (text_cursor).size));
+			write (keyword => keyword_size, parameters => to_string (text.size));
 			write (keyword => keyword_alignment, parameters =>
-				keyword_horizontal & space & to_string (element (text_cursor).alignment.horizontal)
+				keyword_horizontal & space & to_string (text.alignment.horizontal)
 				& space & keyword_vertical & space
-				& to_string (element (text_cursor).alignment.vertical));
+				& to_string (text.alignment.vertical));
 
 			-- CS font
 

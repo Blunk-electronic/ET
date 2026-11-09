@@ -113,16 +113,14 @@ package et_schematic_text is
 		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 
-	-- A text/note in the schematic:
-	type type_text is new pac_text_schematic.type_text with record
-		position	: type_vector_model;
-		rotation	: type_rotation_documentation := HORIZONTAL;
+	-- A free text/note in the schematic:
+	type type_text is new type_text_basic with record -- CS rename to type_free_text ?
 		sheet		: type_sheet := type_sheet'first;
 		content		: type_text_content;
-		--font		: et_text.type_font;
 	end record;
 
 	package pac_texts is new doubly_linked_lists (type_text);
+	-- CS rename to pac_free_texts ?
 
 
 
