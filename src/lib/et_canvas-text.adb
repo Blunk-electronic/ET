@@ -389,7 +389,12 @@ package body et_canvas.text is
 		vectors	: type_vector_text;
 
 		-- Take a copy of the given text position:
-		pos_final : type_position := text.position;
+		--pos_final : type_position := text.position;
+
+		-- CS:
+		pos_final : type_position := (
+			place => get_place (text),
+			rotation => get_rotation (text));
 
 	begin
 		-- If absolute placement is required, then pos_final

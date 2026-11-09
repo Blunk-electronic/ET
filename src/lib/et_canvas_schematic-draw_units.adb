@@ -724,7 +724,7 @@ procedure draw_units is
 						p := get_object_tool_position;
 					else
 						-- The placeholder position is relative to the unit position:
-						p := placeholders.name.position;
+						p := get_place (placeholders.name);
 
 						-- Move placeholder by unit position to the final position:
 						move_by (p, unit_place);
@@ -796,7 +796,7 @@ procedure draw_units is
 							p := get_object_tool_position;
 						else
 							-- The placeholder position is relative to the unit position:
-							p := placeholders.value.position;
+							p := get_place (placeholders.value);
 
 							-- Move placeholder by unit position to the final position:
 							move_by (p, unit_place);
@@ -869,7 +869,7 @@ procedure draw_units is
 							p := get_object_tool_position;
 						else
 							-- The placeholder position is relative to the unit position:
-							p := placeholders.purpose.position;
+							p := get_place (placeholders.purpose);
 
 							-- Move placeholder by unit position to the final position:
 							move_by (p, unit_place);
