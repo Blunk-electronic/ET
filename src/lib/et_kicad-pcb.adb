@@ -3932,7 +3932,8 @@ package body et_kicad.pcb is
 								new_item	=> (
 									technology			=> THT,
 									tht_hole			=> DRILLED,
-									position			=> terminal_position,
+									place				=> terminal_position.place,
+									rotation			=> terminal_position.rotation,
 
 									-- CS: We assume there is no option in kicad to cover
 									-- a THT pad with stop laquer.
@@ -3952,7 +3953,8 @@ package body et_kicad.pcb is
 									drill_size			=> terminal_drill_size,
 
 									-- the pad is connected with a certain net
-									net_name			=> terminal_net_name
+									net_name			=> terminal_net_name,
+									others => <>
 								));
 
 
@@ -3978,7 +3980,8 @@ package body et_kicad.pcb is
 									new_item	=> (
 										technology			=> THT,
 										tht_hole			=> MILLED,
-										position			=> terminal_position,
+										place				=> terminal_position.place,
+										rotation			=> terminal_position.rotation,
 
 										-- CS: We assume there is no option in kicad to cover
 										-- a THT pad with stop laquer.
@@ -4000,7 +4003,8 @@ package body et_kicad.pcb is
 										millings => millings,
 
 										-- the pad is connected with a certain net
-										net_name			=> terminal_net_name
+										net_name			=> terminal_net_name,
+										others => <>
 									));
 							end;
 					end case;
@@ -4028,7 +4032,8 @@ package body et_kicad.pcb is
 									new_item	=> (
 										technology			=> THT,
 										tht_hole			=> DRILLED,
-										position			=> terminal_position,
+										place				=> terminal_position.place,
+										rotation			=> terminal_position.rotation,
 
 										-- CS: We assume there is no option in kicad to cover
 										-- a THT pad with stop laquer.
@@ -4048,7 +4053,8 @@ package body et_kicad.pcb is
 										drill_size			=> terminal_drill_size,
 
 										-- the pad is connected with a certain net
-										net_name			=> terminal_net_name
+										net_name			=> terminal_net_name,
+										others => <>
 										));
 
 							when RECTANGULAR =>
@@ -4095,7 +4101,8 @@ package body et_kicad.pcb is
 									new_item	=> (
 										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
-										position		=> terminal_position,
+										place			=> terminal_position.place,
+										rotation		=> terminal_position.rotation,
 										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -4113,7 +4120,8 @@ package body et_kicad.pcb is
 										stencil_shape		=> (others => <>),
 
 										-- the pad is connected with a certain net
-										net_name		=> terminal_net_name
+										net_name		=> terminal_net_name,
+										others => <>
 										));
 
 							when RECTANGULAR =>
@@ -4132,7 +4140,8 @@ package body et_kicad.pcb is
 									new_item	=> (
 										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
-										position		=> terminal_position,
+										place				=> terminal_position.place,
+										rotation			=> terminal_position.rotation,
 										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -4150,7 +4159,8 @@ package body et_kicad.pcb is
 										stencil_shape		=> (others => <>),
 
 										-- the pad is connected with a certain net
-										net_name		=> terminal_net_name
+										net_name		=> terminal_net_name,
+										others => <>
 										));
 
 							when OVAL =>
@@ -4169,7 +4179,8 @@ package body et_kicad.pcb is
 									new_item	=> (
 										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
-										position		=> terminal_position,
+										place				=> terminal_position.place,
+										rotation			=> terminal_position.rotation,
 										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -4187,7 +4198,8 @@ package body et_kicad.pcb is
 										stencil_shape		=> (others => <>),
 
 										-- the pad is connected with a certain net
-										net_name		=> terminal_net_name
+										net_name		=> terminal_net_name,
+										others => <>
 										));
 
 						end case;

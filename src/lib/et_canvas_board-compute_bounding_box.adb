@@ -1533,7 +1533,7 @@ is
 
 								b := get_bounding_box (
 									contour		=> t.pad_shape_tht.top,
-									offset_1	=> t.position.place,
+									offset_1	=> t.get_place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
 									mirror		=> mirror);
@@ -1542,7 +1542,7 @@ is
 
 								b := get_bounding_box (
 									contour		=> t.pad_shape_tht.bottom,
-									offset_1	=> t.position.place,
+									offset_1	=> t.get_place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
 									mirror		=> mirror);
@@ -1557,7 +1557,7 @@ is
 
 								b := get_bounding_box (
 									contour		=> t.pad_shape_smt,
-									offset_1	=> t.position.place,
+									offset_1	=> t.get_place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
 									mirror		=> mirror);

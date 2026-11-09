@@ -255,12 +255,12 @@ package body et_package_library is
 			use pac_terminals;
 			terminal : type_terminal renames element (t);
 
-			displacement : constant type_vector_model := terminal.position.place;
+			displacement : constant type_vector_model := get_place (terminal);
 
 			procedure finalize (c : in type_contour) is
 				contour : type_contour := c;
 			begin
-				rotate_by (contour, terminal.position.rotation);
+				rotate_by (contour, terminal.get_rotation);
 				move_by (contour, displacement);
 				result.append (contour);
 			end finalize;
@@ -273,7 +273,7 @@ package body et_package_library is
 							case terminal.tht_hole is
 								when DRILLED =>
 									finalize (get_inner_contour (
-										terminal, to_vector (terminal.position.place)));
+										terminal, to_vector (terminal.get_place)));
 
 								when MILLED =>
 									finalize (terminal.millings);

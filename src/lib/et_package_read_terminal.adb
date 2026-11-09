@@ -299,11 +299,14 @@ package body et_package_read_terminal is
 								technology			=> THT,
 								tht_hole			=> DRILLED,
 								drill_size			=> tht_drill_size,
-								position			=> terminal_position,
+								place				=> terminal_position.place,
+								rotation			=> terminal_position.rotation,
 								pad_shape_tht		=> tht_pad_shape,
 								stop_mask_status_tht	=> tht_stop_mask_status,
 								stop_mask_shape_tht		=> make_stop_mask_tht,
-								width_inner_layers		=> tht_width_inner_layers));
+								width_inner_layers		=> tht_width_inner_layers,
+								status => <>
+								));
 
 					when MILLED =>
 						pac_terminals.insert (
@@ -315,11 +318,14 @@ package body et_package_read_terminal is
 								technology			=> THT,
 								tht_hole			=> MILLED,
 								millings			=> tht_millings,
-								position			=> terminal_position,
+								place				=> terminal_position.place,
+								rotation			=> terminal_position.rotation,
 								pad_shape_tht		=> tht_pad_shape,
 								stop_mask_status_tht	=> tht_stop_mask_status,
 								stop_mask_shape_tht		=> make_stop_mask_tht,
-								width_inner_layers		=> tht_width_inner_layers));
+								width_inner_layers		=> tht_width_inner_layers,
+								status => <>
+								));
 				end case;
 
 				-- clean up for next terminal
@@ -344,12 +350,14 @@ package body et_package_read_terminal is
 						technology				=> SMT,
 						tht_hole				=> terminal_tht_hole_default, -- not relevant here, see spec
 						face					=> smt_pad_face,
-						position				=> terminal_position,
+						place				=> terminal_position.place,
+						rotation			=> terminal_position.rotation,
 						pad_shape_smt			=> smt_pad_shape,
 						stop_mask_status_smt	=> smt_stop_mask_status,
 						stop_mask_shape_smt		=> make_stop_mask_smt,
 						solder_paste_status		=> smt_solder_paste_status,
-						stencil_shape			=> make_stencil
+						stencil_shape			=> make_stencil,
+						others => <>
 						));
 
 				-- clean up for next terminal

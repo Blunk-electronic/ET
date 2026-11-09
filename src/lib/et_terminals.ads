@@ -35,7 +35,9 @@
 --
 --   history of changes:
 --
---   to do:
+-- To Do:
+-- 1. rename this package to et_terminal
+--
 
 with ada.containers;			use ada.containers;
 with ada.containers.indefinite_ordered_maps;
@@ -63,6 +65,7 @@ package et_terminals is
 	use pac_geometry_2;
 	use pac_contours;
 
+	use pac_basic_objects;
 	use pac_basic_objects_circle;
 
 
@@ -79,21 +82,20 @@ package et_terminals is
 
 		 -- drilled/milled, without meaning if technology is SMT
 		tht_hole	: type_terminal_tht_hole)
-	is tagged record
+	is new type_object_with_rotation with record
 
-			-- The terminal position (x/y) relative to the package position.
-			-- The rotation is the rotation of the terminal about itself:
-			position : type_position;
+		-- The terminal position (x/y) relative to the package position.
+		-- The rotation is the rotation of the terminal about itself:
 
-			-- For SMT pads this should be the geometical center of the pad.
-			-- The rotation has no meaning for THT pads with round shape.
-			-- The rotation is useful for exotic pad contours. The operator
-			-- would be drawing the contour with zero rotation
-			-- first (which is easier) in the package model. Then, by applying an angle,
-			-- the countour would be rotated to its final position.
+		-- For SMT pads this should be the geometical center of the pad.
+		-- The rotation has no meaning for THT pads with round shape.
+		-- The rotation is useful for exotic pad contours. The operator
+		-- would be drawing the contour with zero rotation
+		-- first (which is easier) in the package model. Then, by applying an angle,
+		-- the countour would be rotated to its final position.
 
-			-- CS: When reading a package model, make sure position is inside
-			-- the pad shape.
+		-- CS: When reading a package model, make sure position is inside
+		-- the pad shape.
 
 		case technology is
 			when THT =>
@@ -167,6 +169,7 @@ package et_terminals is
 			when THT => null;
 		end case;
 	end record;
+	-- CS rework. must be derived from type_abstract_object ?
 
 
 
@@ -223,6 +226,9 @@ package et_terminals is
 		name			: in type_terminal_name;
 		log_threshold	: in type_log_level);
 
+
+
+-- CS: move the following stuff (terminal lists) to package et_terminals:
 
 	package pac_terminals is new indefinite_ordered_maps (
 		key_type		=> type_terminal_name, -- H7, 14

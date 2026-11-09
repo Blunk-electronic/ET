@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -244,10 +244,11 @@ package body et_package_write_terminals is
 		section_mark (section_terminals, HEADER);
 
 		while terminal_cursor /= pac_terminals.no_element loop
+		-- CS: use renames
 			section_mark (section_terminal, HEADER);
 			write (keyword => keyword_name, parameters => space & to_string (key (terminal_cursor)));
 			write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
-			write (keyword => keyword_position, parameters => to_string (element (terminal_cursor).position));
+			write (keyword => keyword_position, parameters => get_position (element (terminal_cursor)));
 			-- CS change format to x 12 y 45 rotation 90
 
 			case element (terminal_cursor).technology is

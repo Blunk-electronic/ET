@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -4616,6 +4616,8 @@ package body et_board_ops_devices is
 
 		-- Locate the desired terminal in the package model:
 		terminal_cursor := get_terminal (package_model_cursor, terminal_name);
+		-- CS: use renames
+
 		if terminal_cursor = pac_terminals.no_element then
 			terminal_not_found (terminal_name);
 		end if;
@@ -4625,10 +4627,10 @@ package body et_board_ops_devices is
 
 		-- Get x/y of the terminal as given by the package model.
 		-- This position is relative to the origin of the package model:
-		terminal_position := to_vector (pac_terminals.element (terminal_cursor).position.place);
+		terminal_position := to_vector (get_place (pac_terminals.element (terminal_cursor)));
 
 		-- Get the rotation of the terminal (about its center) as given by the package model:
-		terminal_rotation := to_angle (pac_terminals.element (terminal_cursor).position.rotation);
+		terminal_rotation := to_angle (get_rotation (pac_terminals.element (terminal_cursor)));
 
 		-- Add to the terminal rotation the rotation of the package:
 		terminal_rotation := terminal_rotation + to_angle (get_rotation (package_position));

@@ -150,7 +150,7 @@ is
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.bottom,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					drill_size		=> t.drill_size);
 			end if;
@@ -158,7 +158,7 @@ is
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.top,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					drill_size		=> t.drill_size);
 			end if;
@@ -167,7 +167,7 @@ is
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.top,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					drill_size		=> t.drill_size);
 			end if;
@@ -175,7 +175,7 @@ is
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.bottom,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					drill_size		=> t.drill_size);
 			end if;
@@ -191,7 +191,7 @@ is
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.bottom,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					hole_contours	=> t.millings);
 			end if;
@@ -199,7 +199,7 @@ is
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.top,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					hole_contours	=> t.millings);
 
@@ -209,7 +209,7 @@ is
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.top,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					hole_contours	=> t.millings);
 			end if;
@@ -217,7 +217,7 @@ is
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
 					pad_contours	=> t.pad_shape_tht.bottom,
-					pad_position	=> t.position,
+					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
 					hole_contours	=> t.millings);
 			end if;
@@ -287,7 +287,7 @@ is
 		do_it (
 			drill_size		=> t.drill_size,
 			restring		=> t.width_inner_layers,
-			pad_position	=> t.position);
+			pad_position	=> (t.get_place, t.get_rotation));
 
 	end draw_tht_inner_layers_drilled;
 
@@ -348,7 +348,7 @@ is
 		do_it (
 			hole_contours	=> t.millings,
 			restring_width	=> t.width_inner_layers,
-			pad_position	=> t.position);
+			pad_position	=> (t.get_place, t.get_rotation));
 
 	end draw_tht_inner_layers_milled;
 
@@ -445,7 +445,7 @@ is
 				draw_stopmask (
 					pad_contours	=> t.pad_shape_tht.bottom,
 					stopmask		=> t.stop_mask_shape_tht.bottom,
-					pad_position	=> t.position);
+					pad_position	=> (t.get_place, t.get_rotation));
 			end if;
 
 			if stop_mask_enabled (BOTTOM) then
@@ -454,7 +454,7 @@ is
 				draw_stopmask (
 					pad_contours	=> t.pad_shape_tht.top,
 					stopmask		=> t.stop_mask_shape_tht.top,
-					pad_position	=> t.position);
+					pad_position	=> (t.get_place, t.get_rotation));
 			end if;
 
 		else -- not flipped
@@ -464,7 +464,7 @@ is
 				draw_stopmask (
 					pad_contours	=> t.pad_shape_tht.top,
 					stopmask		=> t.stop_mask_shape_tht.top,
-					pad_position	=> t.position);
+					pad_position	=> (t.get_place, t.get_rotation));
 			end if;
 
 			if stop_mask_enabled (BOTTOM) then
@@ -473,7 +473,7 @@ is
 				draw_stopmask (
 					pad_contours	=> t.pad_shape_tht.bottom,
 					stopmask		=> t.stop_mask_shape_tht.bottom,
-					pad_position	=> t.position);
+					pad_position	=> (t.get_place, t.get_rotation));
 
 			end if;
 		end if;
@@ -918,7 +918,7 @@ begin -- query_terminal
 					draw_tht_stop_mask;
 
 					-- Draw the name of the terminal:
-					draw_name_tht (t.position);
+					draw_name_tht ((t.get_place, t.get_rotation));
 
 
 				when MILLED => -- arbitrary shape of so called "plated millings"
@@ -933,14 +933,14 @@ begin -- query_terminal
 					draw_tht_stop_mask;
 
 					-- Draw the name of the terminal:
-					draw_name_tht (t.position);
+					draw_name_tht ((t.get_place, t.get_rotation));
 			end case;
 
 
 		when SMT =>
 
 			draw_pad_smt (t.pad_shape_smt, t.stop_mask_shape_smt,
-				t.stencil_shape, t.position, t.face);
+				t.stencil_shape, (t.get_place, t.get_rotation), t.face);
 	end case;
 
 end draw_terminal;

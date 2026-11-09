@@ -1961,7 +1961,8 @@ package body et_kicad_packages is
 								new_item	=> (
 									technology			=> THT,
 									tht_hole			=> DRILLED,
-									position			=> terminal_position,
+									place				=> terminal_position.place,
+									rotation			=> terminal_position.rotation,
 
 									-- The shape is the same on top and on bottom side.
 									pad_shape_tht		=> (top => shape, bottom => shape),
@@ -1978,7 +1979,8 @@ package body et_kicad_packages is
 									stop_mask_shape_tht	=> (others => <>),
 
 									width_inner_layers	=> terminal_copper_width_inner_layers,
-									drill_size			=> terminal_drill_size
+									drill_size			=> terminal_drill_size,
+									others				=> <>
 								));
 
 
@@ -2004,7 +2006,8 @@ package body et_kicad_packages is
 									new_item	=> (
 										technology			=> THT,
 										tht_hole			=> MILLED,
-										position			=> terminal_position,
+										place				=> terminal_position.place,
+										rotation			=> terminal_position.rotation,
 
 										-- CS: We assume there is no option in kicad to cover
 										-- a THT pad with stop laquer.
@@ -2023,7 +2026,9 @@ package body et_kicad_packages is
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 
 										-- The plated millings of the hole is a list of lines.
-										millings => millings
+										millings => millings,
+
+										others => <>
 									));
 							end;
 					end case;
@@ -2050,7 +2055,8 @@ package body et_kicad_packages is
 									new_item	=> (
 										technology			=> THT,
 										tht_hole			=> DRILLED,
-										position			=> terminal_position,
+										place				=> terminal_position.place,
+										rotation			=> terminal_position.rotation,
 
 										-- CS: We assume there is no option in kicad to cover
 										-- a THT pad with stop laquer.
@@ -2067,7 +2073,8 @@ package body et_kicad_packages is
 										stop_mask_shape_tht	=> (others => <>),
 
 										width_inner_layers	=> terminal_copper_width_inner_layers,
-										drill_size			=> terminal_drill_size
+										drill_size			=> terminal_drill_size,
+										others	=> <>
 										));
 
 							when RECTANGULAR =>
@@ -2114,7 +2121,8 @@ package body et_kicad_packages is
 									new_item	=> (
 										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
-										position		=> terminal_position,
+										place			=> terminal_position.place,
+										rotation		=> terminal_position.rotation,
 										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -2129,7 +2137,8 @@ package body et_kicad_packages is
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
 										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-										stencil_shape		=> (others => <>)
+										stencil_shape		=> (others => <>),
+										others => <>
 										));
 
 							when RECTANGULAR =>
@@ -2148,7 +2157,8 @@ package body et_kicad_packages is
 									new_item	=> (
 										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
-										position		=> terminal_position,
+										place			=> terminal_position.place,
+										rotation		=> terminal_position.rotation,
 										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -2163,7 +2173,8 @@ package body et_kicad_packages is
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
 										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-										stencil_shape		=> (others => <>)
+										stencil_shape		=> (others => <>),
+										others => <>
 										));
 
 
@@ -2183,7 +2194,8 @@ package body et_kicad_packages is
 									new_item	=> (
 										technology		=> SMT,
 										tht_hole		=> DRILLED, -- has no meaning here
-										position		=> terminal_position,
+										place			=> terminal_position.place,
+										rotation		=> terminal_position.rotation,
 										pad_shape_smt	=> shape,
 
 										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
@@ -2198,7 +2210,8 @@ package body et_kicad_packages is
 										-- CS: For the stencil shape we assume it is just the same as the pad shape.
 										-- It should be investigated whether kicad supports other stencil shapes
 										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-										stencil_shape		=> (others => <>)
+										stencil_shape		=> (others => <>),
+										others => <>
 										));
 
 						end case;
