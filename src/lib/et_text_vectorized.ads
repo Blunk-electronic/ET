@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -146,8 +146,6 @@ package et_text_vectorized is
 
 
 
-
-
 		-- Rotates a text by the given angle about the origin
 		-- and rotates the text about its own anchor point:
 		procedure rotate_text_by (
@@ -155,25 +153,6 @@ package et_text_vectorized is
 			angle	: in type_rotation);
 
 
-		-- Rotates a text by the given angle about
-		-- its own origin:
-		-- procedure rotate_text_by_2 (
-		-- 	text	: in out type_text_fab;
-		-- 	angle	: in type_rotation);
-
-
-
-
-
-		-- Moves a text by the given offset:
-		-- procedure move_text_by (
-		-- 	text	: in out type_text_fab;
-		-- 	offset	: in type_vector_model);
-
-		-- Moves a text to the given point:
-		-- procedure move_text_to (
-		-- 	text	: in out type_text_fab;
-		-- 	point	: in type_vector_model);
 
 
 		-- Returns the properties of the given text in a long single string.

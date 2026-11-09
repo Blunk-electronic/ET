@@ -108,33 +108,6 @@ package body et_text_vectorized is
 		end rotate_text_by;
 
 
-		-- procedure rotate_text_by_2 (
-		-- 	text	: in out type_text_fab;
-		-- 	angle	: in type_rotation)
-		-- is begin
-		-- 	text.position.rotation := add (text.position.rotation, angle);
-		-- end rotate_text_by_2;
-
-
-
-
-
-
-
-		-- procedure move_text_by (
-		-- 	text	: in out type_text_fab;
-		-- 	offset	: in type_vector_model)
-		-- is begin
-		-- 	move_by (text.position.place, offset);
-		-- end move_text_by;
-
-
-		-- procedure move_text_to (
-		-- 	text	: in out type_text_fab;
-		-- 	point	: in type_vector_model)
-		-- is begin
-		-- 	text.position.place := point;
-		-- end move_text_to;
 
 
 		function text_properties (
