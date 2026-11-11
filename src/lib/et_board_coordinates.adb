@@ -46,15 +46,83 @@ with et_keywords;						use et_keywords;
 package body et_board_coordinates is
 
 
-	function to_string (
-		position	: in type_package_position;
-		format		: in type_output_format := FORMAT_1)
+	function get_face (
+		object	: in type_board_object)
+		return type_face
+	is (object.face);
+
+
+	function get_face (
+		object	: in type_board_object)
+		return string
+	is (to_string (get_face (object)));
+
+
+
+	procedure set_face (
+		object	: in out type_board_object;
+		face	: in type_face)
+	is begin
+		object.face := face;
+	end set_face;
+
+
+
+	procedure toggle_face (
+		object	: in out type_board_object)
+	is begin
+		case get_face (object) is
+			when TOP	=> set_face (object, BOTTOM);
+			when BOTTOM	=> set_face (object, TOP);
+		end case;
+	end toggle_face;
+
+
+
+	function on_face_and_in_area (
+		object	: in type_board_object;
+		face	: in type_face;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_face (object) = face
+		and in_area (object, area) then
+			result := true;
+		end if;
+
+		return result;
+	end on_face_and_in_area;
+
+
+
+	function get_position (
+		object	: in type_board_object)
+		return type_board_object'class
+	is (type_board_object (object));
+
+
+	procedure set_position (
+		object		: in out type_board_object;
+		position	: in type_board_object'class)
+	is begin
+		object.set_place (get_place (position));
+		object.set_rotation (get_rotation (position));
+		object.set_face (get_face (position));
+	end set_position;
+
+
+
+	function get_position (
+		object	: in type_board_object;
+		format	: in type_output_format := FORMAT_1)
 		return string
 	is
-		x : constant string := to_string (get_x (position));
-		y : constant string := to_string (get_y (position));
-		r : constant string := to_string (get_rotation (position));
-		f : constant string := to_string (get_face (position));
+		x : constant string := to_string (get_x (object));
+		y : constant string := to_string (get_y (object));
+		r : constant string := to_string (get_rotation (object));
+		f : constant string := to_string (get_face (object));
 
 		separator : constant string := " / ";
 	begin
@@ -71,7 +139,7 @@ package body et_board_coordinates is
 			when others => -- CS do the same as with FORMAT_1
 				return "x/y/rotation/face " & x & separator & y & separator & r & separator & f;
 		end case;
-	end to_string;
+	end get_position;
 
 
 
@@ -79,12 +147,12 @@ package body et_board_coordinates is
 
 
 
-	function to_position (
+	function to_board_object_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
-		return type_package_position
+		return type_board_object'class
 	is
-		position : type_package_position; -- to be returned
+		position : type_board_object; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: more detailled syntax check required
@@ -94,11 +162,11 @@ package body et_board_coordinates is
 
 			-- We expect after the x the corresponding value for x
 			if get_field (line, place) = keyword_x then
-				set (position.place, AXIS_X, to_distance (get_field (line, place + 1)));
+				set_x (position, to_distance (get_field (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif get_field (line, place) = keyword_y then
-				set (position.place, AXIS_Y, to_distance (get_field (line, place + 1)));
+				set_y (position, to_distance (get_field (line, place + 1)));
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif get_field (line, place) = keyword_rotation then
@@ -116,7 +184,7 @@ package body et_board_coordinates is
 		end loop;
 
 		return position;
-	end to_position;
+	end to_board_object_position;
 
 
 
@@ -124,99 +192,63 @@ package body et_board_coordinates is
 
 
 
-	function to_package_position (
+	function to_board_object_position (
 		point		: in type_vector_model;
 		rotation	: in type_rotation_model := zero_rotation;
 		face		: in type_face := TOP)
-		return type_package_position
+		return type_board_object'class
 	is begin
-		return pos : type_package_position do
+		return pos : type_board_object do
 			set_place (pos, point);
 			set_rotation (pos, rotation);
-			pos.face := face;
+			set_face (pos, face);
 		end return;
-	end to_package_position;
-
-
-
-
-	procedure set_face (
-		position : in out type_package_position;
-		face	: in type_face)
-	is begin
-		position.face := face;
-	end set_face;
-
-
-
-
-	function get_face (
-		packge : in type_package_position)
-		return type_face
-	is (packge.face);
+	end to_board_object_position;
 
 
 
 
 
-	procedure toggle_face (
-		position : in out type_package_position)
-	is begin
-		case get_face (position) is
-			when TOP	=> set_face (position, BOTTOM);
-			when BOTTOM	=> set_face (position, TOP);
-		end case;
-	end toggle_face;
+
+	-- function get_position (
+	-- 	position : in type_package_position)
+	-- 	return type_position
+	-- is (type_position (position));
 
 
 
 
+	-- procedure set_position (
+	-- 	package_position	: in out type_package_position;
+	-- 	position			: in type_position)
+	-- is begin
+	-- 	package_position.place := get_place (position);
+	-- 	package_position.rotation := get_rotation (position);
+	-- end set_position;
 
-	function get_position (
-		position : in type_package_position)
-		return type_position
-	is (type_position (position));
-
-
-
-
-	procedure set_position (
-		package_position	: in out type_package_position;
-		position			: in type_position)
-	is begin
-		package_position.place := get_place (position);
-		package_position.rotation := get_rotation (position);
-	end set_position;
-
-
-
-	function get_place (
-		position : in type_package_position)
-		return type_vector_model
-	is (position.place);
 
 
 
 	function is_flipped (
-		position : in type_package_position)
+		object	: in type_board_object)
 		return boolean
-	is (position.face = BOTTOM);
+	is (get_face (object) = BOTTOM);
 
 
 
 
-	function to_terminal_position (
-		point		: in type_vector_model;
-		rotation	: in type_rotation_model)
-		return type_position'class
-	is
-		pos : type_position;
-	begin
-		--pos := (point with rotation);
-		set_place (pos, point);
-		set_rotation (pos, rotation);
-		return pos;
-	end to_terminal_position;
+	-- function to_terminal_position (
+	-- 	point		: in type_vector_model;
+	-- 	rotation	: in type_rotation_model)
+	-- 	return type_position'class
+	-- is
+	-- 	pos : type_position;
+	-- begin
+	-- 	--pos := (point with rotation);
+	-- 	set_place (pos, point);
+	-- 	set_rotation (pos, rotation);
+	-- 	return pos;
+	-- end to_terminal_position;
 
 
 

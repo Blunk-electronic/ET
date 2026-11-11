@@ -266,6 +266,32 @@ package body et_basic_objects is
 
 
 
+
+	procedure set_locked (
+		object : in out type_abstract_object)
+	is begin
+		set_locked (object.status);
+	end set_locked;
+
+
+	procedure clear_locked (
+		object : in out type_abstract_object)
+	is begin
+		clear_locked (object.status);
+	end clear_locked;
+
+
+	function is_locked (
+		object : in type_abstract_object)
+		return boolean
+	is (is_locked (object.status));
+
+
+
+
+
+
+
 	function get_status (
 		object	: in type_abstract_object)
 		return type_object_status

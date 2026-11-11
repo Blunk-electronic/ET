@@ -110,9 +110,9 @@ package et_devices_non_electrical is
 	-- Despite not having a counterpart in the schematic, these devices
 	-- are modeled via package models:
 
-	type type_device_non_electrical is record   -- CS should be private
-		position : type_package_position; -- incl. rotation and face
-
+	type type_device_non_electrical is new  -- CS should be private
+		type_board_object
+	with record
 		-- Text placeholders for value, name, purpose, ...
 		placeholders : type_text_placeholders;
 
@@ -132,8 +132,6 @@ package et_devices_non_electrical is
 
 		-- A purpose will rarely be assigned. But in case it is required:
 		purpose : type_device_purpose;
-
-		status : type_object_status;
 	end record;
 
 
@@ -153,99 +151,9 @@ package et_devices_non_electrical is
 
 
 
--- POSITION:
-
-	procedure set_position (
-		device		: in out type_device_non_electrical;
-		position	: in type_package_position);
-
-
-	function get_position (
-		device : in type_device_non_electrical)
-		return type_package_position;
-
-
-	function get_position (
-		device	: in type_device_non_electrical;
-		format	: in type_output_format := FORMAT_1)
-		return string;
-
-
-	function get_rotation (
-		device	: in type_device_non_electrical)
-		return type_rotation_model;
-
-
-	procedure set_rotation (
-		device		: in out type_device_non_electrical;
-		rotation	: in type_rotation_model);
-
-
-	procedure set_rotation_relative (
-		device		: in out type_device_non_electrical;
-		rotation	: in type_rotation_model);
-
-
-	procedure set_face (
-		device	: in out type_device_non_electrical;
-		face	: in type_face);
-
-
-	procedure toggle_face (
-		device	: in out type_device_non_electrical);
-
-
-	function get_face (
-		device	: in type_device_non_electrical)
-		return type_face;
-
-
-	function get_face (
-		device	: in type_device_non_electrical)
-		return string;
-
-
-	procedure set_place (
-		device	: in out type_device_non_electrical;
-		place	: in type_vector_model);
-
-
-	-- Moves the device by the given offset:
-	procedure set_place_relative ( -- CS rename to move_device_by ?
-		device	: in out type_device_non_electrical;
-		offset	: in type_vector_model);
-
-
-	function get_place (
-		device	: in type_device_non_electrical)
-		return type_vector_model;
-
-
-	function get_place (
-		device	: in type_device_non_electrical;
-		format	: in type_output_format := FORMAT_1)
-		return string;
-
-
-
-	-- Returns true if the given device is in the
-	-- given area:
-	function in_area (
-		device	: in type_device_non_electrical;
-		area	: in type_area)
-		return boolean;
-
-
-	-- Returns true if the given device meets the
-	-- following criteria:
-	-- 1. is mounted on the given face
-	-- 2. is in the given area
-	function on_face_and_in_area (
-		device	: in type_device_non_electrical;
-		face	: in type_face;
-		area	: in type_area)
-		return boolean;
-
+	-- procedure set_rotation_relative (
+	-- 	device		: in out type_device_non_electrical;
+	-- 	rotation	: in type_rotation_model);
 
 
 
@@ -320,80 +228,6 @@ package et_devices_non_electrical is
 
 
 
-
-
--- STATUS:
-
-
-	procedure set_proposed (
-		device : in out type_device_non_electrical);
-
-
-	procedure clear_proposed (
-		device : in out type_device_non_electrical);
-
-
-	function is_proposed (
-		device : in type_device_non_electrical)
-		return boolean;
-
-
-
-
-
-	procedure set_selected (
-		device : in out type_device_non_electrical);
-
-
-	procedure clear_selected (
-		device : in out type_device_non_electrical);
-
-
-	function is_selected (
-		device : in type_device_non_electrical)
-		return boolean;
-
-
-
-
-	procedure set_moving (
-		device : in out type_device_non_electrical);
-
-
-	procedure clear_moving (
-		device : in out type_device_non_electrical);
-
-
-	function is_moving (
-		device : in type_device_non_electrical)
-		return boolean;
-
-
-
-
-
-	procedure set_locked (
-		device : in out type_device_non_electrical);
-
-
-	procedure clear_locked (
-		device : in out type_device_non_electrical);
-
-
-	function is_locked (
-		device : in type_device_non_electrical)
-		return boolean;
-
-
-
-	procedure modify_status (
-		device		: in out type_device_non_electrical;
-		operation	: in type_status_operation);
-
-
-
-	procedure reset_status (
-	   device : in out type_device_non_electrical);
 
 
 
@@ -540,7 +374,7 @@ package et_devices_non_electrical is
 	-- given non-electrical device:
 	function get_position (
 		device_cursor	: in pac_devices_non_electrical.cursor) -- FD1
-		return type_package_position;
+		return type_board_object;
 
 
 	function get_position (

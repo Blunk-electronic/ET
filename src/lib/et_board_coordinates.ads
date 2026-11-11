@@ -46,111 +46,143 @@ with et_pcb_sides;					use et_pcb_sides;
 package et_board_coordinates is
 
 	use pac_geometry_2;
+	use pac_basic_objects;
 
 
-	type type_package_position is new pac_geometry_2.type_position with private;
+	-- type type_package_position is new pac_geometry_2.type_position with private;
+
+
+	-- package_position_default : constant type_package_position;
+
+
+	type type_board_object is new
+		type_object_with_rotation with private;
 
 
 
-	package_position_default : constant type_package_position;
+
+	function get_face (
+		object	: in type_board_object)
+		return type_face;
+
+
+	procedure set_face (
+		object	: in out type_board_object;
+		face	: in type_face);
+
+
+	procedure toggle_face (
+		object	: in out type_board_object);
 
 
 
-	-- This function returns the given package position
+	-- Returns true if the given object meets the
+	-- following criteria:
+	-- 1. is mounted on the given face
+	-- 2. is in the given area
+	function on_face_and_in_area (
+		object	: in type_board_object;
+		face	: in type_face;
+		area	: in type_area)
+		return boolean;
+
+
+	function get_position (
+		object	: in type_board_object)
+		return type_board_object'class;
+
+
+	procedure set_position (
+		object		: in out type_board_object;
+		position	: in type_board_object'class);
+
+
+	-- This function returns the given object position
 	-- as string formatted as follows:
 	-- FORMAT_1 : x/y/rotation/face 4.5 / 5.6 / 90.0 / top
 	-- FORMAT_2 : x 4.5 y 5.6 rotation 90.0 face top
 	-- FORMAT_3 : 4.5 5.6 90.0 top
-	overriding function to_string (
-		position	: in type_package_position;
-		format		: in type_output_format := FORMAT_1)
+	overriding function get_position (
+		object	: in type_board_object;
+		format	: in type_output_format := FORMAT_1)
+		-- CS: default format correct ?
 		return string;
 
 
 	-- Reads a line like "position x 44.5 y 53.5 rotation 90.0 face top"
 	-- starting at a field given by "from" and returns
-	-- a package position:
+	-- a board object position:
 	-- CS should be a procedure with an error flag output
-	-- and the position output ?
-	overriding function to_position (
+	-- and the erroneous field position output ?
+	function to_board_object_position (
 		line : in type_fields_of_line;
 		from : in type_field_count_positive)
-		return type_package_position;
+		return type_board_object'class;
 
 
-	function to_package_position (
+	function to_board_object_position (
 		point		: in type_vector_model;
 		rotation	: in type_rotation_model := zero_rotation;
 		face		: in type_face := TOP)
-		return type_package_position;
-
-	placeholder_position_default : constant type_package_position;
+		return type_board_object'class;
 
 
-
-	procedure set_face (
-		position : in out type_package_position;
-		face	: in type_face);
+	-- placeholder_position_default : constant type_package_position;
 
 
-	function get_face (
-		packge : in type_package_position)
-		return type_face;
 
-
-	-- Changes from top to bottom or vice versa:
-	procedure toggle_face (
-		position : in out type_package_position);
 
 
 
 	-- Returns the location vector and rotation of
 	-- the given package position:
-	function get_position (
-		position : in type_package_position)
-		return type_position;
+	-- function get_position (
+	-- 	position : in type_package_position)
+	-- 	return type_position;
 
 
 	-- Sets the position (x/y/rotation) of
 	-- the given package position:
-	procedure set_position (
-		package_position	: in out type_package_position;
-		position			: in type_position);
+	-- procedure set_position (
+	-- 	package_position	: in out type_package_position;
+	-- 	position			: in type_position);
 
 
-	-- Returns the x/y position of a package:
-	function get_place (
-		position : in type_package_position)
-		return type_vector_model;
 
-
-	-- Returns true if the face of the given package
+	-- Returns true if the face of the given object
 	-- position is BOTTOM:
 	function is_flipped (
-		position : in type_package_position)
+		object	: in type_board_object)
 		return boolean;
 
 
 	-- Composes from a given point and angle the terminal position.
-	function to_terminal_position (
-		point		: in type_vector_model;
-		rotation	: in type_rotation_model)
-		return type_position'class;
+	-- function to_terminal_position (
+	-- 	point		: in type_vector_model;
+	-- 	rotation	: in type_rotation_model)
+	-- 	return type_position'class;
 
 
 
 private
 
-		type type_package_position is new pac_geometry_2.type_position
-			with record
-				face : type_face := TOP;
-			end record;
+		-- type type_package_position is new pac_geometry_2.type_position
+		-- 	with record
+		-- 		face : type_face := TOP;
+		-- 	end record;
 
-	package_position_default : constant type_package_position := (
-		pac_geometry_2.origin_zero_rotation with face => TOP);
+	type type_board_object is new
+		type_object_with_rotation
+	with record
+		face : type_face := TOP;
+	end record;
 
-	placeholder_position_default : constant type_package_position := (
-		pac_geometry_2.origin_zero_rotation with face => TOP);
+
+	-- package_position_default : constant type_package_position := (
+	-- 	pac_geometry_2.origin_zero_rotation with face => TOP);
+
+	-- placeholder_position_default : constant type_package_position := (
+	-- 	pac_geometry_2.origin_zero_rotation with face => TOP);
 
 
 end et_board_coordinates;

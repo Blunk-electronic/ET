@@ -230,6 +230,18 @@ package et_basic_objects is
 
 
 
+	procedure set_locked (
+		object : in out type_abstract_object);
+
+
+	procedure clear_locked (
+		object : in out type_abstract_object);
+
+
+	function is_locked (
+		object : in type_abstract_object)
+		return boolean;
+
 
 
 	function get_status (
