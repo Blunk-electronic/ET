@@ -89,7 +89,7 @@ package body et_device_placeholders.packages is
 
 	function get_absolute_position (
 		placeholder			: in type_text_placeholder;
-		package_position	: in type_package_position)
+		package_position	: in type_board_object)
 		return type_vector_model
 	is
 		result : type_vector_model;
@@ -140,7 +140,7 @@ package body et_device_placeholders.packages is
 
 	function get_relative_position (
 		placeholder			: in type_text_placeholder;
-		package_position	: in type_package_position)
+		package_position	: in type_board_object)
 		return type_vector_model
 	is
 		result : type_vector_model;
@@ -430,7 +430,7 @@ package body et_device_placeholders.packages is
 		layer				: in type_placeholder_layer; -- silkscreen, assy doc
 		face				: in type_face;
 		index				: in type_placeholder_index; -- 1, 2, 3, ...
-		package_position	: in type_package_position;
+		package_position	: in type_board_object'class;
 		coordinates			: in type_coordinates; -- relative/absolute
 		point				: in type_vector_model)
 	is
@@ -691,7 +691,7 @@ package body et_device_placeholders.packages is
 
 	procedure propose_placeholders (
 		placeholders		: in out type_text_placeholders;
-		package_position	: in type_package_position;
+		package_position	: in type_board_object;
 		catch_zone			: in type_catch_zone;
 		count				: in out natural;
 		log_threshold		: in type_log_level)

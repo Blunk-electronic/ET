@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -130,7 +130,7 @@ package body et_package_model is
 		term_pos	: in out type_position; -- terminal position
 		outline		: in out type_contour'class;
 		flipped		: in type_flipped;
-		package_pos	: in type_package_position)
+		package_pos	: in type_board_object)
 	is
 		package_rotation : constant type_rotation_model := get_rotation (package_pos);
 		package_position_relative : constant type_vector_model := package_pos.place;

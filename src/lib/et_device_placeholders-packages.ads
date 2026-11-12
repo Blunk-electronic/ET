@@ -94,7 +94,7 @@ package et_device_placeholders.packages is
 	-- is absolute, then the package position is irrelevant:
 	function get_absolute_position (
 		placeholder			: in type_text_placeholder;
-		package_position	: in type_package_position)
+		package_position	: in type_board_object)
 		return type_vector_model;
 
 
@@ -104,7 +104,7 @@ package et_device_placeholders.packages is
 	-- package:
 	function get_relative_position (
 		placeholder			: in type_text_placeholder;
-		package_position	: in type_package_position)
+		package_position	: in type_board_object)
 		return type_vector_model;
 
 
@@ -274,7 +274,7 @@ package et_device_placeholders.packages is
 		layer				: in type_placeholder_layer; -- silkscreen, assy doc
 		face				: in type_face;
 		index				: in type_placeholder_index; -- 1, 2, 3, ...
-		package_position	: in type_package_position;
+		package_position	: in type_board_object'class;
 		coordinates			: in type_coordinates; -- relative/absolute
 		point				: in type_vector_model); -- x/y
 		-- CS rename to destination_offset rework documentation above
@@ -313,7 +313,7 @@ package et_device_placeholders.packages is
 	-- Adds to count the number of placeholders that have been found:
 	procedure propose_placeholders (
 		placeholders		: in out type_text_placeholders;
-		package_position	: in type_package_position;
+		package_position	: in type_board_object;
 		catch_zone			: in type_catch_zone;
 		count				: in out natural;
 		log_threshold		: in type_log_level);

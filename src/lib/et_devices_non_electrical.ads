@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         DEVICES NON-ELECTRICAL                           --
+--                       LISTS OF DEVICES NON-ELECTRICAL                    --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -49,6 +49,7 @@ with ada.containers;					use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
+with et_device_non_electrical;			use et_device_non_electrical;
 with et_pcb_sides;						use et_pcb_sides;
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
@@ -84,150 +85,6 @@ package et_devices_non_electrical is
 
 	use pac_geometry_2;
 	use pac_polygons;
-
-
-	procedure device_name_in_use (
-		name : in type_device_name); -- FD1, MH1, ...
-
-
-
-	-- In this world, if a package is flipped, then it is
-	-- mirrored along the Y-axis.
-	-- This function maps from flip status to mirror along y-axis.
-	-- If flipped is false, then the return is MIRRROR_NO.
-	-- If flipped is true, then the return is MIRROR_ALONG_Y_AXIS:
-	function to_mirror_along_y_axis ( -- CS remove ?
-		flipped : in type_flipped)
-		return type_mirror;
-
-
-
-
-	-- Devices which do not have a counterpart in the schematic
-	-- (like fiducials, mounting holes, ...). They can have
-	-- terminals. But the terminals are not connected with any net.
-	-- They have names like H1 (hole) or FD (fiducial).
-	-- Despite not having a counterpart in the schematic, these devices
-	-- are modeled via package models:
-
-	type type_device_non_electrical is new  -- CS should be private
-		type_board_object
-	with record
-		-- Text placeholders for value, name, purpose, ...
-		placeholders : type_text_placeholders;
-
-		-- The link to the package model like "../lbr/packages/fiducial.pac":
-		model_cursor : pac_package_models.cursor;
-
-		-- IMPORTANT: When reading the module file, the
-		-- package libraries must have been read beforehand.
-		-- Otherwise a valid cursor can not be assigned
-		-- to the device !
-
-		-- A value will rarely be assigned. But in case it is required:
-		value : type_device_value;
-
-		-- The partcode:
-		partcode : type_device_partcode;
-
-		-- A purpose will rarely be assigned. But in case it is required:
-		purpose : type_device_purpose;
-	end record;
-
-
-
-	-- Returns the name of the package model file
-	-- like "../lbr/packages/fiducial.pac"
-	function get_package_model_name (
-		device	: in type_device_non_electrical)
-		return type_package_model_name;
-
-
-	function get_package_model_name (
-		device : in type_device_non_electrical)
-		return string;
-
-
-
-
-
-	-- procedure set_rotation_relative (
-	-- 	device		: in out type_device_non_electrical;
-	-- 	rotation	: in type_rotation_model);
-
-
-
-
--- VALUE:
-
-	procedure set_value (
-		device	: in out type_device_non_electrical;
-		value	: in type_device_value);
-
-
-	function get_value (
-		device	: in type_device_non_electrical)
-		return type_device_value;
-
-
-	function get_value (
-		device	: in type_device_non_electrical)
-		return string;
-
-
-	function has_value (
-		device	: in type_device_non_electrical)
-		return boolean;
-
-
-
--- PARTCODE:
-
-	procedure set_partcode (
-		device		: in out type_device_non_electrical;
-		partcode	: in type_device_partcode);
-
-
-	function get_partcode (
-		device	: in type_device_non_electrical)
-		return type_device_partcode;
-
-
-	function get_partcode (
-		device	: in type_device_non_electrical)
-		return string;
-
-
-	function has_partcode (
-		device	: in type_device_non_electrical)
-		return boolean;
-
-
-
--- PURPOSE:
-
-	procedure set_purpose (
-		device	: in out type_device_non_electrical;
-		purpose	: in type_device_purpose);
-
-
-	function get_purpose (
-		device	: in type_device_non_electrical)
-		return type_device_purpose;
-
-
-	function get_purpose (
-		device	: in type_device_non_electrical)
-		return string;
-
-
-	function has_purpose (
-		device	: in type_device_non_electrical)
-		return boolean;
-
-
-
-
 
 
 
@@ -310,13 +167,7 @@ package et_devices_non_electrical is
 	--	return string;
 
 
-
-	-- Returns true if the given device has a
-	-- a real package with a height, means if it is relevant
-	-- for creating bill of materials (BOM):
-	function is_bom_relevant (
-		device : in type_device_non_electrical)
-		return boolean;
+-- BOM:
 
 
 	-- Returns true if the given device has a
@@ -463,78 +314,9 @@ package et_devices_non_electrical is
 
 
 
--- PLACEHOLDERS:
-
-	-- Resets the positions of placeholders back to the
-	-- defaults as specified in the package model:
-	procedure reset_placeholder_positions (
-		device		: in out type_device_non_electrical);
-
-
-
-	-- Moves the placeholder given by meaning, layer, face and index.
-	-- NOTE: Index identifies the targeted placeholder in connection
-	--       with its meaning. For example, if meaning is "value" and index is 3
-	--       then the 3rd value placeholder is adressed.
-	--
-	-- If no matching placeholder has been found, then nothing happens.
-	-- CS; An error flag output by this procedure could be useful.
-	--
-	-- If coordinates is absolute, then the affected placeholder
-	-- is moved to the given point and its anchor mode set accordingly.
-	-- If coordinates is relative, then the affected placeholder
-	-- is moved by the x/y-distance given by point and its anchor mode
-	-- set accordingly:
-	procedure move_placeholder (
-		device		: in out type_device_non_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer; -- silkscreen, assy doc
-		face		: in type_face;
-		index		: in type_placeholder_index; -- 1, 2, 3, ...
-		coordinates	: in type_coordinates; -- relative/absolute
-		point		: in type_vector_model); -- x/y
-	-- CS rename to destination_offset rework documentation above
-
-
-
-	-- Rotates the placeholder given by meaning, layer, face and index.
-	-- NOTE: Index identifies the targeted placeholder in connection
-	--       with its meaning. For example, if meaning is "value" and index is 3
-	--       then the 3rd value placeholder is adressed.
-	--
-	-- If no matching placeholder has been found, then nothing happens.
-	-- CS; An error flag output by this procedure could be useful.
-	--
-	-- If coordinates is absolute, then the placeholder
-	-- is rotated to the given rotation.
-	-- If coordinates is relative, then the placeholder
-	-- is rotated by the given rotation:
-	procedure rotate_placeholder (
-		device		: in out type_device_non_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer; -- silkscreen, assy doc
-		face		: in type_face;
-		index		: in type_placeholder_index; -- 1, 2, 3, ...
-		coordinates	: in type_coordinates;
-		rotation	: in type_rotation_model);
-
-
-
 
 
 -- PROPERTIES QUERIES:
-
-
-	-- Returns properties of the given device.
-	-- 1. Level determines the degree and amount of information to be returned.
-	-- 2. If linebreaks is true, then linebreaks are inserted.
-	--    This is useful when the output is to be displayed
-	--    in a window or if it is to be written in a file:
-	function get_device_properties (
-		device		: in type_device_non_electrical;
-		level		: in type_properties_level;
-		linebreaks	: in boolean := false)
-		return string;
 
 
 	-- Returns properties of the given device.

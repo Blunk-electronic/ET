@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         DEVICES NON-ELECTRICAL                           --
+--                       LISTS OF DEVICES NON-ELECTRICAL                    --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -50,179 +50,6 @@ with et_string_processing;			use et_string_processing;
 
 
 package body et_devices_non_electrical is
-
-
-	procedure device_name_in_use (
-		name : in type_device_name)
-	is
-		use et_logging;
-	begin
-		log (SEVERITY_ERROR, "Name " & enclose_in_quotes (to_string (name)) &
-			 " already used by another non-electrical device !",
-			 console => true);
-
-		raise constraint_error;
-	end device_name_in_use;
-
-
-
-
-	function to_mirror_along_y_axis (
-		flipped : in type_flipped)
-		return type_mirror
-	is begin
-		case flipped is
-			when YES => return MIRROR_ALONG_Y_AXIS;
-			when NO =>  return MIRROR_NO;
-		end case;
-	end to_mirror_along_y_axis;
-
-
-
-
-	function get_package_model_name (
-		device	: in type_device_non_electrical)
-		return type_package_model_name
-	is
-		use pac_package_models;
-	begin
-		return key (device.model_cursor);
-	end get_package_model_name;
-
-
-
-	function get_package_model_name (
-		device : in type_device_non_electrical)
-		return string
-	is (to_string (get_package_model_name (device)));
-
-
-
-
-
-
-
-
-	-- procedure set_rotation_relative (
-	-- 	device		: in out type_device_non_electrical;
-	-- 	rotation	: in type_rotation_model)
-	-- is begin
-	-- 	set_rotation_relative (device.position, rotation);
-	-- end set_rotation_relative;
-
-
-
-
--- VALUE:
-
-	procedure set_value (
-		device	: in out type_device_non_electrical;
-		value	: in type_device_value)
-	is begin
-		device.value := value;
-	end set_value;
-
-
-	function get_value (
-		device	: in type_device_non_electrical)
-		return type_device_value
-	is (device.value);
-
-
-	function get_value (
-		device	: in type_device_non_electrical)
-		return string
-	is (to_string (get_value (device)));
-
-
-	function has_value (
-		device	: in type_device_non_electrical)
-		return boolean
-	is begin
-		if is_empty (get_value (device)) then
-			return false;
-		else
-			return true;
-		end if;
-	end has_value;
-
-
-
--- PARTCODE:
-
-	procedure set_partcode (
-		device		: in out type_device_non_electrical;
-		partcode	: in type_device_partcode)
-	is begin
-		device.partcode := partcode;
-	end set_partcode;
-
-
-	function get_partcode (
-		device	: in type_device_non_electrical)
-		return type_device_partcode
-	is (device.partcode);
-
-
-	function get_partcode (
-		device	: in type_device_non_electrical)
-		return string
-	is (to_string (get_partcode (device)));
-
-
-	function has_partcode (
-		device	: in type_device_non_electrical)
-		return boolean
-	is begin
-		if is_empty (get_partcode (device)) then
-			return false;
-		else
-			return true;
-		end if;
-	end has_partcode;
-
-
-
-
--- PURPOSE:
-
-	procedure set_purpose (
-		device	: in out type_device_non_electrical;
-		purpose	: in type_device_purpose)
-	is begin
-		device.purpose := purpose;
-	end set_purpose;
-
-
-	function get_purpose (
-		device	: in type_device_non_electrical)
-		return type_device_purpose
-	is (device.purpose);
-
-
-	function get_purpose (
-		device	: in type_device_non_electrical)
-		return string
-	is (to_string (get_purpose (device)));
-
-
-	function has_purpose (
-		device	: in type_device_non_electrical)
-		return boolean
-	is begin
-		if is_empty (get_purpose (device)) then
-			return false;
-		else
-			return true;
-		end if;
-	end has_purpose;
-
-
-
-
-
-
-
 
 
 
@@ -329,17 +156,8 @@ package body et_devices_non_electrical is
 
 
 
-	function is_bom_relevant (
-		device : in type_device_non_electrical)
-		return boolean
-	is
-		use pac_package_models;
-	begin
-		return is_bom_relevant (key (device.model_cursor));
-	end is_bom_relevant;
 
-
-
+-- BOM:
 
 
 	function is_bom_relevant (
@@ -421,11 +239,11 @@ package body et_devices_non_electrical is
 		format			: in type_output_format := FORMAT_1)
 		return string
 	is
-		p : type_package_position;
+		p : type_board_object;
 	begin
 		p := get_position (device_cursor);
 
-		return to_string (p, format);
+		return get_position (p, format);
 	end get_position;
 
 
@@ -463,10 +281,9 @@ package body et_devices_non_electrical is
 		device_cursor	: in pac_devices_non_electrical.cursor)
 		return type_face
 	is
-		position : type_package_position;
+		device : type_device_non_electrical renames element (device_cursor);
 	begin
-		position := element (device_cursor).position;
-		return get_face (position);
+		return get_face (device);
 	end get_face;
 
 
@@ -567,151 +384,6 @@ package body et_devices_non_electrical is
 
 
 
--- PLACEHOLDERS:
-
-
-
-	procedure reset_placeholder_positions (
-		device		: in out type_device_non_electrical)
-	is
-		cursor_lib : pac_package_models.cursor;
-		default_placeholders : type_text_placeholders;
-	begin
-		-- Locate the device in the package library:
-		cursor_lib := device.model_cursor;
-
-		-- Get the default placeholders as they are specified
-		-- in the package model:
-		default_placeholders := get_default_placeholders (cursor_lib);
-
-		-- Assign the default placeholders to the device:
-		device.placeholders := default_placeholders;
-	end reset_placeholder_positions;
-
-
-
-
-
-	procedure move_placeholder (
-		device		: in out type_device_non_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer;
-		face		: in type_face;
-		index		: in type_placeholder_index;
-		coordinates	: in type_coordinates; -- relative/absolute
-		point		: in type_vector_model) -- x/y
-	is begin
-		move_placeholder (device.placeholders, meaning, layer,
-			face, index, get_position (device), coordinates, point);
-
-	end move_placeholder;
-
-
-
-
-
-
-	procedure rotate_placeholder (
-		device		: in out type_device_non_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer;
-		face		: in type_face;
-		index		: in type_placeholder_index;
-		coordinates	: in type_coordinates;
-		rotation	: in type_rotation_model)
-	is begin
-		rotate_placeholder (device.placeholders, meaning, layer,
-			face, index, coordinates, rotation);
-
-	end rotate_placeholder;
-
-
-
-
-
-
-
-
-
-
-	function get_device_properties (
-		device		: in type_device_non_electrical;
-		level		: in type_properties_level;
-		linebreaks	: in boolean := false)
-		return string
-	is
-		use ada.strings.unbounded;
-		result : unbounded_string;
-
-
-		-- If linebreaks are requested by the caller, then
-		-- this function returns a linefeed character on each call.
-		-- If no linefeeds are requested, then the return is an empty string:
-		function ins_LF return string is
-			use ada.characters.latin_1;
-		begin
-			if linebreaks then
-				return "" & LF;
-			else
-				return "";
-			end if;
-		end ins_LF;
-
-
-		-- CS: Refinement required about what
-		-- should be output on which level.
-
-		procedure get_info_1 is begin
-			if has_value (device) then
-				result := to_unbounded_string (" value: "
-					& get_value (device) & ins_LF);
-			end if;
-
-			if has_purpose (device) then
-				result := to_unbounded_string (" purpose: "
-					& get_purpose (device) & ins_LF);
-			end if;
-		end get_info_1;
-
-
-		procedure get_info_2 is begin
-			if has_partcode (device) then
-				result := result & " partcode: "
-					& get_partcode (device) & ins_LF;
-			end if;
-		end get_info_2;
-
-
-		procedure get_info_3 is begin
-			result := result & " package model: "
-				& to_string (get_package_model_name (device)) & ins_LF;
-		end get_info_3;
-
-
-
-	begin
-		case level is
-			when DEVICE_PROPERTIES_LEVEL_1 =>
-				get_info_1;
-
-			when DEVICE_PROPERTIES_LEVEL_2 =>
-				get_info_1;
-				get_info_2;
-
-			when DEVICE_PROPERTIES_LEVEL_3 =>
-				get_info_1;
-				get_info_2;
-				get_info_3;
-		end case;
-
-		return to_string (result);
-	end get_device_properties;
-
-
-
-
-
-
 
 
 	function get_properties (
@@ -765,19 +437,19 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		offset : constant type_vector_model := device.position.place;
+		offset : constant type_vector_model := device.get_place;
 	begin
 		-- lines, arcs, circles, texts
 		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
 			case get_face (device_cursor) is
 				when TOP =>
 					conductors := get_conductor_objects (packge, layer_category);
-					rotate_conductor_objects (conductors, +device.position.rotation);
+					rotate_conductor_objects (conductors, +device.get_rotation);
 
 				when BOTTOM =>
 					conductors := get_conductor_objects (packge, invert_category (layer_category));
 					mirror_conductor_objects (conductors);
-					rotate_conductor_objects (conductors, -device.position.rotation);
+					rotate_conductor_objects (conductors, -device.get_rotation);
 			end case;
 
 			move_conductor_objects (conductors, offset);
@@ -802,7 +474,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		offset : constant type_vector_model := device.position.place;
+		offset : constant type_vector_model := device.get_place;
 
 		use pac_contours;
 		terminals	: pac_contour_list.list;
@@ -816,11 +488,11 @@ package body et_devices_non_electrical is
 		case get_face (device_cursor) is
 			when TOP =>
 				terminals := get_terminal_contours (packge, layer_category);
-				rotate_contours (terminals, device.position.rotation);
+				rotate_contours (terminals, device.get_rotation);
 			when BOTTOM =>
 				terminals := get_terminal_contours (packge, invert_category (layer_category));
 				mirror_contours (terminals);
-				rotate_contours (terminals, -device.position.rotation);
+				rotate_contours (terminals, -device.get_rotation);
 		end case;
 
 		move_contours (terminals, offset);
@@ -837,12 +509,12 @@ package body et_devices_non_electrical is
 			case get_face (device_cursor) is
 				when TOP =>
 					conductors := get_conductor_objects (packge, layer_category);
-					rotate_conductor_objects (conductors, +device.position.rotation);
+					rotate_conductor_objects (conductors, +device.get_rotation);
 
 				when BOTTOM =>
 					conductors := get_conductor_objects (packge, invert_category (layer_category));
 					mirror_conductor_objects (conductors);
-					rotate_conductor_objects (conductors, -device.position.rotation);
+					rotate_conductor_objects (conductors, -device.get_rotation);
 			end case;
 
 			move_conductor_objects (conductors, offset);
@@ -872,21 +544,21 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		unused_rotation : type_rotation_model renames device.position.rotation;
+		unused_rotation : type_rotation_model renames device.get_rotation;
 	begin
 		if layer_category /= INNER then -- route restrict objects exist in outer layers only
 			case get_face (device_cursor) is
 				when TOP =>
 					restrict := get_route_restrict_objects (packge, layer_category);
-					rotate_route_restrict_objects (restrict, +device.position.rotation);
+					rotate_route_restrict_objects (restrict, +device.get_rotation);
 
 				when BOTTOM =>
 					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
 					mirror_route_restrict_objects (restrict);
-					rotate_route_restrict_objects (restrict, -device.position.rotation);
+					rotate_route_restrict_objects (restrict, -device.get_rotation);
 			end case;
 
-			move_route_restrict_objects (restrict, device.position.place);
+			move_route_restrict_objects (restrict, device.get_place);
 		end if;
 
 		return restrict;
@@ -914,15 +586,15 @@ package body et_devices_non_electrical is
 			case get_face (device_cursor) is
 				when TOP =>
 					restrict := get_route_restrict_objects (packge, layer_category);
-					rotate_route_restrict_objects (restrict, +device.position.rotation);
+					rotate_route_restrict_objects (restrict, +device.get_rotation);
 
 				when BOTTOM =>
 					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
 					mirror_route_restrict_objects (restrict);
-					rotate_route_restrict_objects (restrict, -device.position.rotation);
+					rotate_route_restrict_objects (restrict, -device.get_rotation);
 			end case;
 
-			move_route_restrict_objects (restrict, device.position.place);
+			move_route_restrict_objects (restrict, device.get_place);
 
 			-- convert restrict objects to polygons:
 			result := to_polygons (restrict, fill_tolerance);
@@ -947,21 +619,21 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		unused_rotation : type_rotation_model renames device.position.rotation;
+		unused_rotation : type_rotation_model renames device.get_rotation;
 	begin
 		if layer_category /= INNER then -- via restrict objects exist in outer layers only
 			case get_face (device_cursor) is
 				when TOP =>
 					restrict := get_via_restrict_objects (packge, layer_category);
-					rotate_via_restrict_objects (restrict, +device.position.rotation);
+					rotate_via_restrict_objects (restrict, +device.get_rotation);
 
 				when BOTTOM =>
 					restrict := get_via_restrict_objects (packge, invert_category (layer_category));
 					mirror_via_restrict_objects (restrict);
-					rotate_via_restrict_objects (restrict, -device.position.rotation);
+					rotate_via_restrict_objects (restrict, -device.get_rotation);
 			end case;
 
-			move_via_restrict_objects (restrict, device.position.place);
+			move_via_restrict_objects (restrict, device.get_place);
 		end if;
 
 		return restrict;
@@ -982,7 +654,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		rotation : type_rotation_model renames device.get_rotation;
 	begin
 		case face is
 			when TOP =>
@@ -1010,7 +682,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 
-		move_keepout_objects (result, device.position.place);
+		move_keepout_objects (result, device.get_place);
 
 		return result;
 	end get_keepout_objects;
@@ -1031,7 +703,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		rotation : type_rotation_model renames device.get_rotation;
 	begin
 		case face is
 			when TOP =>
@@ -1059,7 +731,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 
-		move_stencil_objects (result, device.position.place);
+		move_stencil_objects (result, device.get_place);
 		return result;
 	end get_stencil_objects;
 
@@ -1079,7 +751,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		rotation : type_rotation_model renames device.get_rotation;
 
 		use et_stopmask.packages;
 	begin
@@ -1109,7 +781,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 
-		move_stopmask_objects (result, device.position.place);
+		move_stopmask_objects (result, device.get_place);
 		return result;
 	end get_stopmask_objects;
 
@@ -1153,7 +825,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		rotation : type_rotation_model renames device.get_rotation;
 
 		use et_silkscreen.packages;
 		silkscreen : et_silkscreen.packages.type_silkscreen_package;
@@ -1226,7 +898,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 
-		move_silkscreen_objects (silkscreen, device.position.place);
+		move_silkscreen_objects (silkscreen, device.get_place);
 
 		result := type_silkscreen (silkscreen);
 		return result;
@@ -1249,7 +921,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		rotation : type_rotation_model renames device.get_rotation;
 
 		use et_assy_doc.packages;
 		assy_doc : et_assy_doc.packages.type_assy_doc_package;
@@ -1333,7 +1005,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 
-		move_assy_doc_objects (assy_doc, device.position.place);
+		move_assy_doc_objects (assy_doc, device.get_place);
 
 		result := type_assy_doc (assy_doc);
 		return result;
@@ -1354,7 +1026,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		rotation : type_rotation_model renames device.get_rotation;
 	begin
 		holes := get_hole_contours (packge);
 
@@ -1367,7 +1039,7 @@ package body et_devices_non_electrical is
 				rotate_holes (holes, +rotation);
 		end case;
 
-		move_holes (holes, device.position.place);
+		move_holes (holes, device.get_place);
 		return holes;
 	end get_holes;
 
@@ -1387,7 +1059,7 @@ package body et_devices_non_electrical is
 
 		packge : constant pac_package_models.cursor := device.model_cursor;
 
-		rotation : type_rotation_model renames device.position.rotation;
+		rotation : type_rotation_model renames device.get_rotation;
 	begin
 		holes := get_hole_contours (packge);
 
@@ -1401,7 +1073,7 @@ package body et_devices_non_electrical is
 
 		end case;
 
-		move_holes (holes, device.position.place);
+		move_holes (holes, device.get_place);
 
 		result := to_polygons (holes, fill_tolerance);
 		return result;
