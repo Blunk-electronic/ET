@@ -35,13 +35,15 @@
 --
 --   history of changes:
 --
---   ToDo:
---		1. device accessories
+-- To Do:
+-- 1. device accessories
+-- 2. see comments on package pac_devices_electrical
+--
 --
 -- DESCRIPTION:
 --
 -- This package is about the type, basic properties and subprograms related
--- to so called "electrical" devices as they are modeled in the schematic
+-- to a called "electrical device" as it is modeled in the schematic
 -- and in the board.
 -- These devices have a representation in schematic and mostly in the board.
 
@@ -123,14 +125,13 @@ package et_devices_electrical is
 				-- or vice versa.
 				-- Flipping a device to top or bottom means it will be drawn
 				-- mirrored along its Y-axis.
-				position	: et_board_coordinates.type_package_position; -- incl. rotation and face
+				position	: et_board_coordinates.type_board_object;
+				-- incl. place, rotation, face and status
 
 				-- Text placeholders in the board drawing
 				-- for value, name, purpose, ...
 				placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
-				-- The status of the package:
-				status : type_object_status;
 
 			when APPEARANCE_VIRTUAL => null;
 
@@ -159,7 +160,7 @@ package et_devices_electrical is
 
 	function get_position (
 		device : in type_device_electrical)
-		return et_board_coordinates.type_package_position;
+		return et_board_coordinates.type_board_object;
 
 
 
@@ -202,6 +203,8 @@ package et_devices_electrical is
 
 
 
+	-- CS: move list related stuff to et_devices_electrical
+	-- rename this package to et_devices_electrical
 
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:

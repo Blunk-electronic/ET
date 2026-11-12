@@ -68,7 +68,7 @@ package body et_devices_electrical is
 		-- If the given device is real, then reset
 		-- the status flags of the copy:
 		if is_real (device_in) then
-			reset_status (device_out.status);
+			reset_status (device_out.position.status);
 		end if;
 
 		return device_out;
@@ -81,7 +81,7 @@ package body et_devices_electrical is
 
 	function get_position (
 		device : in type_device_electrical)
-		return et_board_coordinates.type_package_position
+		return et_board_coordinates.type_board_object
 	is (device.position);
 
 
@@ -272,7 +272,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			set_selected (device.status);
+			set_selected (device.position.status);
 		end if;
 	end set_selected;
 
@@ -283,7 +283,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			clear_selected (device.status);
+			clear_selected (device.position.status);
 		end if;
 	end clear_selected;
 
@@ -294,7 +294,7 @@ package body et_devices_electrical is
 		return boolean
 	is begin
 		if is_real (device) then
-			if is_selected (device.status) then
+			if is_selected (device.position.status) then
 				return true;
 			else
 				return false;
@@ -311,7 +311,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			set_proposed (device.status);
+			set_proposed (device.position.status);
 		end if;
 	end set_proposed;
 
@@ -321,7 +321,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			clear_proposed (device.status);
+			clear_proposed (device.position.status);
 		end if;
 	end clear_proposed;
 
@@ -332,7 +332,7 @@ package body et_devices_electrical is
 		return boolean
 	is begin
 		if is_real (device) then
-			if is_proposed (device.status) then
+			if is_proposed (device.position.status) then
 				return true;
 			else
 				return false;
@@ -348,7 +348,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			set_moving (device.status);
+			set_moving (device.position.status);
 		end if;
 	end set_moving;
 
@@ -357,7 +357,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			clear_moving (device.status);
+			clear_moving (device.position.status);
 		end if;
 	end clear_moving;
 
@@ -368,7 +368,7 @@ package body et_devices_electrical is
 		return boolean
 	is begin
 		if is_real (device) then
-			if is_moving (device.status) then
+			if is_moving (device.position.status) then
 				return true;
 			else
 				return false;
@@ -389,7 +389,7 @@ package body et_devices_electrical is
 		operation	: in type_status_operation)
 	is begin
 		if is_real (device) then
-			modify_status (device.status, operation);
+			modify_status (device.position.status, operation);
 		end if;
 	end modify_status;
 
@@ -400,7 +400,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			reset_status (device.status);
+			reset_status (device.position.status);
 		end if;
 	end reset_status;
 
