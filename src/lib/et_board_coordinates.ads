@@ -89,9 +89,9 @@ package et_board_coordinates is
 		return boolean;
 
 
-	function get_position (
-		object	: in type_board_object)
-		return type_board_object'class;
+	-- function get_position (
+	-- 	object	: in type_board_object)
+	-- 	return type_board_object'class;
 
 
 	procedure set_position (

@@ -176,7 +176,7 @@ package body et_board_ops_devices is
 				device		: in out type_device_electrical)
 			is begin
 				log (text => to_string (device_name), level => log_threshold + 1);
-				set_proposed (device.status);
+				set_proposed (device);
 				count := count + 1;
 			end query_device;
 
@@ -349,7 +349,7 @@ package body et_board_ops_devices is
 						set_place (device, point); -- preserve angle and face
 
 					when RELATIVE =>
-						set_place_relative (device, point); -- preserve angle and face
+						move_by (device, point); -- preserve angle and face
 
 				end case;
 			end move_non_electrical;
@@ -1254,7 +1254,7 @@ package body et_board_ops_devices is
 	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in type_package_model_name; -- ../lbr/packages/fiducial.pac
-		position		: in type_package_position; -- x,y,rotation,face
+		position		: in type_board_object; -- x,y,rotation,face
 		prefix			: in type_device_prefix; -- FD
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level)
@@ -1292,8 +1292,7 @@ package body et_board_ops_devices is
 				inserted	=> inserted,
 				position	=> device_cursor,
 				key			=> next_name,
-				new_item	=> (
-					position		=> position,
+				new_item	=> (position with
 					model_cursor	=> package_cursor_lib,
 
 					-- Text placeholders in the board drawing:
@@ -1306,7 +1305,7 @@ package body et_board_ops_devices is
 					-- then it DOES NOT get updated.
 					placeholders	=> get_default_placeholders (package_cursor_lib),
 
-					others			=> <>));
+					others			=> <>)); -- value, purpose, partcode
 
 			-- check inserted flag
 			if not inserted then
@@ -1320,7 +1319,7 @@ package body et_board_ops_devices is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " add non-electrical device " & to_string (package_model)
-			& " at " & to_string (position),
+			& " at " & get_position (position),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1471,7 +1470,7 @@ package body et_board_ops_devices is
 				element (device_cursor);
 		begin
 			-- Move the new device by the given offset:
-			set_place_relative (new_device, offset);
+			move_by (new_device, offset);
 
 			-- Insert the new device in the module:
 			module.devices_non_electric.insert (next_name, new_device);
@@ -4588,7 +4587,7 @@ package body et_board_ops_devices is
 	is
 		pragma unreferenced (module_cursor);
 		-- This is the position of the package as it is in the layout:
-		package_position : et_board_coordinates.type_package_position; -- incl. angle and face
+		package_position : type_board_object; -- incl. angle and face
 
 		use pac_geometry_brd;
 		terminal_position : type_vector; -- x/y

@@ -274,7 +274,7 @@ package et_device_placeholders.packages is
 		layer				: in type_placeholder_layer; -- silkscreen, assy doc
 		face				: in type_face;
 		index				: in type_placeholder_index; -- 1, 2, 3, ...
-		package_position	: in type_board_object'class;
+		package_position	: in type_board_object;
 		coordinates			: in type_coordinates; -- relative/absolute
 		point				: in type_vector_model); -- x/y
 		-- CS rename to destination_offset rework documentation above

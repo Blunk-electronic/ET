@@ -52,6 +52,8 @@ with et_device_prefix;					use et_device_prefix;
 with et_device_name;					use et_device_name;
 with et_device_property_level;			use et_device_property_level;
 with et_devices_electrical;				use et_devices_electrical;
+
+with et_device_non_electrical;			use et_device_non_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
 with et_nets;							-- use et_nets;
@@ -326,7 +328,7 @@ package et_board_ops_devices is
 	procedure add_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in type_package_model_name; -- ../lbr/packages/fiducial.pac
-		position		: in type_package_position; -- x,y,rotation,face
+		position		: in type_board_object; -- x,y,rotation,face
 		prefix			: in type_device_prefix; -- FD
 		commit_design	: in type_commit_design := DO_COMMIT;
 		log_threshold	: in type_log_level);

@@ -97,10 +97,10 @@ package body et_board_coordinates is
 
 
 
-	function get_position (
-		object	: in type_board_object)
-		return type_board_object'class
-	is (type_board_object (object));
+	-- function get_position (
+	-- 	object	: in type_board_object)
+	-- 	return type_board_object'class
+	-- is (type_board_object (object));
 
 
 	procedure set_position (
