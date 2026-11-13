@@ -1344,7 +1344,6 @@ package body et_kicad_v6_to_native is
 							variant			=> et_package_variant_name.to_variant_name (placeholder_not_assigned),
 							position		=> et_board_coordinates.package_position_default,
 							placeholders	=> (others => <>),
-							status			=> object_status_default,
 							others			=> <>));
 			end case;
 

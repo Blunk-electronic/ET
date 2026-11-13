@@ -76,6 +76,13 @@ package body et_device_non_electrical is
 
 
 
+	-- function get_position (
+	-- 	device : in type_device_non_electrical)
+	-- 	return type_board_object
+	-- is (type_board_object (device));
+
+
+
 	function get_package_model_name (
 		device	: in type_device_non_electrical)
 		return type_package_model_name

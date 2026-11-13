@@ -86,7 +86,7 @@ package et_canvas.contours is
 	procedure draw_contour_with_circular_cutout (
 		outer_border	: in type_contour'class;
 		inner_border	: in type_circle;
-		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		pos				: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror := MIRROR_NO);
 
@@ -96,7 +96,7 @@ package et_canvas.contours is
 	procedure draw_contour_with_arbitrary_cutout (
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
-		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		pos				: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror := MIRROR_NO);
 

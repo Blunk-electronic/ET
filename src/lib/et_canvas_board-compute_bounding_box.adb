@@ -54,6 +54,7 @@ with et_devices_electrical.packages;
 with et_nets;
 with et_conductors_floating_board;	use et_conductors_floating_board;
 with et_route;
+with et_device_non_electrical;
 with et_devices_non_electrical;
 with et_package_model;				use et_package_model;
 with et_package_library;
@@ -1584,7 +1585,7 @@ is
 
 					declare
 						-- Fetch the position of the package on the board:
-						pos : constant type_package_position := get_position (device_electric);
+						pos : constant type_board_object := get_position (device_electric);
 					begin
 						-- Extract x/y coordinates of the package:
 						package_position := pos.place;
@@ -1598,7 +1599,7 @@ is
 
 					declare
 						-- Fetch the position of the package on the board:
-						pos : constant type_package_position := get_position (device_non_electric);
+						pos : constant type_board_object := get_position (device_non_electric);
 					begin
 						-- Extract x/y coordinates of the package:
 						package_position := pos.place;
@@ -1684,6 +1685,7 @@ is
 					module		: in type_generic_module)
 				is
 					pragma unreferenced (module_name);
+					use et_device_non_electrical;
 					use et_devices_non_electrical;
 					use pac_devices_non_electrical;
 
@@ -1693,7 +1695,7 @@ is
 						device : type_device_non_electrical renames element (device_cursor);
 						mirror : type_mirror;
 					begin
-						case get_face (device.position) is
+						case device.get_face is
 							when TOP	=> mirror := MIRROR_NO;
 							when bottom	=> mirror := MIRROR_ALONG_Y_AXIS;
 						end case;

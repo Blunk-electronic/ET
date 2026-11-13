@@ -119,6 +119,11 @@ package et_device_non_electrical is
 	end record;
 
 
+	-- function get_position (
+	-- 	device : in type_device_non_electrical)
+	-- 	return type_board_object;
+
+
 
 	-- Returns the name of the package model file
 	-- like "../lbr/packages/fiducial.pac"
@@ -130,7 +135,6 @@ package et_device_non_electrical is
 	function get_package_model_name (
 		device : in type_device_non_electrical)
 		return string;
-
 
 
 

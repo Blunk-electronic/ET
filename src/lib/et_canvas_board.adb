@@ -702,7 +702,7 @@ package body et_canvas_board is
 		name				: in et_terminal_name.type_terminal_name;
 		terminal			: in et_terminals.type_terminal;
 		brightness			: in et_colors.type_brightness;
-		package_position	: in type_package_position;
+		package_position	: in type_board_object;
 		mirror				: in et_mirroring.type_mirror;
 		flip				: in boolean)
 		is separate;

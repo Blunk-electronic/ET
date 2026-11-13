@@ -292,7 +292,7 @@ package et_kicad.schematic is
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
-				position			: et_board_coordinates.type_package_position; -- incl. angle and face
+				position			: et_board_coordinates.type_board_object; -- incl. angle and face
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
 			-- If a component appears in the schematic only, it does not have any package variants.

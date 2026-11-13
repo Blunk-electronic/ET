@@ -49,14 +49,16 @@ package et_board_coordinates is
 	use pac_basic_objects;
 
 
-	-- type type_package_position is new pac_geometry_2.type_position with private;
-
-
-	-- package_position_default : constant type_package_position;
 
 
 	type type_board_object is new
 		type_object_with_rotation with private;
+
+
+	package_position_default : constant type_board_object;
+
+	placeholder_position_default : constant type_board_object;
+
 
 
 
@@ -127,7 +129,7 @@ package et_board_coordinates is
 		return type_board_object'class;
 
 
-	-- placeholder_position_default : constant type_package_position;
+
 
 
 
@@ -178,11 +180,9 @@ private
 	end record;
 
 
-	-- package_position_default : constant type_package_position := (
-	-- 	pac_geometry_2.origin_zero_rotation with face => TOP);
+	package_position_default : constant type_board_object := (others => <>);
 
-	-- placeholder_position_default : constant type_package_position := (
-	-- 	pac_geometry_2.origin_zero_rotation with face => TOP);
+	placeholder_position_default : constant type_board_object := (others => <>);
 
 
 end et_board_coordinates;

@@ -242,7 +242,7 @@ package body et_devices_electrical.packages is
 
 	procedure set_position (
 		device		: in out type_device_electrical;
-		position	: in type_package_position)
+		position	: in type_board_object)
 	is begin
 		device.position := position;
 	end set_position;
@@ -250,7 +250,7 @@ package body et_devices_electrical.packages is
 
 	function get_position (
 		device : in type_device_electrical)
-		return type_package_position
+		return type_board_object
 	is (device.position);
 
 
@@ -259,7 +259,7 @@ package body et_devices_electrical.packages is
 		device	: in type_device_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string
-	is (to_string (device.position, format));
+	is (get_position (device.position, format));
 
 
 
@@ -332,7 +332,7 @@ package body et_devices_electrical.packages is
 		device	: in out type_device_electrical;
 		offset	: in type_vector_model)
 	is begin
-		set_place_relative (device.position, offset);
+		move_by (device.position, offset);
 	end set_place_relative;
 
 
@@ -381,11 +381,11 @@ package body et_devices_electrical.packages is
 
 	function get_position (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
-		return et_board_coordinates.type_package_position
+		return et_board_coordinates.type_board_object
 	is
 		device : type_device_electrical renames element (device_cursor);
 	begin
-		return get_position (device);
+		return packages.get_position (device);
 	end get_position;
 
 
@@ -484,7 +484,7 @@ package body et_devices_electrical.packages is
 		point		: in type_vector_model)
 	is begin
 		move_placeholder (device.placeholders, meaning, layer,
-			face, index, get_position (device), coordinates, point);
+			face, index, packages.get_position (device), coordinates, point);
 
 	end move_placeholder;
 

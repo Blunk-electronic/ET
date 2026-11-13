@@ -82,7 +82,7 @@ procedure draw_terminal (
 	name				: in et_terminal_name.type_terminal_name;
 	terminal			: in et_terminals.type_terminal;
 	brightness			: in et_colors.type_brightness;
-	package_position	: in type_package_position;
+	package_position	: in type_board_object;
 	mirror				: in et_mirroring.type_mirror;
 	flip				: in boolean)
 is
@@ -119,7 +119,7 @@ is
 					draw_contour_with_circular_cutout (
 						outer_border	=> pad_contours,
 						inner_border	=> c,
-						pos				=> get_position (package_position),
+						pos				=> (get_place (package_position), get_rotation (package_position)),
 						offset			=> pad_position,
 						mirror			=> mirror);
 
@@ -129,7 +129,7 @@ is
 					draw_contour_with_arbitrary_cutout (
 						outer_border	=> pad_contours,
 						inner_border	=> hole_contours,
-						pos				=> get_position (package_position),
+						pos				=> (get_place (package_position), get_rotation (package_position)),
 						offset			=> pad_position,
 						mirror			=> mirror);
 
@@ -252,7 +252,7 @@ is
 				-- Draw the restring:
 				draw_circle (
 					circle	=> circle,
-					pos		=> get_position (package_position),
+					pos				=> (get_place (package_position), get_rotation (package_position)),
 					filled	=> NO,
 					width	=> restring,
 					mirror	=> mirror,
@@ -336,7 +336,7 @@ is
 				draw_contour_with_arbitrary_cutout (
 					outer_border	=> pad_contours,
 					inner_border	=> hole_contours,
-					pos				=> get_position (package_position),
+					pos				=> (get_place (package_position), get_rotation (package_position)),
 					offset			=> pad_position,
 					mirror			=> mirror);
 
@@ -426,7 +426,7 @@ is
 			-- Draw the outer contour of the stopmask opening:
 			pac_draw_contours.draw_contour (
 				contour		=> stopmask_contours,
-				pos			=> get_position (package_position),
+				pos			=> (get_place (package_position), get_rotation (package_position)),
 				offset		=> pad_position,
 				filled		=> YES,
 				width		=> zero,
@@ -595,7 +595,7 @@ is
 			procedure do_it is begin
 				draw_contour (
 					contour	=> pad_contours,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					offset	=> pad_position,
 					filled	=> YES,
 					mirror	=> mirror,
@@ -714,7 +714,7 @@ is
 			procedure do_it is begin
 				draw_contour (
 					contour	=> stopmask_contours,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					offset	=> pad_position,
 					filled	=> YES,
 					mirror	=> mirror,
@@ -831,7 +831,7 @@ is
 			procedure do_it is begin
 				draw_contour (
 					contour	=> stencil_contours,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					offset	=> pad_position,
 					filled	=> YES,
 					mirror	=> mirror,

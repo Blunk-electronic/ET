@@ -81,8 +81,8 @@ package body et_devices_electrical is
 
 	function get_position (
 		device : in type_device_electrical)
-		return et_board_coordinates.type_board_object
-	is (device.position);
+		return et_board_coordinates.type_board_object'class
+	is (device.position.get_position);
 
 
 

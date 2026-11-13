@@ -531,7 +531,7 @@ package body et_kicad.pcb is
 		-- PACKAGES
 		unused_package_name			: type_package_name;
 		unused_package_library_name	: et_kicad_general.pac_library_name.bounded_string;
-		package_position		: et_board_coordinates.type_package_position;
+		package_position		: et_board_coordinates.type_board_object;
 
 		-- package_path			: et_kicad.type_timestamp; -- like /59F17F64/59F18F3E/5B852A16/5B851D80
 		-- CS: This this the sheet path. Currently it is ignored, because no need for it.
@@ -1375,9 +1375,9 @@ package body et_kicad.pcb is
 								when 0 => null;
 								when 1 =>
 									if to_string (arg) = layer_bot_copper then
-										set_face (face => BOTTOM, position => package_position);
+										package_position.set_face (BOTTOM);
 									elsif to_string (arg) /= layer_top_copper then
-										set_face (face => TOP, position => package_position);
+										package_position.set_face (TOP);
 									end if;
 								when others => too_many_arguments;
 							end case;
@@ -3255,7 +3255,7 @@ package body et_kicad.pcb is
 
 					-- log package coordinates
 					log (text => "package " & to_string (package_reference)
-						 & to_string (package_position), -- this is a function that returns package coordinates !
+						 & get_position (package_position), -- this is a function that returns package coordinates !
 						 level => log_threshold + 1);
 
 					-- CS log package properties (at least reference, value, ...) ?
@@ -3317,7 +3317,7 @@ package body et_kicad.pcb is
 
 				else
 					log (SEVERITY_ERROR, "package " & to_string (package_reference)
-						& to_string (package_position)
+						& get_position (package_position)
 						& " already used !",
 						 console => true);
 					raise constraint_error;
@@ -4849,7 +4849,7 @@ package body et_kicad.pcb is
 				use pac_packages_board;
 				package_cursor		: pac_packages_board.cursor;
 				package_reference	: type_device_name;
-				package_position	: et_board_coordinates.type_package_position;
+				package_position	: et_board_coordinates.type_board_object;
 
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
@@ -5532,7 +5532,7 @@ package body et_kicad.pcb is
 								package_position := element (package_cursor).position;
 
 								log (text => "package " & to_string (package_reference) &
-									to_string (package_position), level => log_threshold + 2);
+									get_position (package_position), level => log_threshold + 2);
 
 								-- Extract the text placeholders for reference and value from the
 								-- current package (indicated by package_cursor) and store them

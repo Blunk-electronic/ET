@@ -59,6 +59,8 @@ with et_terminals;
 
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
+
+with et_device_non_electrical;			use et_device_non_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
 with et_board_holes;
@@ -108,7 +110,7 @@ procedure draw_packages is
 	-- It can assume the value as defined in the database
 	-- or it can be changed if a package is being moved
 	-- or copied:
-	package_position : type_package_position;
+	package_position : type_board_object;
 
 	-- The brightness a package is drawn with:
 	brightness : type_brightness := NORMAL;
@@ -231,7 +233,11 @@ procedure draw_packages is
 					when RELATIVE =>
 						-- If the placeholder is anchored relatively to the package,
 						-- then the package position (incl. rotation) must be taken into account.
-						draw_vector_text (text, mirror, get_position (package_position));
+						draw_vector_text (
+							text			=> text,
+							mirror			=> mirror,
+							parent_position	=> (get_place (package_position), get_rotation (package_position)));
+								-- former: get_position (package_position));
 
 					when ABSOLUTE =>
 						-- If the placeholder is anchored with absolute coordinates,
@@ -242,7 +248,12 @@ procedure draw_packages is
 						-- mirrors the text position properly if it is relative to a
 						-- reference (the package position):
 						set_place (text, get_relative_position (ph, package_position));
-						draw_vector_text (text, mirror, get_position (package_position));
+						-- former draw_vector_text (text, mirror, get_position (package_position));
+						draw_vector_text (
+							text			=> text,
+							mirror			=> mirror,
+							parent_position	=> (get_place (package_position), get_rotation (package_position)));
+
 				end case;
 
 
@@ -279,7 +290,7 @@ procedure draw_packages is
 			begin
 				draw_line (
 					line	=> line,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> line.width,
 					mirror	=> mirror,
 					stroke	=> DO_STROKE);
@@ -335,7 +346,7 @@ procedure draw_packages is
 			begin
 				draw_line (
 					line	=> line,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> line.width,
 					mirror	=> mirror,
 					stroke	=> DO_STROKE);
@@ -349,7 +360,7 @@ procedure draw_packages is
 			begin
 				draw_arc (
 					arc		=> arc,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> arc.width,
 					mirror	=> mirror,
 					stroke	=> DO_STROKE);
@@ -411,7 +422,7 @@ procedure draw_packages is
 			begin
 				draw_line (
 					line	=> line,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> line.width,
 					mirror	=> mirror,
 					stroke	=> DO_STROKE);
@@ -463,7 +474,7 @@ procedure draw_packages is
 			begin
 				draw_line (
 					line	=> line,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> line.width,
 					mirror	=> mirror,
 					stroke	=> DO_STROKE);
@@ -516,7 +527,7 @@ procedure draw_packages is
 			begin
 				draw_contour (
 					contour	=> zone,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					filled	=> NO,
 					width	=> zero,
 					mirror	=> mirror);
@@ -572,7 +583,7 @@ procedure draw_packages is
 			begin
 				draw_line (
 					line	=> line,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> zero,
 					mirror	=> mirror,
 					stroke	=> DO_STROKE);
@@ -586,7 +597,7 @@ procedure draw_packages is
 			begin
 				draw_circle (
 					circle	=> circle,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> zero,
 					mirror	=> mirror,
 					filled	=> NO,
@@ -649,7 +660,7 @@ procedure draw_packages is
 			begin
 				draw_contour (
 					contour	=> zone,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					filled	=> NO,
 					width	=> zero,
 					mirror	=> mirror);
@@ -700,7 +711,7 @@ procedure draw_packages is
 			begin
 				draw_contour (
 					contour	=> hole,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					filled	=> NO,
 					mirror	=> mirror,
 					width	=> zero);
@@ -730,7 +741,7 @@ procedure draw_packages is
 			begin
 				draw_line (
 					line	=> line,
-					pos		=> get_position (package_position),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					width	=> line.width,
 					mirror	=> mirror,
 					stroke	=> DO_STROKE);
@@ -748,7 +759,7 @@ procedure draw_packages is
 
 				use pac_draw_text;
 			begin
-				draw_vector_text (t, mirror, get_position (package_position));
+				draw_vector_text (t, mirror, (get_place (package_position), get_rotation (package_position)));
 			end query_text;
 
 

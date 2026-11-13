@@ -220,23 +220,23 @@ package et_devices_electrical.packages is
 	-- Sets the position of the package in the board drawing.
 	procedure set_position ( -- CS rename to set_package_position
 		device		: in out type_device_electrical;
-		position	: in type_package_position);
+		position	: in type_board_object);
 
 
 	-- Returns the position of the package in the board drawing.
 	function get_position ( -- CS rename to get_package_position
 		device : in type_device_electrical)
-		return type_package_position;
+		return type_board_object;
 
 
 	-- Returns the position of the package in the board drawing.
-	function get_position ( -- CS rename to get_package_position
+	function get_position ( -- CS rename to get_package_position ?
 		device	: in type_device_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
 
-	function get_rotation ( -- CS rename to get_package_rotation
+	function get_rotation ( -- CS rename to get_package_rotation ?
 		device	: in out type_device_electrical)
 		return type_rotation_model;
 
@@ -313,7 +313,7 @@ package et_devices_electrical.packages is
 	-- given electrical device:
 	function get_position (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
-		return et_board_coordinates.type_package_position;
+		return et_board_coordinates.type_board_object;
 
 
 	-- Returns the current position (x/y) of the

@@ -562,7 +562,7 @@ package et_kicad.pcb is
 		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
 		value					: type_device_value;
-		position				: et_board_coordinates.type_package_position; -- incl. angle, face
+		position				: et_board_coordinates.type_board_object; -- incl. angle, face
 	end record;
 
 	-- Lots of packages (in a board) can be collected in a map:
