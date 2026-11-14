@@ -48,22 +48,8 @@ with et_keywords;						use et_keywords;
 package body et_schematic_coordinates is
 
 
-	function to_position (
-		point		: in type_vector_model;
-		sheet		: in type_sheet;
-		rotation	: in type_rotation_model := zero_rotation)
-		return type_schematic_object'class
-	is
-		p : type_schematic_object;
-	begin
-		set_place (p, point);
-		set_sheet (p, sheet);
-		set_rotation (p, rotation);
-		return p;
-	end to_position;
 
-
-
+-- SHEET:
 
 	function get_sheet (
 		object : in type_schematic_object)
@@ -91,6 +77,10 @@ package body et_schematic_coordinates is
 	end move_by_sheets;
 
 
+
+
+
+-- SORTING:
 
 	function "<" (
 		left, right : in type_schematic_object)
@@ -134,6 +124,111 @@ package body et_schematic_coordinates is
 
 		return result;
 	end "<";
+
+
+
+
+
+-- AREA:
+
+	function on_sheet_and_in_area (
+		object	: in type_schematic_object;
+		sheet	: in type_sheet;
+		area	: in type_area)
+		return boolean
+	is
+		result : boolean := false;
+		place : type_vector_model;
+	begin
+		-- The given object must be on the given sheet:
+		if get_sheet (object) = sheet then
+
+			-- Get the x/y position of the object:
+			place := get_place (object);
+
+			-- The object must be in the given area:
+			if in_area (place, area) then
+				result := true;
+			else
+				result := false;
+			end if;
+
+		else
+			result := false;
+		end if;
+
+		return result;
+	end on_sheet_and_in_area;
+
+
+
+
+
+	function on_sheet_and_selected (
+		object	: in type_schematic_object;
+		sheet	: in type_sheet)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		if get_sheet (object) = sheet then
+			if is_selected (object) then
+				result := true;
+			end if;
+		end if;
+
+		return result;
+	end on_sheet_and_selected;
+
+
+
+
+
+-- CATCH ZONE:
+
+	function in_catch_zone (
+		object	: in type_schematic_object;
+		zone	: in type_catch_zone;
+		sheet	: in type_sheet)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- The object must be on the given sheet and
+		-- in the given catch zone:
+		if	get_sheet (object) = sheet
+		and	in_catch_zone (zone, get_place (object)) then
+			result := true;
+		else
+			result := false;
+		end if;
+
+		return result;
+	end in_catch_zone;
+
+
+
+
+
+
+-- POSITION:
+
+
+	function to_position (
+		point		: in type_vector_model;
+		sheet		: in type_sheet;
+		rotation	: in type_rotation_model := zero_rotation)
+		return type_schematic_object'class
+	is
+		p : type_schematic_object;
+	begin
+		set_place (p, point);
+		set_sheet (p, sheet);
+		set_rotation (p, rotation);
+		return p;
+	end to_position;
+
+
 
 
 
@@ -226,80 +321,6 @@ package body et_schematic_coordinates is
 
 
 
-
-
-	function in_catch_zone (
-		object	: in type_schematic_object;
-		zone	: in type_catch_zone;
-		sheet	: in type_sheet)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		-- The object must be on the given sheet and
-		-- in the given catch zone:
-		if	get_sheet (object) = sheet
-		and	in_catch_zone (zone, get_place (object)) then
-			result := true;
-		else
-			result := false;
-		end if;
-
-		return result;
-	end in_catch_zone;
-
-
-
-
-
-	function on_sheet_and_in_area (
-		object	: in type_schematic_object;
-		sheet	: in type_sheet;
-		area	: in type_area)
-		return boolean
-	is
-		result : boolean := false;
-		place : type_vector_model;
-	begin
-		-- The given object must be on the given sheet:
-		if get_sheet (object) = sheet then
-
-			-- Get the x/y position of the object:
-			place := get_place (object);
-
-			-- The object must be in the given area:
-			if in_area (place, area) then
-				result := true;
-			else
-				result := false;
-			end if;
-
-		else
-			result := false;
-		end if;
-
-		return result;
-	end on_sheet_and_in_area;
-
-
-
-
-
-	function on_sheet_and_selected (
-		object	: in type_schematic_object;
-		sheet	: in type_sheet)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		if get_sheet (object) = sheet then
-			if is_selected (object) then
-				result := true;
-			end if;
-		end if;
-
-		return result;
-	end on_sheet_and_selected;
 
 
 

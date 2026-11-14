@@ -50,7 +50,6 @@ package et_board_coordinates is
 
 
 
-
 	type type_board_object is new
 		type_object_with_rotation with private;
 
@@ -99,10 +98,15 @@ package et_board_coordinates is
 		return boolean;
 
 
+
+
+-- POSITION:
+
 	-- CS: experimental
 	-- function get_position (
 	-- 	object	: in type_board_object)
 	-- 	return type_board_object'class;
+
 
 
 	procedure set_position (

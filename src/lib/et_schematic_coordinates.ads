@@ -71,9 +71,7 @@ package et_schematic_coordinates is
 	-- This could be helpful to distinguish between schematic
 	-- object and schematic position.
 
-	type type_object_position_relative_2
-		is new type_object_with_rotation with private;
-	-- CS rename type_object_position_relative
+
 
 
 	-- function to_schematic_object (
@@ -82,15 +80,12 @@ package et_schematic_coordinates is
 	-- 	return type_schematic_object'class;
 
 
-	-- CS make a function that assigns a the elements of a type_schematic_object
-	-- to a type_schematic_object and its derivatives.
 
 
-	function to_position ( -- CS rename to to_schematic_object_position
-		point		: in type_vector_model; -- CS rename to place
-		sheet		: in type_sheet;
-		rotation	: in type_rotation_model := zero_rotation)
-		return type_schematic_object'class;
+-- SHEET:
+
+	-- The current active sheet:
+	active_sheet : type_sheet := type_sheet'first;
 
 
 
@@ -110,9 +105,65 @@ package et_schematic_coordinates is
 		offset	: in type_sheet_relative);
 
 
+
+
+-- SORTING:
+
 	function "<" (
 		left, right : in type_schematic_object)
 		return boolean;
+
+
+
+
+
+-- AREA:
+
+	-- Returns true if the given object is
+	-- on the given sheet and in the given
+	-- rectangular area:
+	function on_sheet_and_in_area (
+		object	: in type_schematic_object;
+		sheet	: in type_sheet;
+		area	: in type_area)
+		return boolean;
+
+
+	-- Returns true if the given object is
+	-- on the given sheet and if it is selected:
+	function on_sheet_and_selected (
+		object	: in type_schematic_object;
+		sheet	: in type_sheet)
+		return boolean;
+
+
+
+
+
+-- CATCH ZONE:
+
+	-- Returns true if the given object is in
+	-- the given catch zone:
+	function in_catch_zone (
+		object	: in type_schematic_object;
+		zone	: in type_catch_zone;
+		sheet	: in type_sheet)
+		return boolean;
+
+
+
+
+
+
+-- POSITION:
+
+	function to_position ( -- CS rename to to_schematic_object_position
+		point		: in type_vector_model; -- CS rename to place
+		sheet		: in type_sheet;
+		rotation	: in type_rotation_model := zero_rotation)
+		return type_schematic_object'class;
+
+
 
 
 	-- Resets the object. Sets its sheet to 1:
@@ -142,47 +193,20 @@ package et_schematic_coordinates is
 
 
 
-	-- Returns true if the given object is in
-	-- the given catch zone:
-	function in_catch_zone (
-		object	: in type_schematic_object;
-		zone	: in type_catch_zone;
-		sheet	: in type_sheet)
-		return boolean;
 
 
-	-- Returns true if the given object is
-	-- on the given sheet and in the given
-	-- rectangular area:
-	function on_sheet_and_in_area (
-		object	: in type_schematic_object;
-		sheet	: in type_sheet;
-		area	: in type_area)
-		return boolean;
 
 
-	-- Returns true if the given object is
-	-- on the given sheet and if it is selected:
-	function on_sheet_and_selected (
-		object	: in type_schematic_object;
-		sheet	: in type_sheet)
-		return boolean;
 
+	type type_object_position_relative_2
+		is new type_object_with_rotation with private;
+	-- CS rename type_object_position_relative
 
 
 
 	function get_offset (
 		left, right : in type_schematic_object'class)
 		return type_object_position_relative_2;
-
-
-
-
-
--- SHEET:
-
-	-- The current active sheet:
-	active_sheet : type_sheet := type_sheet'first;
 
 
 	function get_sheet (
@@ -192,7 +216,6 @@ package et_schematic_coordinates is
 
 
 private
-
 
 	type type_schematic_object
 		is new type_object_with_rotation with record

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -109,6 +109,11 @@ package body et_board_coordinates is
 
 
 
+
+
+
+-- POSITION:
+
 	-- function get_position (
 	-- 	object	: in type_board_object)
 	-- 	return type_board_object'class
@@ -123,6 +128,7 @@ package body et_board_coordinates is
 		object.set_rotation (get_rotation (position));
 		object.set_face (get_face (position));
 	end set_position;
+
 
 
 
@@ -216,8 +222,6 @@ package body et_board_coordinates is
 			set_face (pos, face);
 		end return;
 	end to_board_object_position;
-
-
 
 
 
