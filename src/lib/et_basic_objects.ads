@@ -59,6 +59,9 @@ package et_basic_objects is
 	use pac_geometry.pac_geometry_1;
 
 
+	-- This is the root object type.
+	-- Since most objects have a place and a status,
+	-- they are derived from this type.
 	type type_abstract_object is abstract tagged record
 		place 	: type_vector_model;
 		status	: type_object_status;
@@ -263,9 +266,14 @@ package et_basic_objects is
 
 
 
-	type type_object_with_rotation is new type_abstract_object with record
-		rotation : type_rotation := 0.0;
-	end record;
+-- OBJECT WITH ROTATION:
+
+	type type_object_with_rotation is new
+		type_abstract_object with private;
+
+	object_with_rotation_default : constant
+		type_object_with_rotation;
+
 
 
 	function get_rotation (
@@ -346,6 +354,18 @@ package et_basic_objects is
 		rotation	: in type_rotation;
 		mirror		: in type_mirror := MIRROR_NO);
 
+
+private
+
+	type type_object_with_rotation is new
+		type_abstract_object
+	with record
+		rotation : type_rotation := 0.0;
+	end record;
+
+
+	object_with_rotation_default : constant
+		type_object_with_rotation := (others => <>);
 
 end et_basic_objects;
 

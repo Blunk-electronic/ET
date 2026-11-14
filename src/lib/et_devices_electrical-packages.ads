@@ -237,7 +237,7 @@ package et_devices_electrical.packages is
 
 
 	function get_rotation ( -- CS rename to get_package_rotation ?
-		device	: in out type_device_electrical)
+		device	: in type_device_electrical)
 		return type_rotation_model;
 
 

@@ -156,9 +156,11 @@ private
 	end record;
 
 
-	package_position_default : constant type_board_object := (others => <>);
+	package_position_default : constant type_board_object :=
+		(object_with_rotation_default with others => <>);
 
-	placeholder_position_default : constant type_board_object := (others => <>);
+	placeholder_position_default : constant type_board_object :=
+		(object_with_rotation_default with others => <>);
 
 
 end et_board_coordinates;

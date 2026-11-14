@@ -264,7 +264,7 @@ package body et_devices_electrical.packages is
 
 
 	function get_rotation (
-		device	: in out type_device_electrical)
+		device	: in type_device_electrical)
 		return type_rotation_model
 	is (get_rotation (device.position));
 
@@ -535,12 +535,12 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						conductors := get_conductor_objects (packge, layer_category);
-						rotate_conductor_objects (conductors, +device.position.rotation);
+						rotate_conductor_objects (conductors, +get_rotation (device));
 
 					when BOTTOM =>
 						conductors := get_conductor_objects (packge, invert_category (layer_category));
 						mirror_conductor_objects (conductors);
-						rotate_conductor_objects (conductors, -device.position.rotation);
+						rotate_conductor_objects (conductors, -get_rotation (device));
 				end case;
 
 				move_conductor_objects (conductors, device.position.place);
@@ -576,12 +576,12 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						conductors := get_conductor_objects (packge, layer_category);
-						rotate_conductor_objects (conductors, +device.position.rotation);
+						rotate_conductor_objects (conductors, +get_rotation (device));
 
 					when BOTTOM =>
 						conductors := get_conductor_objects (packge, invert_category (layer_category));
 						mirror_conductor_objects (conductors);
-						rotate_conductor_objects (conductors, -device.position.rotation);
+						rotate_conductor_objects (conductors, -get_rotation (device));
 				end case;
 
 				move_conductor_objects (conductors, device.position.place);
@@ -621,11 +621,11 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						restrict := get_route_restrict_objects (packge, layer_category);
-						rotate_route_restrict_objects (restrict, +device.position.rotation);
+						rotate_route_restrict_objects (restrict, +get_rotation (device));
 					when BOTTOM =>
 						restrict := get_route_restrict_objects (packge, invert_category (layer_category));
 						mirror_route_restrict_objects (restrict);
-						rotate_route_restrict_objects (restrict, -device.position.rotation);
+						rotate_route_restrict_objects (restrict, -get_rotation (device));
 				end case;
 
 				move_route_restrict_objects (restrict, device.position.place);
@@ -662,11 +662,11 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						restrict := get_route_restrict_objects (packge, layer_category);
-						rotate_route_restrict_objects (restrict, +device.position.rotation);
+						rotate_route_restrict_objects (restrict, +get_rotation (device));
 					when BOTTOM =>
 						restrict := get_route_restrict_objects (packge, invert_category (layer_category));
 						mirror_route_restrict_objects (restrict);
-						rotate_route_restrict_objects (restrict, -device.position.rotation);
+						rotate_route_restrict_objects (restrict, -get_rotation (device));
 				end case;
 
 				move_route_restrict_objects (restrict, device.position.place);
@@ -706,12 +706,12 @@ package body et_devices_electrical.packages is
 				case get_face (device_cursor) is
 					when TOP =>
 						restrict := get_via_restrict_objects (packge, layer_category);
-						rotate_via_restrict_objects (restrict, +device.position.rotation);
+						rotate_via_restrict_objects (restrict, +get_rotation (device));
 
 					when BOTTOM =>
 						restrict := get_via_restrict_objects (packge, invert_category (layer_category));
 						mirror_via_restrict_objects (restrict);
-						rotate_via_restrict_objects (restrict, -device.position.rotation);
+						rotate_via_restrict_objects (restrict, -get_rotation (device));
 				end case;
 
 				move_via_restrict_objects (restrict, device.position.place);
@@ -742,7 +742,7 @@ package body et_devices_electrical.packages is
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-			rotation := device.position.rotation;
+			rotation := get_rotation (device);
 
 			case face is
 				when TOP =>
@@ -797,7 +797,7 @@ package body et_devices_electrical.packages is
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-			rotation := device.position.rotation;
+			rotation := get_rotation (device);
 
 			case face is
 				when TOP =>
@@ -852,7 +852,7 @@ package body et_devices_electrical.packages is
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-			rotation := device.position.rotation;
+			rotation := get_rotation (device);
 
 			case face is
 				when TOP =>
@@ -935,7 +935,7 @@ package body et_devices_electrical.packages is
 	begin -- get_silkscreen_objects
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-			rotation := device.position.rotation;
+			rotation := get_rotation (device);
 
 			case face is
 				when TOP =>
@@ -1037,7 +1037,7 @@ package body et_devices_electrical.packages is
 	begin -- get_assy_doc_objects
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-			rotation := device.position.rotation;
+			rotation := get_rotation (device);
 
 			case face is
 				when TOP =>
@@ -1107,7 +1107,7 @@ package body et_devices_electrical.packages is
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-			rotation := device.position.rotation;
+			rotation := get_rotation (device);
 
 			holes := get_hole_contours (packge);
 
@@ -1147,7 +1147,7 @@ package body et_devices_electrical.packages is
 	begin
 		if is_real (device) then
 			packge := get_package_model (device_cursor);
-			rotation := device.position.rotation;
+			rotation := get_rotation (device);
 
 			holes := get_hole_contours (packge);
 

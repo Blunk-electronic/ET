@@ -282,6 +282,74 @@ package body et_package_read_terminal is
 		end make_stencil;
 
 
+		procedure insert_tht_drilled is
+			terminal : type_terminal (THT, DRILLED);
+		begin
+			terminal.set_place (terminal_position.place);
+			terminal.set_rotation (terminal_position.rotation);
+
+			terminal.drill_size := tht_drill_size;
+			terminal.pad_shape_tht := tht_pad_shape;
+			terminal.stop_mask_status_tht := tht_stop_mask_status;
+			terminal.stop_mask_shape_tht := make_stop_mask_tht;
+			terminal.width_inner_layers := tht_width_inner_layers;
+
+			pac_terminals.insert (
+				container	=> packge.terminals,
+				key			=> terminal_name, -- 1,4,16
+				position	=> cursor,
+				inserted	=> inserted,
+				new_item	=> terminal);
+
+		end insert_tht_drilled;
+
+
+		procedure insert_tht_milled is
+			terminal : type_terminal (THT, MILLED);
+		begin
+			terminal.millings := tht_millings;
+
+			terminal.set_place (terminal_position.place);
+			terminal.set_rotation (terminal_position.rotation);
+			terminal.pad_shape_tht := tht_pad_shape;
+			terminal.stop_mask_status_tht := tht_stop_mask_status;
+			terminal.stop_mask_shape_tht := make_stop_mask_tht;
+			terminal.width_inner_layers := tht_width_inner_layers;
+
+			pac_terminals.insert (
+				container	=> packge.terminals,
+				key			=> terminal_name, -- 1,4,16
+				position	=> cursor,
+				inserted	=> inserted,
+				new_item	=> terminal);
+
+		end insert_tht_milled;
+
+
+		procedure insert_smt is
+			terminal : type_terminal (SMT, terminal_tht_hole_default);
+			-- NOTE: Discriminant for tht_hole is not relevant here.
+			-- See specification of type_terminal.
+		begin
+			terminal.face := smt_pad_face;
+			terminal.set_place (terminal_position.place);
+			terminal.set_rotation (terminal_position.rotation);
+			terminal.pad_shape_smt := smt_pad_shape;
+			terminal.stop_mask_status_smt := smt_stop_mask_status;
+			terminal.stop_mask_shape_smt := make_stop_mask_smt;
+			terminal.solder_paste_status := smt_solder_paste_status;
+			terminal.stencil_shape := make_stencil;
+
+			pac_terminals.insert (
+				container	=> packge.terminals,
+				key			=> terminal_name, -- 1,4,16,H9
+				position	=> cursor,
+				inserted	=> inserted,
+				new_item	=> terminal);
+
+		end insert_smt;
+
+
 	begin -- build_terminal
 		-- CS log message
 
@@ -289,43 +357,10 @@ package body et_package_read_terminal is
 			when THT =>
 				case tht_hole is
 					when DRILLED =>
-
-						pac_terminals.insert (
-							container	=> packge.terminals,
-							key			=> terminal_name, -- 1,4,16
-							position	=> cursor,
-							inserted	=> inserted,
-							new_item	=> (
-								technology			=> THT,
-								tht_hole			=> DRILLED,
-								drill_size			=> tht_drill_size,
-								place				=> terminal_position.place,
-								rotation			=> terminal_position.rotation,
-								pad_shape_tht		=> tht_pad_shape,
-								stop_mask_status_tht	=> tht_stop_mask_status,
-								stop_mask_shape_tht		=> make_stop_mask_tht,
-								width_inner_layers		=> tht_width_inner_layers,
-								status => <>
-								));
+						insert_tht_drilled;
 
 					when MILLED =>
-						pac_terminals.insert (
-							container	=> packge.terminals,
-							key			=> terminal_name, -- 1,4,16
-							position	=> cursor,
-							inserted	=> inserted,
-							new_item	=> (
-								technology			=> THT,
-								tht_hole			=> MILLED,
-								millings			=> tht_millings,
-								place				=> terminal_position.place,
-								rotation			=> terminal_position.rotation,
-								pad_shape_tht		=> tht_pad_shape,
-								stop_mask_status_tht	=> tht_stop_mask_status,
-								stop_mask_shape_tht		=> make_stop_mask_tht,
-								width_inner_layers		=> tht_width_inner_layers,
-								status => <>
-								));
+						insert_tht_milled;
 				end case;
 
 				-- clean up for next terminal
@@ -340,25 +375,9 @@ package body et_package_read_terminal is
 				delete_segments (tht_stop_mask_contours_top);
 				delete_segments (tht_stop_mask_contours_bottom);
 
+
 			when SMT =>
-				pac_terminals.insert (
-					container	=> packge.terminals,
-					key			=> terminal_name, -- 1,4,16,H9
-					position	=> cursor,
-					inserted	=> inserted,
-					new_item	=> (
-						technology				=> SMT,
-						tht_hole				=> terminal_tht_hole_default, -- not relevant here, see spec
-						face					=> smt_pad_face,
-						place				=> terminal_position.place,
-						rotation			=> terminal_position.rotation,
-						pad_shape_smt			=> smt_pad_shape,
-						stop_mask_status_smt	=> smt_stop_mask_status,
-						stop_mask_shape_smt		=> make_stop_mask_smt,
-						solder_paste_status		=> smt_solder_paste_status,
-						stencil_shape			=> make_stencil,
-						others => <>
-						));
+				insert_smt;
 
 				-- clean up for next terminal
 				smt_stop_mask_shape		:= stopmask_expand_mode_default;
@@ -370,6 +389,7 @@ package body et_package_read_terminal is
 				delete_segments (smt_stencil_contours);
 				smt_stencil_shrink		:= stencil_shrink_mode_default;
 		end case;
+
 
 		if not inserted then
 			log (SEVERITY_ERROR, "terminal" & to_string (terminal_name)

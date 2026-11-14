@@ -443,7 +443,7 @@ package body et_module_read_device_non_electrical is
 		end case;
 
 		-- reset placeholder for next placeholder
-		text_placeholder := (others => <>);
+		reset_placeholder (text_placeholder);
 		text_placeholder_position := placeholder_position_default;
 
 	end insert_package_placeholder;

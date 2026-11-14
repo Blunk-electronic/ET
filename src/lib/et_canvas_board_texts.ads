@@ -57,6 +57,7 @@ with et_object_status;
 package et_canvas_board_texts is
 
 	use pac_geometry_2;
+	use et_board_geometry.pac_basic_objects;
 
 
 	-- This procedure creates a set of categories:
@@ -70,11 +71,10 @@ package et_canvas_board_texts is
 	-- collect preliminary information using this type:
 	type type_preliminary_text is record
 		text : type_text_fab_with_content := (
-			place		=> origin,
-			rotation	=> 0.0,
+			object_with_rotation_default with
+
 			size		=> 10.0,
 			line_width	=> 1.0,
-			status		=> et_object_status.get_default_status,
 			alignment	=> text_alignment_default,
 			content		=> empty_text_content);
 

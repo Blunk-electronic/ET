@@ -77,7 +77,7 @@ package et_terminals is
 
 
 
-	type type_terminal (
+	type type_terminal ( -- CS: should be private
 		technology	: type_assembly_technology; -- smt/tht
 
 		 -- drilled/milled, without meaning if technology is SMT

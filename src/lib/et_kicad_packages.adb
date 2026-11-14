@@ -1948,134 +1948,264 @@ package body et_kicad_packages is
 				shape : type_contour;
 
 
-				procedure insert_tht is begin
+				procedure insert_tht is
+
+					procedure insert_tht_drilled is
+						terminal : type_terminal (THT, DRILLED);
+					begin
+						terminal.set_place (terminal_position.place);
+						terminal.set_rotation (terminal_position.rotation);
+
+						-- The shape is the same on top and on bottom side.
+						terminal.pad_shape_tht := (top => shape, bottom => shape);
+
+						-- CS: We assume there is no option in kicad to cover
+						-- a THT pad with stop laquer.
+						terminal.stop_mask_status_tht := stop_mask_status_default;
+
+						-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+						-- It should be investigated whether kicad supports other stop mask
+						-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+						-- It should also be checked whether kicad supports different contours
+						-- of top and bottom side of the pad.
+						terminal.stop_mask_shape_tht := (others => <>);
+
+						terminal.width_inner_layers	:= terminal_copper_width_inner_layers;
+						terminal.drill_size	:= terminal_drill_size;
+
+						terminals.insert (
+							key		=> terminal_name,
+							position	=> terminal_cursor,
+							inserted	=> terminal_inserted,
+							new_item	=> terminal);
+
+					end insert_tht_drilled;
+
+
+					procedure insert_tht_milled is
+						terminal : type_terminal (THT, MILLED);
+
+						-- KiCad does not allow arcs or circles for plated millings.
+						-- So we have only lines and nothing else.
+						lines : constant pac_segments.list := to_pad_milling_contour (
+							center	=> terminal_position,
+							size_x	=> terminal_milling_size_x,
+							size_y	=> terminal_milling_size_y,
+							offset	=> terminal_pad_drill_offset);
+
+						millings : type_contour;
+					begin
+						load_segments (millings, (circular => false, segments => lines));
+
+						terminal.set_place (terminal_position.place);
+						terminal.set_rotation (terminal_position.rotation);
+
+						-- CS: We assume there is no option in kicad to cover
+						-- a THT pad with stop laquer.
+						terminal.stop_mask_status_tht := stop_mask_status_default;
+
+						-- The shape is the same on top and on bottom side.
+						terminal.pad_shape_tht := (top => shape, bottom => shape);
+
+						-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+						-- It should be investigated whether kicad supports other stop mask
+						-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+						-- It should also be checked whether kicad supports different contours
+						-- of top and bottom side of the pad.
+						terminal.stop_mask_shape_tht := (others => <>);
+
+						terminal.width_inner_layers	:= terminal_copper_width_inner_layers;
+
+						-- The plated millings of the hole is a list of lines.
+						terminal.millings := millings;
+
+						terminals.insert (
+							key			=> terminal_name,
+							position	=> terminal_cursor,
+							inserted	=> terminal_inserted,
+							new_item	=> terminal);
+
+					end insert_tht_milled;
+
+
+				begin
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
 				-- a therminal with either a circular or an oval hole.
 					case terminal_hole_shape is
 						when CIRCULAR => -- a circular hole
-
-							terminals.insert (
-								key		=> terminal_name,
-								position	=> terminal_cursor,
-								inserted	=> terminal_inserted,
-								new_item	=> (
-									technology			=> THT,
-									tht_hole			=> DRILLED,
-									place				=> terminal_position.place,
-									rotation			=> terminal_position.rotation,
-
-									-- The shape is the same on top and on bottom side.
-									pad_shape_tht		=> (top => shape, bottom => shape),
-
-									-- CS: We assume there is no option in kicad to cover
-									-- a THT pad with stop laquer.
-									stop_mask_status_tht	=> stop_mask_status_default,
-
-									-- CS: For the stop mask we assume it is just an expansion of the pad shape.
-									-- It should be investigated whether kicad supports other stop mask
-									-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-									-- It should also be checked whether kicad supports different contours
-									-- of top and bottom side of the pad.
-									stop_mask_shape_tht	=> (others => <>),
-
-									width_inner_layers	=> terminal_copper_width_inner_layers,
-									drill_size			=> terminal_drill_size,
-									others				=> <>
-								));
-
+							insert_tht_drilled;
 
 						when OVAL => -- a milled hole
-							declare
-								-- KiCad does not allow arcs or circles for plated millings.
-								-- So we have only lines and nothing else.
-								lines : constant pac_segments.list := to_pad_milling_contour (
-									center	=> terminal_position,
-									size_x	=> terminal_milling_size_x,
-									size_y	=> terminal_milling_size_y,
-									offset	=> terminal_pad_drill_offset);
+							insert_tht_milled;
 
-								millings : type_contour;
-
-							begin
-								load_segments (millings, (circular => false, segments => lines));
-
-								terminals.insert (
-									key		=> terminal_name,
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item	=> (
-										technology			=> THT,
-										tht_hole			=> MILLED,
-										place				=> terminal_position.place,
-										rotation			=> terminal_position.rotation,
-
-										-- CS: We assume there is no option in kicad to cover
-										-- a THT pad with stop laquer.
-										stop_mask_status_tht	=> stop_mask_status_default,
-
-										-- The shape is the same on top and on bottom side.
-										pad_shape_tht		=> (top => shape, bottom => shape),
-
-										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
-										-- It should be investigated whether kicad supports other stop mask
-										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-										-- It should also be checked whether kicad supports different contours
-										-- of top and bottom side of the pad.
-										stop_mask_shape_tht	=> (others => <>),
-
-										width_inner_layers	=> terminal_copper_width_inner_layers,
-
-										-- The plated millings of the hole is a list of lines.
-										millings => millings,
-
-										others => <>
-									));
-							end;
 					end case;
 				end insert_tht;
+
+
+				procedure insert_tht_circular is -- CS: correct name for this procedure ?
+					terminal : type_terminal (THT, DRILLED);
+				begin
+					-- Caclulate the pad shape. It is a circle.
+					-- Therefore the size in x serves as diameter.
+					shape := to_pad_shape_circle (
+						terminal_position, pad_size_x,
+						terminal_pad_drill_offset);
+
+
+					terminal.set_place (terminal_position.place);
+					terminal.set_rotation (terminal_position.rotation);
+
+					-- CS: We assume there is no option in kicad to cover
+					-- a THT pad with stop laquer.
+					terminal.stop_mask_status_tht := stop_mask_status_default;
+
+					-- The shape is the same on top and on bottom side.
+					terminal.pad_shape_tht := (top => shape, bottom => shape);
+
+					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+					-- It should be investigated whether kicad supports other stop mask
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+					-- It should also be checked whether kicad supports different contours
+					-- of top and bottom side of the pad.
+					terminal.stop_mask_shape_tht := (others => <>);
+
+					terminal.width_inner_layers	:= terminal_copper_width_inner_layers;
+					terminal.drill_size			:= terminal_drill_size;
+
+					terminals.insert (
+						key			=> terminal_name,
+						position	=> terminal_cursor,
+						inserted	=> terminal_inserted,
+						new_item	=> terminal);
+
+				end insert_tht_circular;
+
+
+				procedure insert_smt_circular is
+					terminal : type_terminal (SMT, DRILLED);
+					-- NOTE: Discriminant DRILLED has no meaning.
+					-- See specification.
+				begin
+					-- Caclulate the pad shape. It is a circle.
+					-- Therefore the size in x serves as diameter.
+					shape := to_pad_shape_circle (
+						terminal_position, pad_size_x,
+						terminal_pad_drill_offset);
+
+					terminal.set_place (terminal_position.place);
+					terminal.set_rotation (terminal_position.rotation);
+					terminal.pad_shape_smt := shape;
+
+					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+					-- It should be investigated whether kicad supports other stop mask
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+					terminal.stop_mask_shape_smt := (others => <>);
+
+					terminal.face := terminal_face;
+					terminal.stop_mask_status_smt := terminal_stop_mask_status;
+					terminal.solder_paste_status := terminal_solder_paste;
+
+					-- CS: For the stencil shape we assume it is just the same as the pad shape.
+					-- It should be investigated whether kicad supports other stencil shapes
+					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+					terminal.stencil_shape := (others => <>);
+
+					terminals.insert (
+						key			=> terminal_name,
+						position	=> terminal_cursor,
+						inserted	=> terminal_inserted,
+						new_item	=> terminal);
+
+				end insert_smt_circular;
+
+
+				procedure insert_smt_rectangular is
+					terminal : type_terminal (SMT, DRILLED);
+					-- NOTE: Discriminant DRILLED has no meaning.
+					-- See specification.
+				begin
+					-- Calculate the rectangular pad shape.
+					shape := to_pad_shape_rectangle (
+						center		=> terminal_position,
+						size_x		=> pad_size_x,
+						size_y		=> pad_size_y,
+						offset		=> terminal_pad_drill_offset);
+
+					terminal.set_place (terminal_position.place);
+					terminal.set_rotation (terminal_position.rotation);
+					terminal.pad_shape_smt := shape;
+
+					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+					-- It should be investigated whether kicad supports other stop mask
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+					terminal.stop_mask_shape_smt := (others => <>);
+
+					terminal.face := terminal_face;
+					terminal.stop_mask_status_smt := terminal_stop_mask_status;
+					terminal.solder_paste_status := terminal_solder_paste;
+
+					-- CS: For the stencil shape we assume it is just the same as the pad shape.
+					-- It should be investigated whether kicad supports other stencil shapes
+					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+					terminal.stencil_shape := (others => <>);
+
+					terminals.insert (
+						key		=> terminal_name,
+						position	=> terminal_cursor,
+						inserted	=> terminal_inserted,
+						new_item	=> terminal);
+
+				end insert_smt_rectangular;
+
+
+				procedure insert_smt_oval is
+					terminal : type_terminal (SMT, DRILLED);
+					-- NOTE: Discriminant DRILLED has no meaning.
+					-- See specification.
+				begin
+					-- Calculate the oval pad shape.
+					shape := to_pad_shape_oval (
+						center		=> terminal_position,
+						size_x		=> pad_size_x,
+						size_y		=> pad_size_y,
+						offset		=> terminal_pad_drill_offset);
+
+					terminal.set_place (terminal_position.place);
+					terminal.set_rotation (terminal_position.rotation);
+					terminal.pad_shape_smt := shape;
+
+					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
+					-- It should be investigated whether kicad supports other stop mask
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+					terminal.stop_mask_shape_smt := (others => <>);
+
+					terminal.face := terminal_face;
+					terminal.stop_mask_status_smt := terminal_stop_mask_status;
+					terminal.solder_paste_status := terminal_solder_paste;
+
+					-- CS: For the stencil shape we assume it is just the same as the pad shape.
+					-- It should be investigated whether kicad supports other stencil shapes
+					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
+					terminal.stencil_shape := (others => <>);
+
+					terminals.insert (
+						key			=> terminal_name,
+						position	=> terminal_cursor,
+						inserted	=> terminal_inserted,
+						new_item	=> terminal);
+
+				end insert_smt_oval;
+
 
 
 			begin -- insert_terminal
 
 				case terminal_technology is
 					when THT =>
-
 						case terminal_pad_shape_tht is
 							when CIRCULAR =>
-								-- Caclulate the pad shape. It is a circle.
-								-- Therefore the size in x serves as diameter.
-								shape := to_pad_shape_circle (
-											terminal_position, pad_size_x,
-											terminal_pad_drill_offset);
+								insert_tht_circular;
 
-								terminals.insert (
-									key		=> terminal_name,
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item	=> (
-										technology			=> THT,
-										tht_hole			=> DRILLED,
-										place				=> terminal_position.place,
-										rotation			=> terminal_position.rotation,
-
-										-- CS: We assume there is no option in kicad to cover
-										-- a THT pad with stop laquer.
-										stop_mask_status_tht	=> stop_mask_status_default,
-
-										-- The shape is the same on top and on bottom side.
-										pad_shape_tht		=> (top => shape, bottom => shape),
-
-										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
-										-- It should be investigated whether kicad supports other stop mask
-										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-										-- It should also be checked whether kicad supports different contours
-										-- of top and bottom side of the pad.
-										stop_mask_shape_tht	=> (others => <>),
-
-										width_inner_layers	=> terminal_copper_width_inner_layers,
-										drill_size			=> terminal_drill_size,
-										others	=> <>
-										));
 
 							when RECTANGULAR =>
 								-- Calculate the pad shape.
@@ -2101,118 +2231,19 @@ package body et_kicad_packages is
 
 
 					when SMT =>
-
-						-- From the SMT terminal face, validate the status of stop mask and solder paste.
+						-- From the SMT terminal face, validate the
+						-- status of stop mask and solder paste.
 						set_stop_and_mask;
 
 						case terminal_pad_shape_smt is
 							when CIRCULAR =>
-
-								-- Caclulate the pad shape. It is a circle.
-								-- Therefore the size in x serves as diameter.
-								shape := to_pad_shape_circle (
-											terminal_position, pad_size_x,
-											terminal_pad_drill_offset);
-
-								terminals.insert (
-									key		=> terminal_name,
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item	=> (
-										technology		=> SMT,
-										tht_hole		=> DRILLED, -- has no meaning here
-										place			=> terminal_position.place,
-										rotation		=> terminal_position.rotation,
-										pad_shape_smt	=> shape,
-
-										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
-										-- It should be investigated whether kicad supports other stop mask
-										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-										stop_mask_shape_smt => (others => <>),
-
-										face					=> terminal_face,
-										stop_mask_status_smt	=> terminal_stop_mask_status,
-										solder_paste_status		=> terminal_solder_paste,
-
-										-- CS: For the stencil shape we assume it is just the same as the pad shape.
-										-- It should be investigated whether kicad supports other stencil shapes
-										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-										stencil_shape		=> (others => <>),
-										others => <>
-										));
+								insert_smt_circular;
 
 							when RECTANGULAR =>
-
-								-- Calculate the rectangular pad shape.
-								shape := to_pad_shape_rectangle (
-											center		=> terminal_position,
-											size_x		=> pad_size_x,
-											size_y		=> pad_size_y,
-											offset		=> terminal_pad_drill_offset);
-
-								terminals.insert (
-									key		=> terminal_name,
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item	=> (
-										technology		=> SMT,
-										tht_hole		=> DRILLED, -- has no meaning here
-										place			=> terminal_position.place,
-										rotation		=> terminal_position.rotation,
-										pad_shape_smt	=> shape,
-
-										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
-										-- It should be investigated whether kicad supports other stop mask
-										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-										stop_mask_shape_smt => (others => <>),
-
-										face					=> terminal_face,
-										stop_mask_status_smt	=> terminal_stop_mask_status,
-										solder_paste_status		=> terminal_solder_paste,
-
-										-- CS: For the stencil shape we assume it is just the same as the pad shape.
-										-- It should be investigated whether kicad supports other stencil shapes
-										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-										stencil_shape		=> (others => <>),
-										others => <>
-										));
-
+								insert_smt_rectangular;
 
 							when OVAL =>
-
-								-- Calculate the oval pad shape.
-								shape := to_pad_shape_oval (
-											center		=> terminal_position,
-											size_x		=> pad_size_x,
-											size_y		=> pad_size_y,
-											offset		=> terminal_pad_drill_offset);
-
-								terminals.insert (
-									key		=> terminal_name,
-									position	=> terminal_cursor,
-									inserted	=> terminal_inserted,
-									new_item	=> (
-										technology		=> SMT,
-										tht_hole		=> DRILLED, -- has no meaning here
-										place			=> terminal_position.place,
-										rotation		=> terminal_position.rotation,
-										pad_shape_smt	=> shape,
-
-										-- CS: For the stop mask we assume it is just an expansion of the pad shape.
-										-- It should be investigated whether kicad supports other stop mask
-										-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-										stop_mask_shape_smt => (others => <>),
-
-										face					=> terminal_face,
-										stop_mask_status_smt	=> terminal_stop_mask_status,
-										solder_paste_status		=> terminal_solder_paste,
-
-										-- CS: For the stencil shape we assume it is just the same as the pad shape.
-										-- It should be investigated whether kicad supports other stencil shapes
-										-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-										stencil_shape		=> (others => <>),
-										others => <>
-										));
+								insert_smt_oval;
 
 						end case;
 

@@ -335,7 +335,7 @@ package body et_schematic_coordinates is
 		result.place := right.place - left.place;
 
 		-- subtract rotation:
-		result.rotation := add (right.rotation, -left.rotation);
+		result.set_rotation (add (right.get_rotation, -left.get_rotation));
 		-- CS: probably not correct. Instead a sub (right, left)
 		-- should be used.
 

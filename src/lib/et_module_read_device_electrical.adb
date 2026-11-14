@@ -928,7 +928,7 @@ package body et_module_read_device_electrical is
 		end case;
 
 		-- reset placeholder for next placeholder
-		device_text_placeholder := (others => <>);
+		reset_placeholder (device_text_placeholder);
 		device_text_placeholder_position := placeholder_position_default;
 
 	end insert_package_placeholder;
