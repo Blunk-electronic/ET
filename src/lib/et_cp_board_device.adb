@@ -338,7 +338,7 @@ package body et_cp_board_device is
 						package_model	=> model,
 						position		=> type_board_object (
 							to_board_object_position (
-								point		=> xy,
+								place		=> xy,
 								rotation	=> to_rotation (get_field (cmd, 9)),
 								face		=> to_face (get_field (cmd, 10)))),
 

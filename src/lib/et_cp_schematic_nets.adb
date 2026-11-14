@@ -305,8 +305,8 @@ package body et_cp_schematic_nets is
 
 				place_net_connector (
 					module_cursor	=> module,
-					position		=> to_position (
-						point => set (
+					position		=> to_schematic_object_position (
+						place => set (
 							x => to_distance (get_field (cmd, 6)),
 							y => to_distance (get_field (cmd, 7))),
 						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
@@ -384,8 +384,8 @@ package body et_cp_schematic_nets is
 
 				place_net_label (
 					module_cursor	=> module,
-					position		=> to_position (
-						point => set (
+					position		=> to_schematic_object_position (
+						place => set (
 							x => to_distance (get_field (cmd, 6)),
 							y => to_distance (get_field (cmd, 7))),
 						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
@@ -433,8 +433,8 @@ package body et_cp_schematic_nets is
 					(
 					module_cursor	=> module,
 
-					position		=> to_position (
-						point => set (
+					position		=> to_schematic_object_position (
+						place => set (
 							x => to_distance (get_field (cmd, 6)),
 							y => to_distance (get_field (cmd, 7))),
 						sheet => to_sheet (get_field (cmd, 5))), -- sheet number
@@ -612,8 +612,8 @@ package body et_cp_schematic_nets is
 			name_b : type_net_name;
 
 			-- Assign the start and end of the segment:
-			A : constant type_schematic_object'class := to_position (
-				point => to_vector_model (get_field (cmd, 7), get_field (cmd, 8)), -- x/y
+			A : constant type_schematic_object'class := to_schematic_object_position (
+				place => to_vector_model (get_field (cmd, 7), get_field (cmd, 8)), -- x/y
 				sheet => to_sheet (get_field (cmd, 6))); -- sheet number
 
 			B : constant type_vector_model := to_vector_model (

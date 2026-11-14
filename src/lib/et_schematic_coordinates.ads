@@ -157,8 +157,8 @@ package et_schematic_coordinates is
 
 -- POSITION:
 
-	function to_position ( -- CS rename to to_schematic_object_position
-		point		: in type_vector_model; -- CS rename to place
+	function to_schematic_object_position (
+		place		: in type_vector_model;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_schematic_object'class;

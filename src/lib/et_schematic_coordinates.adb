@@ -214,19 +214,19 @@ package body et_schematic_coordinates is
 -- POSITION:
 
 
-	function to_position (
-		point		: in type_vector_model;
+	function to_schematic_object_position (
+		place		: in type_vector_model;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_schematic_object'class
 	is
 		p : type_schematic_object;
 	begin
-		set_place (p, point);
+		set_place (p, place);
 		set_sheet (p, sheet);
 		set_rotation (p, rotation);
 		return p;
-	end to_position;
+	end to_schematic_object_position;
 
 
 

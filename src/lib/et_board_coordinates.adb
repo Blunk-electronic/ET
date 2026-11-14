@@ -211,13 +211,13 @@ package body et_board_coordinates is
 
 
 	function to_board_object_position (
-		point		: in type_vector_model;
+		place		: in type_vector_model;
 		rotation	: in type_rotation_model := zero_rotation;
 		face		: in type_face := TOP)
 		return type_board_object'class
 	is begin
 		return pos : type_board_object do
-			set_place (pos, point);
+			set_place (pos, place);
 			set_rotation (pos, rotation);
 			set_face (pos, face);
 		end return;
