@@ -790,14 +790,17 @@ package body et_canvas_board_devices is
 		use et_package_library;
 		use pac_package_models;
 
-		-- Build the full package position from the
-		-- given place, with rotation as given by device_add and on the
-		-- top side of the board:
-		position : constant type_package_position :=
-			to_package_position (place, device_add.rotation, TOP);
+		position : type_board_object;
 	begin
 		log (text => "add_non_electrical_device", level => log_threshold);
 		log_indentation_up;
+
+		-- Build the full package position from the
+		-- given place, with rotation as given by device_add and on the
+		-- top side of the board:
+		position.set_place (place);
+		position.set_rotation (device_add.rotation);
+		position.set_face (TOP);
 
 		add_non_electrical_device (
 			module_cursor	=> active_module,

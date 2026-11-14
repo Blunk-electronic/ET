@@ -75,6 +75,17 @@ package body et_device_non_electrical is
 
 
 
+	procedure reset_device (
+		device	: in out type_device_non_electrical)
+	is
+		d : type_device_non_electrical;
+	begin
+		device := d;
+	end reset_device;
+
+
+
+
 
 	function get_position (
 		device : in type_device_non_electrical)

@@ -123,7 +123,7 @@ package et_board_coordinates is
 
 
 	function to_board_object_position (
-		point		: in type_vector_model;
+		point		: in type_vector_model; -- CS rename to place
 		rotation	: in type_rotation_model := zero_rotation;
 		face		: in type_face := TOP)
 		return type_board_object'class;
@@ -167,11 +167,6 @@ package et_board_coordinates is
 
 
 private
-
-		-- type type_package_position is new pac_geometry_2.type_position
-		-- 	with record
-		-- 		face : type_face := TOP;
-		-- 	end record;
 
 	type type_board_object is new
 		type_object_with_rotation

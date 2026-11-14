@@ -44,6 +44,7 @@
 
 -- with ada.text_io;			use ada.text_io;
 
+with et_device_non_electrical;		use et_device_non_electrical;
 with et_module_names;
 with et_device_name;
 with et_board_ops_devices;

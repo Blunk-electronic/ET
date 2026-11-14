@@ -2067,7 +2067,7 @@ package body et_board_ops_devices is
 					log (text => to_string (device_name),
 						level => log_threshold + 2);
 
-					set_place_relative (device, offset);
+					move_by (device, offset);
 				end if;
 			end query_non_electrical_device;
 

@@ -83,7 +83,7 @@ package body et_module_clipboard.net_segments is
 				-- The copy has a single empty strand.
 				-- Later we will store all net segments
 				-- of the given net in that strand:
-				net_new : type_net := copy_bare_net (
+				net_new : constant type_net := copy_bare_net (
 					net_in			=> element (source_net_cursor),
 					create_strand	=> true);
 			begin
@@ -310,7 +310,7 @@ package body et_module_clipboard.net_segments is
 
 			log (text => "new segment: " & to_string (segment),
 				 level => log_threshold);
-			
+
 		end make_new_segment;
 
 
@@ -326,7 +326,7 @@ package body et_module_clipboard.net_segments is
 			-- If the net does not exist yet, then net_cursor will
 			-- be no_element and a new net be created:
 			net_cursor := locate_net (module_cursor, net_name);
-			
+
 			if not has_element (net_cursor) then
 				log (text => "Net " & to_string (net_name)
 					& " does not exist yet and will be created.",
@@ -340,17 +340,17 @@ package body et_module_clipboard.net_segments is
 					log_threshold	=> log_threshold + 2);
 			end if;
 
-			
+
 			-- Insert the net segment_new in the target net:
 			insert_net_segment (module_cursor, net_cursor,
 				sheet, segment_new, log_threshold + 2);
 
 			update_strand_positions (module_cursor, log_threshold + 2);
 
-			update_ratsnest (module_cursor, log_threshold + 2);			
+			update_ratsnest (module_cursor, log_threshold + 2);
 		end insert_segment;
-		
-		
+
+
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " paste net segment " & to_string (segment)
@@ -371,10 +371,10 @@ package body et_module_clipboard.net_segments is
 
 
 
-	
-	
 
-	
+
+
+
 
 
 
@@ -470,8 +470,8 @@ package body et_module_clipboard.net_segments is
 	end paste_net_segments_from_clipboard;
 
 
-	
-	
+
+
 
 end et_module_clipboard.net_segments;
 

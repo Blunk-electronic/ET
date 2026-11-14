@@ -59,7 +59,7 @@ package et_module_clipboard.net_segments is
 
 
 -- COPY:
-	
+
 	-- This procedure copies a given net and net segment
 	-- to the clipboard.
 	-- 1. If the net does not exist in the clipboard yet,
@@ -88,7 +88,7 @@ package et_module_clipboard.net_segments is
 
 
 
-	
+
 
 -- PASTE:
 
@@ -104,7 +104,7 @@ package et_module_clipboard.net_segments is
 		offset			: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-	
+
 
 	-- This procedure copies net segments from the clipboard
 	-- to the given module. The segments will be placed
@@ -116,7 +116,7 @@ package et_module_clipboard.net_segments is
 		log_threshold	: in type_log_level);
 
 
-	
+
 end et_module_clipboard.net_segments;
 
 -- Soli Deo Gloria

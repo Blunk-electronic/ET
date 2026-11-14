@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -117,19 +117,19 @@ package body et_board_ops_material_pnp is
 					device_name : type_device_name;
 					inserted : boolean;
 
-					function apply_position_in_board (position_generic : in type_package_position) return
-						et_board_coordinates.type_package_position
+					function apply_position_in_board (position_generic : in type_board_object) return
+						et_board_coordinates.type_board_object
 					is
 						-- Get the device position in the generic submodule:.
-						device_position : et_board_coordinates.type_package_position := position_generic;
+						device_position : et_board_coordinates.type_board_object := position_generic;
 					begin
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
 						--move_by (device_position, to_distance_relative (position_in_board));
 						move_by (device_position.place, position_in_board.place);
 
-						log (text => "generic" & to_string (position_generic) &
-							" -> " & "in instance" & to_string (device_position),
+						log (text => "generic" & get_position (position_generic)
+							& " -> " & "in instance" & get_position (device_position),
 							level => log_threshold + 2);
 
 						return device_position;

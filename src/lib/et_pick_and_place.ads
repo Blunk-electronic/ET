@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2026                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -65,7 +65,7 @@ package et_pick_and_place is
 	function to_file_name is new et_bounded_string_helpers.from_string (pac_pnp_file_name, to_type   => type_pnp_file_name);
 
 	type type_device is record
-		position : et_board_coordinates.type_package_position; -- x/y, rotation and face
+		position : et_board_coordinates.type_board_object; -- x/y, rotation and face
 		-- CS value and partcode ?
 	end record;
 

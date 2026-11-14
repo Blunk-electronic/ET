@@ -66,11 +66,13 @@ with et_device_value;
 with et_device_library;				use et_device_library;
 with et_device_partcode;
 with et_device_read;
+
 with et_devices_electrical;
+
+with et_device_non_electrical;
 with et_devices_non_electrical;
 
 with et_schematic_text;
-
 
 with et_package_library;
 with et_package_name;
@@ -122,7 +124,7 @@ package body et_module_read_device_electrical is
 	-- temporarily collection of units:
 	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
 
-	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
+	device_position	: et_board_coordinates.type_board_object; -- in the layout ! incl. angle and face
 
 
 
@@ -366,7 +368,7 @@ package body et_module_read_device_electrical is
 
 				-- The device name must not be in use by any non-electrical device:
 				if module.devices_non_electric.contains (device_name) then
-					et_devices_non_electrical.device_name_in_use (device_name);
+					et_device_non_electrical.device_name_in_use (device_name);
 				end if;
 
 				log_indentation_down;
@@ -536,7 +538,7 @@ package body et_module_read_device_electrical is
 			expect_field_count (line, 9);
 
 			-- extract package position starting at field 2
-			device_position := to_position (line, 2);
+			device_position := type_board_object (to_board_object_position (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -812,7 +814,7 @@ package body et_module_read_device_electrical is
 
 	-- These two variables assist when a particular placeholder is appended to the
 	-- list of placholders in silk screen, assy doc and their top or bottom face:
-	device_text_placeholder_position : et_board_coordinates.type_package_position := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
+	device_text_placeholder_position : et_board_coordinates.type_board_object := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
 
 
 	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer :=
@@ -857,7 +859,8 @@ package body et_module_read_device_electrical is
 			expect_field_count (line, 9);
 
 			-- extract position of placeholder starting at field 2
-			device_text_placeholder_position := to_position (line, 2);
+			device_text_placeholder_position :=
+				type_board_object (to_board_object_position (line, 2));
 
 		elsif kw = keyword_size then -- size 5
 			expect_field_count (line, 2);

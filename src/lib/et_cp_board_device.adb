@@ -304,11 +304,10 @@ package body et_cp_board_device is
 					add_non_electrical_device (
 						module_cursor	=> module,
 						package_model	=> model,
-						position		=> to_package_position
-							(
-							point	=> xy
-							),
-							prefix			=> prefix,
+						position		=> type_board_object (
+							to_board_object_position (xy)),
+
+						prefix			=> prefix,
 
 						-- Depending on the origin of the command,
 						-- the design state is to be commited or not:
@@ -321,11 +320,9 @@ package body et_cp_board_device is
 					add_non_electrical_device (
 						module_cursor	=> module,
 						package_model	=> model,
-						position		=> to_package_position
-							(
-							point		=> xy,
-							rotation	=> to_rotation (get_field (cmd, 9))
-							),
+						position		=> type_board_object (
+							to_board_object_position (xy, to_rotation (get_field (cmd, 9)))),
+
 						prefix			=> prefix,
 
 						-- Depending on the origin of the command,
@@ -339,12 +336,12 @@ package body et_cp_board_device is
 					add_non_electrical_device (
 						module_cursor	=> module,
 						package_model	=> model,
-						position		=> to_package_position
-							(
-							point		=> xy,
-							rotation	=> to_rotation (get_field (cmd, 9)),
-							face		=> to_face (get_field (cmd, 10))
-							),
+						position		=> type_board_object (
+							to_board_object_position (
+								point		=> xy,
+								rotation	=> to_rotation (get_field (cmd, 9)),
+								face		=> to_face (get_field (cmd, 10)))),
+
 						prefix			=> prefix,
 
 						-- Depending on the origin of the command,

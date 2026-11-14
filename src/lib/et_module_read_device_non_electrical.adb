@@ -58,6 +58,8 @@ with et_device_partcode;
 with et_package_variant_name;
 
 with et_devices_electrical;
+
+with et_device_non_electrical;		use et_device_non_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 
 with et_package_library;
@@ -82,7 +84,7 @@ package body et_module_read_device_non_electrical is
 
 
 	-- The temporarily non-electrical device:
-	device			: et_devices_non_electrical.type_device_non_electrical;
+	device			: et_device_non_electrical.type_device_non_electrical;
 
 	device_name		: et_device_name.type_device_name; -- C12
 
@@ -92,7 +94,9 @@ package body et_module_read_device_non_electrical is
 	unused_device_purpose	: et_device_purpose.type_device_purpose;
 	unused_device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
 
-	device_position	: et_board_coordinates.type_package_position; -- in the layout ! incl. angle and face
+	device_position	: et_board_coordinates.type_board_object; -- in the layout ! incl. angle and face
+	-- CS: probably no need because the position is already
+	-- part of device (see above) ?
 
 	package_model_name	: et_package_model_name.type_package_model_name; -- ../libraries/misc/fiducials/crosshair.pac
 
@@ -120,7 +124,8 @@ package body et_module_read_device_non_electrical is
 			expect_field_count (line, 9);
 
 			-- extract device position (in the layout) starting at field 2
-			device_position := to_position (line, 2);
+			device_position := type_board_object (
+				to_board_object_position (line, 2));
 
 
 		elsif kw = keyword_model then -- model fiducials/crosshair.pac
@@ -221,7 +226,7 @@ package body et_module_read_device_non_electrical is
 
 				-- The device name must not be in use by any non-electrical device:
 				if not inserted then
-					et_devices_non_electrical.device_name_in_use (device_name);
+					et_device_non_electrical.device_name_in_use (device_name);
 				end if;
 
 				-- The device name must not be in use by an electrical device:
@@ -237,7 +242,7 @@ package body et_module_read_device_non_electrical is
 
 			procedure clean_up is begin
 				-- clean up for next non-electrical device:
-				device				:= (others => <>);
+				reset_device (device);
 				device_name			:= (others => <>);
 				device_position		:= package_position_default;
 				text_placeholders	:= (others => <>);
@@ -263,7 +268,9 @@ package body et_module_read_device_non_electrical is
 				et_package_library.get_package_model (package_model_name);
 
 			-- Assign the package position:
-			device.position := device_position;
+			device.set_place (get_place (device_position));
+			device.set_rotation (get_rotation (device_position));
+			device.set_face (get_face (device_position));
 
 			add_package_to_board;
 
@@ -307,7 +314,8 @@ package body et_module_read_device_non_electrical is
 			expect_field_count (line, 9);
 
 			-- extract package position starting at field 2
-			device_position := to_position (line, 2);
+			device_position := type_board_object (
+				to_board_object_position (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -326,7 +334,7 @@ package body et_module_read_device_non_electrical is
 
 	-- These two variables assist when a particular placeholder is appended to the
 	-- list of placholders in silkscreen, assy doc and their top or bottom face:
-	text_placeholder_position	: type_package_position := placeholder_position_default; -- incl. rotation and face
+	text_placeholder_position	: type_board_object := placeholder_position_default; -- incl. rotation and face
 
 
 	text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer :=
@@ -367,7 +375,8 @@ package body et_module_read_device_non_electrical is
 			expect_field_count (line, 9);
 
 			-- extract position of placeholder starting at field 2
-			text_placeholder_position := to_position (line, 2);
+			text_placeholder_position := type_board_object (
+				to_board_object_position (line, 2));
 
 		elsif kw = keyword_size then -- size 5
 			expect_field_count (line, 2);

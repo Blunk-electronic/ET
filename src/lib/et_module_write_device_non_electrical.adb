@@ -58,7 +58,7 @@ with et_alignment;					use et_alignment;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_device_name;				use et_device_name;
 
-
+with et_device_non_electrical;			use et_device_non_electrical;
 with et_devices_non_electrical;			use et_devices_non_electrical;
 
 with et_device_placeholders.packages;
@@ -107,7 +107,7 @@ package body et_module_write_device_non_electrical is
 					ph : et_device_placeholders.packages.type_text_placeholder renames element (c);
 
 					use pac_geometry_2;
-					position : type_package_position;
+					position : type_board_object;
 				begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_layer, parameters => to_string (layer));
@@ -125,7 +125,7 @@ package body et_module_write_device_non_electrical is
 					set_face (position, face);
 
 					write (keyword => keyword_position,
-						parameters => to_string (position, FORMAT_2));
+						parameters => get_position (position, FORMAT_2));
 					-- position x 0.000 y 5.555 rotation 0.00 face top
 
 					write (keyword => keyword_size,
@@ -173,9 +173,11 @@ package body et_module_write_device_non_electrical is
 
 			section_mark (section_device, HEADER);
 
-			write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
+			write (keyword => keyword_name,
+				parameters => to_string (key (c))); -- name FD1
+
 			write (keyword => keyword_position, parameters =>
-				to_string (get_position (device), FORMAT_2));
+				get_position (device, FORMAT_2));
 
 			-- Write the relative path to the package model like
 			-- "model fiducials/crosshair.pac"

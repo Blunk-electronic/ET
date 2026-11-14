@@ -67,7 +67,8 @@ with et_device_partcode;
 
 with et_package_variant_name;
 
-with et_devices_electrical;			use et_devices_electrical;
+with et_devices_electrical;				use et_devices_electrical;
+with et_devices_electrical.packages;	use et_devices_electrical.packages;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
@@ -210,7 +211,7 @@ package body et_module_write_devices_electrical is
 
 				use et_board_geometry;
 				use pac_geometry_2;
-				position : type_package_position;
+				position : type_board_object;
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => keyword_layer, parameters => to_string (layer));
@@ -228,7 +229,7 @@ package body et_module_write_devices_electrical is
 				set_face (position, face);
 
 				write (keyword => keyword_position,
-					parameters => to_string (position, FORMAT_2));
+					parameters => get_position (position, FORMAT_2));
 				-- position x 0.000 y 5.555 rotation 0.00 face top
 
 				write (keyword => keyword_size,
@@ -317,7 +318,7 @@ package body et_module_write_devices_electrical is
 
 					-- This is the position of the package in the layout,
 					write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
-						et_board_coordinates.to_string (get_position (device), FORMAT_2));
+						get_position (device, FORMAT_2));
 
 					query_element (d, query_placeholders'access);
 					section_mark (section_package, FOOTER);

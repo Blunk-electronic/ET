@@ -384,7 +384,7 @@ package body et_module_clipboard.devices_electrical is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " paste units from clipboard. Group offset: " 
+			& " paste units from clipboard. Group offset: "
 			& get_position (offset),
 			 level => log_threshold);
 
