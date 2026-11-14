@@ -62,6 +62,7 @@ package et_board_coordinates is
 
 
 
+-- FACE (top/bottom):
 
 	function get_face (
 		object	: in type_board_object)
@@ -77,6 +78,15 @@ package et_board_coordinates is
 		object	: in out type_board_object);
 
 
+	-- Returns true if the face of the given object
+	-- position is BOTTOM:
+	function is_flipped (
+		object	: in type_board_object)
+		return boolean;
+
+
+
+-- AREA:
 
 	-- Returns true if the given object meets the
 	-- following criteria:
@@ -89,6 +99,7 @@ package et_board_coordinates is
 		return boolean;
 
 
+	-- CS: experimental
 	-- function get_position (
 	-- 	object	: in type_board_object)
 	-- 	return type_board_object'class;
@@ -129,40 +140,6 @@ package et_board_coordinates is
 		return type_board_object'class;
 
 
-
-
-
-
-
-
-
-	-- Returns the location vector and rotation of
-	-- the given package position:
-	-- function get_position (
-	-- 	position : in type_package_position)
-	-- 	return type_position;
-
-
-	-- Sets the position (x/y/rotation) of
-	-- the given package position:
-	-- procedure set_position (
-	-- 	package_position	: in out type_package_position;
-	-- 	position			: in type_position);
-
-
-
-	-- Returns true if the face of the given object
-	-- position is BOTTOM:
-	function is_flipped (
-		object	: in type_board_object)
-		return boolean;
-
-
-	-- Composes from a given point and angle the terminal position.
-	-- function to_terminal_position (
-	-- 	point		: in type_vector_model;
-	-- 	rotation	: in type_rotation_model)
-	-- 	return type_position'class;
 
 
 

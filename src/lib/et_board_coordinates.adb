@@ -46,6 +46,8 @@ with et_keywords;						use et_keywords;
 package body et_board_coordinates is
 
 
+-- FACE (top/bottom):
+
 	function get_face (
 		object	: in type_board_object)
 		return type_face
@@ -78,6 +80,16 @@ package body et_board_coordinates is
 	end toggle_face;
 
 
+
+	function is_flipped (
+		object	: in type_board_object)
+		return boolean
+	is (get_face (object) = BOTTOM);
+
+
+
+
+-- AREA:
 
 	function on_face_and_in_area (
 		object	: in type_board_object;
@@ -206,49 +218,6 @@ package body et_board_coordinates is
 	end to_board_object_position;
 
 
-
-
-
-
-	-- function get_position (
-	-- 	position : in type_package_position)
-	-- 	return type_position
-	-- is (type_position (position));
-
-
-
-
-	-- procedure set_position (
-	-- 	package_position	: in out type_package_position;
-	-- 	position			: in type_position)
-	-- is begin
-	-- 	package_position.place := get_place (position);
-	-- 	package_position.rotation := get_rotation (position);
-	-- end set_position;
-
-
-
-
-	function is_flipped (
-		object	: in type_board_object)
-		return boolean
-	is (get_face (object) = BOTTOM);
-
-
-
-
-	-- function to_terminal_position (
-	-- 	point		: in type_vector_model;
-	-- 	rotation	: in type_rotation_model)
-	-- 	return type_position'class
-	-- is
-	-- 	pos : type_position;
-	-- begin
-	-- 	--pos := (point with rotation);
-	-- 	set_place (pos, point);
-	-- 	set_rotation (pos, rotation);
-	-- 	return pos;
-	-- end to_terminal_position;
 
 
 
