@@ -57,6 +57,7 @@ with et_net_class;					use et_net_class;
 with et_net_classes;				use et_net_classes;
 with et_net_class_name;				use et_net_class_name;
 with et_terminal_name;				use et_terminal_name;
+with et_terminal;					use et_terminal;
 with et_terminals;					use et_terminals;
 with et_package_model_name;			use et_package_model_name;
 with et_device_value;				use et_device_value;
@@ -542,7 +543,7 @@ package et_kicad.pcb is
 
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
-	type type_terminal is new et_terminals.type_terminal with record
+	type type_terminal is new et_terminal.type_terminal with record
 		net_name : et_net_names.type_net_name;
 	end record;
 

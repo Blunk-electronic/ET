@@ -58,6 +58,7 @@ with et_devices_non_electrical;			use et_devices_non_electrical;
 
 with et_nets;							-- use et_nets;
 
+with et_terminal;						use et_terminal;
 with et_terminals;						use et_terminals;
 with et_terminal_name;					use et_terminal_name;
 with et_assembly_technology;			use et_assembly_technology;

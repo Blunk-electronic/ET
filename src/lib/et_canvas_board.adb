@@ -99,8 +99,10 @@ with et_ripup;
 
 with et_board_ops_signal_layers;
 with et_pcb_signal_layers;
+
 with et_terminal_name;
-with et_terminals;
+with et_terminal;
+
 with et_via;
 with et_vias;
 with et_net_names;
@@ -700,7 +702,7 @@ package body et_canvas_board is
 	-- is separate. It is called by procedure draw_packages:
 	procedure draw_terminal (
 		name				: in et_terminal_name.type_terminal_name;
-		terminal			: in et_terminals.type_terminal;
+		terminal			: in et_terminal.type_terminal;
 		brightness			: in et_colors.type_brightness;
 		package_position	: in type_board_object;
 		mirror				: in et_mirroring.type_mirror;

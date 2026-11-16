@@ -44,7 +44,7 @@
 --   ToDo:
 --
 
-with et_board_geometry;				use et_board_geometry;
+with et_board_geometry;					use et_board_geometry;
 use et_board_geometry.pac_geometry_2;
 
 with et_generic_modules;				use et_generic_modules;
@@ -57,6 +57,7 @@ with et_fill_zones;						use et_fill_zones;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_design_rules_board;				use et_design_rules_board;
 
+with et_terminal;						use et_terminal;
 with et_terminals;						use et_terminals;
 with et_logging;						use et_logging;
 

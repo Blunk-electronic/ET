@@ -57,6 +57,7 @@ with et_stencil_mask_status;			use et_stencil_mask_status;
 
 with et_terminal_hole;					use et_terminal_hole;
 with et_terminal_name;					use et_terminal_name;
+with et_terminal;						use et_terminal;
 with et_terminals;						use et_terminals;
 
 with et_board_geometry;					use et_board_geometry;

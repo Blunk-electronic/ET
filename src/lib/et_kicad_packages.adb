@@ -438,7 +438,7 @@ package body et_kicad_packages is
 	is
 		use pac_lines_of_file;
 		use et_drill;
-		use et_terminals;
+		use et_terminal;
 
 		use pac_geometry_brd;
 
@@ -2251,7 +2251,7 @@ package body et_kicad_packages is
 				end case;
 
 				if terminal_inserted then
-					et_terminals.terminal_properties (
+					et_terminal.terminal_properties (
 						terminal		=> et_terminals.pac_terminals.element (terminal_cursor),
 						name			=> et_terminals.pac_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);

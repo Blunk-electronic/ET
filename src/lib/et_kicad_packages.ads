@@ -43,7 +43,8 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_drill;
 with et_assembly_technology;	use et_assembly_technology;
-with et_terminals;				-- use et_terminals;
+with et_terminal;
+with et_terminals;
 
 with et_text_content;			use et_text_content;
 with et_board_text;				use et_board_text;

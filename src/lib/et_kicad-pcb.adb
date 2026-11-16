@@ -4242,8 +4242,8 @@ package body et_kicad.pcb is
 				-- Log terminal properties and reset net name if terminal could be inserted.
 				-- Otherwise abort due to a duplicated usage:
 				if terminal_inserted then
-					et_terminals.terminal_properties (
-						terminal		=> et_terminals.type_terminal (pac_terminals.element (terminal_cursor)),
+					et_terminal.terminal_properties (
+						terminal		=> et_terminal.type_terminal (pac_terminals.element (terminal_cursor)),
 						name			=> pac_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 

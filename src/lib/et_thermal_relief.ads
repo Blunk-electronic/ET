@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -49,6 +49,7 @@ with et_board_geometry;			use et_board_geometry;
 with et_design_rules_board;		use et_design_rules_board;
 with et_fill_zones;				use et_fill_zones;
 with et_terminal_name;			use et_terminal_name;
+with et_terminal;				use et_terminal;
 with et_terminals;				use et_terminals;
 with et_logging;				use et_logging;
 

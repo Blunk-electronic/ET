@@ -47,7 +47,8 @@ with et_mirroring;					use et_mirroring;
 with et_drill;						use et_drill;
 
 with et_assembly_technology;		use et_assembly_technology;
-with et_terminals;					use et_terminals;
+
+with et_terminal;					use et_terminal;
 with et_terminal_name;				use et_terminal_name;
 with et_terminal_hole;				use et_terminal_hole;
 with et_terminal_tht;				use et_terminal_tht;
@@ -80,7 +81,7 @@ separate (et_canvas_board)
 -- Draws a single terminal candidate:
 procedure draw_terminal (
 	name				: in et_terminal_name.type_terminal_name;
-	terminal			: in et_terminals.type_terminal;
+	terminal			: in et_terminal.type_terminal;
 	brightness			: in et_colors.type_brightness;
 	package_position	: in type_board_object;
 	mirror				: in et_mirroring.type_mirror;

@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your editor to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -101,7 +101,7 @@ package body et_board_ops_fill_zones is
 		use pac_terminals;
 
 		-- Get the actual terminal as described in the package model:
-		terminal : constant et_terminals.type_terminal := element (terminal_cursor);
+		terminal : constant et_terminal.type_terminal := element (terminal_cursor);
 
 		-- Get the terminal name (like 3 or H5):
 		terminal_name : constant type_terminal_name := key (terminal_cursor);

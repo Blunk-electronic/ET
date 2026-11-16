@@ -59,7 +59,7 @@ with et_pcb_placeholders;
 
 with et_ripup;
 with et_module;						use et_module;
-with et_terminals;					use et_terminals;
+with et_terminal;					use et_terminal;
 with et_assembly_technology;		use et_assembly_technology;
 
 with et_modes.board;
