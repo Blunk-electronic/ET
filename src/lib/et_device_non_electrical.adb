@@ -133,14 +133,14 @@ package body et_device_non_electrical is
 		device	: in out type_device_non_electrical;
 		value	: in type_device_value)
 	is begin
-		device.value := value;
+		set_value (device.properties, value);
 	end set_value;
 
 
 	function get_value (
 		device	: in type_device_non_electrical)
 		return type_device_value
-	is (device.value);
+	is (get_value (device.properties));
 
 
 	function get_value (
@@ -168,14 +168,14 @@ package body et_device_non_electrical is
 		device		: in out type_device_non_electrical;
 		partcode	: in type_device_partcode)
 	is begin
-		device.partcode := partcode;
+		set_partcode (device.properties, partcode);
 	end set_partcode;
 
 
 	function get_partcode (
 		device	: in type_device_non_electrical)
 		return type_device_partcode
-	is (device.partcode);
+	is (get_partcode (device.properties));
 
 
 	function get_partcode (
@@ -204,14 +204,14 @@ package body et_device_non_electrical is
 		device	: in out type_device_non_electrical;
 		purpose	: in type_device_purpose)
 	is begin
-		device.purpose := purpose;
+		set_purpose (device.properties, purpose);
 	end set_purpose;
 
 
 	function get_purpose (
 		device	: in type_device_non_electrical)
 		return type_device_purpose
-	is (device.purpose);
+	is (get_purpose (device.properties));
 
 
 	function get_purpose (

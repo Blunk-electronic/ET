@@ -302,6 +302,66 @@ package body et_devices_electrical is
 
 
 
+
+
+
+
+-- VALUE:
+
+	function get_value (
+		device : in pac_devices_electrical.cursor)
+		return type_device_value
+	is
+		d : type_device_electrical renames element (device);
+	begin
+		return get_value (d);
+	end get_value;
+
+
+
+
+
+
+
+-- PARTCODE:
+
+	function get_partcode (
+		device : in pac_devices_electrical.cursor)
+		return type_device_partcode
+	is
+		d : type_device_electrical renames element (device);
+	begin
+		return get_partcode (d);
+	end get_partcode;
+
+
+
+
+
+
+
+-- PURPOSE:
+
+
+	function get_purpose (
+		device : in pac_devices_electrical.cursor)
+		return type_device_purpose
+	is
+		d : type_device_electrical renames element (device);
+	begin
+		return get_purpose (d);
+	end get_purpose;
+
+
+
+
+
+
+
+
+-- STATUS:
+
+
 	function is_proposed (
 		device : in pac_devices_electrical.cursor)
 		return boolean
@@ -445,8 +505,8 @@ package body et_devices_electrical is
 	begin
 		case placeholder.meaning is
 			when NAME		=> result := to_content (to_string (key (device_cursor)));
-			when VALUE		=> result := to_content (to_string (device.value));
-			when PURPOSE	=> result := to_content (to_string (device.purpose));
+			when VALUE		=> result := to_content (to_string (get_value (device)));
+			when PURPOSE	=> result := to_content (to_string (get_purpose (device)));
 		end case;
 
 		return result;

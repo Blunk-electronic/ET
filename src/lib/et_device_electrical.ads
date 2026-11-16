@@ -57,6 +57,7 @@ with et_device_model_names;				use et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 with et_device_partcode;				use et_device_partcode;
+with et_device_properties;				use et_device_properties;
 with et_device_library;					use et_device_library;
 with et_device_placeholders.packages;
 with et_package_model_name;				use et_package_model_name;
@@ -92,17 +93,6 @@ package et_device_electrical is
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
 			when APPEARANCE_PCB =>
-				value		: type_device_value; -- 470R
-
-				partcode	: type_device_partcode; -- R_PAC_S_0805_VAL_100R
-				-- For virtual packages (test points, edge connectors, ...)
-				-- usually no partcode is required.
-
-				-- The purpose indicates what the device is doing.
-				-- It is usually required for devices that require interaction
-				-- with the user of a PCBA:
-				purpose		: type_device_purpose; -- brightness_control
-
 				-- The package variant:
 				variant		: type_package_variant_name; -- D, N
 
@@ -120,9 +110,10 @@ package et_device_electrical is
 				-- for value, name, purpose, ...
 				placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
+				properties	: type_device_properties;
+
 
 			when APPEARANCE_VIRTUAL => null;
-
 		end case;
 	end record;
 
@@ -132,6 +123,79 @@ package et_device_electrical is
 	function is_real (
 		device : in type_device_electrical)
 		return boolean;
+
+
+
+-- VALUE:
+
+	procedure set_value (
+		device	: in out type_device_electrical;
+		value	: in type_device_value);
+
+
+	function get_value (
+		device	: in type_device_electrical)
+		return type_device_value;
+
+
+	function get_value (
+		device	: in type_device_electrical)
+		return string;
+
+
+	function has_value (
+		device	: in type_device_electrical)
+		return boolean;
+
+
+
+-- PARTCODE:
+
+	procedure set_partcode (
+		device		: in out type_device_electrical;
+		partcode	: in type_device_partcode);
+
+
+	function get_partcode (
+		device	: in type_device_electrical)
+		return type_device_partcode;
+
+
+	function get_partcode (
+		device	: in type_device_electrical)
+		return string;
+
+
+	function has_partcode (
+		device	: in type_device_electrical)
+		return boolean;
+
+
+
+
+
+-- PURPOSE:
+
+	procedure set_purpose (
+		device	: in out type_device_electrical;
+		purpose	: in type_device_purpose);
+
+
+	function get_purpose (
+		device	: in type_device_electrical)
+		return type_device_purpose;
+
+
+	function get_purpose (
+		device	: in type_device_electrical)
+		return string;
+
+
+	function has_purpose (
+		device	: in type_device_electrical)
+		return boolean;
+
+
 
 
 	-- This function copies a given device but

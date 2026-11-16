@@ -54,6 +54,120 @@ package body et_device_electrical is
 
 
 
+-- VALUE:
+
+	procedure set_value (
+		device	: in out type_device_electrical;
+		value	: in type_device_value)
+	is begin
+		set_value (device.properties, value);
+	end set_value;
+
+
+	function get_value (
+		device	: in type_device_electrical)
+		return type_device_value
+	is (get_value (device.properties));
+
+
+	function get_value (
+		device	: in type_device_electrical)
+		return string
+	is (to_string (get_value (device)));
+
+
+	function has_value (
+		device	: in type_device_electrical)
+		return boolean
+	is begin
+		if is_empty (get_value (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end has_value;
+
+
+
+
+
+-- PARTCODE:
+
+	procedure set_partcode (
+		device		: in out type_device_electrical;
+		partcode	: in type_device_partcode)
+	is begin
+		set_partcode (device.properties, partcode);
+	end set_partcode;
+
+
+	function get_partcode (
+		device	: in type_device_electrical)
+		return type_device_partcode
+	is (get_partcode (device.properties));
+
+
+	function get_partcode (
+		device	: in type_device_electrical)
+		return string
+	is (to_string (get_partcode (device)));
+
+
+	function has_partcode (
+		device	: in type_device_electrical)
+		return boolean
+	is begin
+		if is_empty (get_partcode (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end has_partcode;
+
+
+
+
+
+
+-- PURPOSE:
+
+	procedure set_purpose (
+		device	: in out type_device_electrical;
+		purpose	: in type_device_purpose)
+	is begin
+		set_purpose (device.properties, purpose);
+	end set_purpose;
+
+
+	function get_purpose (
+		device	: in type_device_electrical)
+		return type_device_purpose
+	is (get_purpose (device.properties));
+
+
+	function get_purpose (
+		device	: in type_device_electrical)
+		return string
+	is (to_string (get_purpose (device)));
+
+
+
+	function has_purpose (
+		device	: in type_device_electrical)
+		return boolean
+	is begin
+		if is_empty (get_purpose (device)) then
+			return false;
+		else
+			return true;
+		end if;
+	end has_purpose;
+
+
+
+
+
+
 
 
 	function copy_bare_device (

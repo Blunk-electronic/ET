@@ -67,13 +67,9 @@ with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_sides;						use et_pcb_sides;
 
 with et_device_electrical;				use et_device_electrical;
-with et_device_purpose;
-with et_device_partcode;				use et_device_partcode;
-with et_device_value;
 with et_device_placeholders;			use et_device_placeholders;
 with et_port_names;						use et_port_names;
 with et_unit_name;						use et_unit_name;
-with et_device_partcode;
 with et_package_variant_name;			use et_package_variant_name;
 with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
@@ -85,99 +81,6 @@ with et_logging;						use et_logging;
 package et_devices_electrical.packages is
 
 	use pac_geometry_2;
-
-
-
-
--- VALUE:
-
-	procedure set_value (
-		device	: in out type_device_electrical;
-		value	: in type_device_value);
-
-
-	function get_value (
-		device	: in type_device_electrical)
-		return type_device_value;
-
-
-	function get_value (
-		device	: in type_device_electrical)
-		return string;
-
-
-	-- Returns the value of the given device.
-	-- The device must be real. Otherwise constraint error is raised.
-	function get_value (
-		device : in pac_devices_electrical.cursor)
-		return type_device_value;
-
-
-	function has_value (
-		device	: in type_device_electrical)
-		return boolean;
-
-
-
-
--- PARTCODE:
-
-	procedure set_partcode (
-		device		: in out type_device_electrical;
-		partcode	: in type_device_partcode);
-
-
-	function get_partcode (
-		device	: in type_device_electrical)
-		return type_device_partcode;
-
-
-	function get_partcode (
-		device	: in type_device_electrical)
-		return string;
-
-
-	-- Returns the partcode of the given device.
-	-- The device must be real. Otherwise constraint error is raised.
-	function get_partcode (
-		device : in pac_devices_electrical.cursor)
-		return type_device_partcode;
-
-
-	function has_partcode (
-		device	: in type_device_electrical)
-		return boolean;
-
-
-
-
--- PURPOSE:
-
-	procedure set_purpose (
-		device	: in out type_device_electrical;
-		purpose	: in type_device_purpose);
-
-
-	function get_purpose (
-		device	: in type_device_electrical)
-		return type_device_purpose;
-
-
-	function get_purpose (
-		device	: in type_device_electrical)
-		return string;
-
-
-	-- Returns the purpose of the given device.
-	-- The device must be real. Otherwise constraint error is raised.
-	function get_purpose (
-		device : in pac_devices_electrical.cursor)
-		return type_device_purpose;
-
-
-	function has_purpose (
-		device	: in type_device_electrical)
-		return boolean;
 
 
 

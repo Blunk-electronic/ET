@@ -56,9 +56,12 @@ with et_device_placeholders.packages;
 with et_device_electrical;				use et_device_electrical;
 with et_text_content;					use et_text_content;
 with et_device_prefix;					use et_device_prefix;
-with et_device_purpose;					use et_device_purpose;
-with et_device_model_names;				use et_device_model_names;
+
 with et_device_value;					use et_device_value;
+with et_device_purpose;					use et_device_purpose;
+with et_device_partcode;				use et_device_partcode;
+
+with et_device_model_names;				use et_device_model_names;
 with et_device_name;					use et_device_name;
 with et_device_library;					use et_device_library;
 with et_package_model_name;				use et_package_model_name;
@@ -149,6 +152,41 @@ package et_devices_electrical is
 	function is_real (
 		device : in pac_devices_electrical.cursor)
 		return boolean;
+
+
+
+
+
+-- VALUE:
+
+	-- Returns the value of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_value (
+		device : in pac_devices_electrical.cursor)
+		return type_device_value;
+
+
+
+-- PARTCODE:
+
+	-- Returns the partcode of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_partcode (
+		device : in pac_devices_electrical.cursor)
+		return type_device_partcode;
+
+
+
+-- PURPOSE:
+
+	-- Returns the purpose of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_purpose (
+		device : in pac_devices_electrical.cursor)
+		return type_device_purpose;
+
+
+
 
 
 

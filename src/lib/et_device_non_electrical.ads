@@ -55,6 +55,7 @@ with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_package_library;				use et_package_library;
 with et_package_model_name;				use et_package_model_name;
 with et_device_name;					use et_device_name;
+with et_device_properties;				use et_device_properties;
 with et_device_prefix;					use et_device_prefix;
 with et_device_value;					use et_device_value;
 with et_device_purpose;					use et_device_purpose;
@@ -108,14 +109,7 @@ package et_device_non_electrical is
 		-- Otherwise a valid cursor can not be assigned
 		-- to the device !
 
-		-- A value will rarely be assigned. But in case it is required:
-		value : type_device_value;
-
-		-- The partcode:
-		partcode : type_device_partcode;
-
-		-- A purpose will rarely be assigned. But in case it is required:
-		purpose : type_device_purpose;
+		properties	: type_device_properties;
 	end record;
 
 
