@@ -84,22 +84,23 @@ package body et_package_write_terminals is
 
 
 		procedure write_stop_mask_tht is
+			-- CS use renames
 
 			function user_specific_contours
 				return boolean
-			is (element (terminal_cursor).stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC
-				or element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode = USER_SPECIFIC);
+			is (element (terminal_cursor).get_stop_mask_shape_tht.top.expand_mode = USER_SPECIFIC
+				or element (terminal_cursor).get_stop_mask_shape_tht.bottom.expand_mode = USER_SPECIFIC);
 
 
 		begin -- write_stop_mask_tht
 			write (keyword => keyword_stop_mask_status,
-					parameters => to_string (element (terminal_cursor).stop_mask_status_tht)); -- stop_mask_status open
+				parameters => to_string (element (terminal_cursor).get_stop_mask_status_tht)); -- stop_mask_status open
 
 			write (keyword => keyword_stop_mask_shape_top,
-					parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.top.expand_mode));
+				parameters => to_string (element (terminal_cursor).get_stop_mask_shape_tht.top.expand_mode));
 
 			write (keyword => keyword_stop_mask_shape_bottom,
-					parameters => to_string (element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode));
+				parameters => to_string (element (terminal_cursor).get_stop_mask_shape_tht.bottom.expand_mode));
 
 			-- If user specified contours in either top or bottom required, write the header
 			-- for stop mask contours:
@@ -108,25 +109,25 @@ package body et_package_write_terminals is
 			end if;
 
 			-- If user specified contours in top, write them:
-			case element (terminal_cursor).stop_mask_shape_tht.top.expand_mode is
+			case element (terminal_cursor).get_stop_mask_shape_tht.top.expand_mode is
 				when AS_PAD | EXPAND_PAD => null;
 				when USER_SPECIFIC =>
 					section_mark (section_top, HEADER);
 
 					write_polygon_segments (type_contour (
-						element (terminal_cursor).stop_mask_shape_tht.top.contour));
+						element (terminal_cursor).get_stop_mask_shape_tht.top.contour));
 
 					section_mark (section_top, FOOTER);
 			end case;
 
 			-- If user specified contours in bottom, write them:
-			case element (terminal_cursor).stop_mask_shape_tht.bottom.expand_mode is
+			case element (terminal_cursor).get_stop_mask_shape_tht.bottom.expand_mode is
 				when AS_PAD | EXPAND_PAD => null;
 				when USER_SPECIFIC =>
 					section_mark (section_bottom, HEADER);
 
 					write_polygon_segments (type_contour (
-						element (terminal_cursor).stop_mask_shape_tht.bottom.contour));
+						element (terminal_cursor).get_stop_mask_shape_tht.bottom.contour));
 
 					section_mark (section_bottom, FOOTER);
 			end case;
@@ -147,15 +148,15 @@ package body et_package_write_terminals is
 
 			function user_specific_contours
 				return boolean
-			is (element (terminal_cursor).stop_mask_shape_smt.expand_mode = USER_SPECIFIC);
+			is (element (terminal_cursor).get_stop_mask_shape_smt.expand_mode = USER_SPECIFIC);
 
 
 		begin -- write_stop_mask_smt
 			write (keyword => keyword_stop_mask_status,
-					parameters => to_string (element (terminal_cursor).stop_mask_status_smt)); -- stop_mask_status open
+				parameters => to_string (element (terminal_cursor).get_stop_mask_status_smt)); -- stop_mask_status open
 
 			write (keyword => keyword_stop_mask_shape,
-					parameters => to_string (element (terminal_cursor).stop_mask_shape_smt.expand_mode)); -- stop_mask_shape as_pad/expand_pad/user_specific
+				parameters => to_string (element (terminal_cursor).get_stop_mask_shape_smt.expand_mode)); -- stop_mask_shape as_pad/expand_pad/user_specific
 
 			-- If user specified contours required, write the header for stop mask contours:
 			if user_specific_contours then
@@ -163,12 +164,12 @@ package body et_package_write_terminals is
 			end if;
 
 			-- If user specified contours, write them:
-			case element (terminal_cursor).stop_mask_shape_smt.expand_mode is
+			case element (terminal_cursor).get_stop_mask_shape_smt.expand_mode is
 				when AS_PAD | EXPAND_PAD => null;
 				when USER_SPECIFIC =>
 
 					write_polygon_segments (type_contour (
-						element (terminal_cursor).stop_mask_shape_smt.contour));
+						element (terminal_cursor).get_stop_mask_shape_smt.contour));
 
 			end case;
 
@@ -199,16 +200,16 @@ package body et_package_write_terminals is
 
 			function user_specific_contours
 				return boolean
-			is (element (terminal_cursor).stencil_shape.shrink_mode = USER_SPECIFIC);
+			is (element (terminal_cursor).get_stencil_shape.shrink_mode = USER_SPECIFIC);
 
 
 		begin
 			write (keyword => keyword_solder_paste_status,
-					parameters => to_string (element (terminal_cursor).solder_paste_status));
+				parameters => to_string (element (terminal_cursor).get_solder_paste_status));
 				-- solder_paste_status applied
 
 			write (keyword => keyword_solder_paste_shape,
-					parameters => to_string (element (terminal_cursor).stencil_shape.shrink_mode));
+				parameters => to_string (element (terminal_cursor).get_stencil_shape.shrink_mode));
 				-- solder_paste_shape as_pad/shrink_pad/user_specific
 
 			-- If user specified contours required, write the header for stencil contours:
@@ -216,19 +217,19 @@ package body et_package_write_terminals is
 				section_mark (section_stencil_contours, HEADER);
 			end if;
 
-			case element (terminal_cursor).stencil_shape.shrink_mode is
+			case element (terminal_cursor).get_stencil_shape.shrink_mode is
 				when AS_PAD => null;
 
 				when SHRINK_PAD	=>
 					write (
 						keyword		=> keyword_solder_paste_shrink_factor,
-						parameters	=> to_string (element (terminal_cursor).stencil_shape.shrink_factor));
+						parameters	=> to_string (element (terminal_cursor).get_stencil_shape.shrink_factor));
 						-- solder_paste_shrink_factor 0.4
 
 				when USER_SPECIFIC =>
 
 					write_polygon_segments (type_contour (
-						element (terminal_cursor).stencil_shape.contour));
+						element (terminal_cursor).get_stencil_shape.contour));
 			end case;
 
 			-- If user specified contours required, write the footer for stencil contours:
@@ -258,12 +259,12 @@ package body et_package_write_terminals is
 					section_mark (section_pad_contours_tht, HEADER);
 
 					section_mark (section_top, HEADER);
-					write_polygon_segments (element (terminal_cursor).pad_shape_tht.top);
+					write_polygon_segments (element (terminal_cursor).get_pad_shape_tht.top);
 					section_mark (section_top, FOOTER);
 
 					-- pad contour bottom
 					section_mark (section_bottom, HEADER);
-					write_polygon_segments (element (terminal_cursor).pad_shape_tht.bottom);
+					write_polygon_segments (element (terminal_cursor).get_pad_shape_tht.bottom);
 					section_mark (section_bottom, FOOTER);
 
 					section_mark (section_pad_contours_tht, FOOTER);
@@ -273,27 +274,27 @@ package body et_package_write_terminals is
 
 					-- conductor width in inner layers
 					write (keyword => keyword_width_inner_layers,
-							parameters => to_string (element (terminal_cursor).width_inner_layers));
+							parameters => to_string (element (terminal_cursor).get_width_inner_layers));
 
 					-- A THT terminal can have a drilled or a milled hole:
 					write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
 
 					case element (terminal_cursor).tht_hole is
 						when DRILLED =>
-							write (keyword_drill_size, parameters => to_string (element (terminal_cursor).drill_size));
+							write (keyword_drill_size, parameters => to_string (element (terminal_cursor).get_drill_size));
 
 						when MILLED =>
-							write_plated_millings (element (terminal_cursor).millings);
+							write_plated_millings (element (terminal_cursor).get_millings);
 					end case;
 
 				when SMT =>
 					-- pad contour
 					section_mark (section_pad_contours_smt, HEADER);
-					write_polygon_segments (element (terminal_cursor).pad_shape_smt);
+					write_polygon_segments (element (terminal_cursor).get_pad_shape_smt);
 					section_mark (section_pad_contours_smt, FOOTER);
 
 					write (keyword => keyword_face,
-							parameters => to_string (element (terminal_cursor).face));
+							parameters => to_string (element (terminal_cursor).get_face));
 
 					-- stop mask
 					write_stop_mask_smt;

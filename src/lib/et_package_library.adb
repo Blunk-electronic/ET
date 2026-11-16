@@ -277,28 +277,28 @@ package body et_package_library is
 										terminal, to_vector (terminal.get_place)));
 
 								when MILLED =>
-									finalize (terminal.millings);
+									finalize (terminal.get_millings);
 							end case;
 
 
 						when OUTER_TOP =>
-							finalize (terminal.pad_shape_tht.top);
+							finalize (terminal.get_pad_shape_tht.top);
 
 						when OUTER_BOTTOM =>
-							finalize (terminal.pad_shape_tht.bottom);
+							finalize (terminal.get_pad_shape_tht.bottom);
 					end case;
 
 
 				when SMT =>
 					case layer_category is
 						when OUTER_TOP =>
-							if terminal.face = TOP then
-								finalize (terminal.pad_shape_smt);
+							if terminal.get_face = TOP then
+								finalize (terminal.get_pad_shape_smt);
 							end if;
 
 						when OUTER_BOTTOM =>
-							if terminal.face = BOTTOM then
-								finalize (terminal.pad_shape_smt);
+							if terminal.get_face = BOTTOM then
+								finalize (terminal.get_pad_shape_smt);
 							end if;
 
 						when INNER => null; -- there are no SMT pads in inner layers

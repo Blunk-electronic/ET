@@ -157,7 +157,7 @@ package body et_board_ops_fill_zones is
 			move_by (contour, terminal_displacement);
 			make_polygon;
 			if do_offset then
-				offset_polygon (result, type_float_model (terminal.width_inner_layers),
+				offset_polygon (result, type_float_model (terminal.get_width_inner_layers),
 					log_threshold + 1);
 			end if;
 		end finalize;
@@ -184,7 +184,7 @@ package body et_board_ops_fill_zones is
 								make_polygon;
 
 							when MILLED =>
-								contour := terminal.millings;
+								contour := terminal.get_millings;
 								mirror_and_rotate;
 								finalize (do_offset => true);
 
@@ -192,18 +192,18 @@ package body et_board_ops_fill_zones is
 
 					when OUTER_TOP =>
 						if terminal_position.face = TOP then
-							contour := terminal.pad_shape_tht.top;
+							contour := terminal.get_pad_shape_tht.top;
 						else
-							contour := terminal.pad_shape_tht.bottom;
+							contour := terminal.get_pad_shape_tht.bottom;
 						end if;
 						mirror_and_rotate;
 						finalize;
 
 					when OUTER_BOTTOM =>
 						if terminal_position.face = BOTTOM then
-							contour := terminal.pad_shape_tht.top;
+							contour := terminal.get_pad_shape_tht.top;
 						else
-							contour := terminal.pad_shape_tht.bottom;
+							contour := terminal.get_pad_shape_tht.bottom;
 						end if;
 						mirror_and_rotate;
 						finalize;
@@ -212,12 +212,12 @@ package body et_board_ops_fill_zones is
 
 			when SMT =>
 				if layer_category = OUTER_TOP and terminal_position.face = TOP then
-					contour := terminal.pad_shape_smt;
+					contour := terminal.get_pad_shape_smt;
 					rotate_by (contour, to_rotation (terminal_position.rotation));
 					finalize;
 
 				elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
-					contour := terminal.pad_shape_smt;
+					contour := terminal.get_pad_shape_smt;
 					mirror (contour, MIRROR_ALONG_Y_AXIS);
 					rotate_by (contour, -to_rotation (terminal_position.rotation));
 					finalize;

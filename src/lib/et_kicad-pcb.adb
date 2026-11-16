@@ -3930,20 +3930,19 @@ package body et_kicad.pcb is
 
 						-- CS: We assume there is no option in kicad to cover
 						-- a THT pad with stop laquer.
-						terminal.stop_mask_status_tht := stop_mask_status_default;
+						set_stop_mask_status_tht (terminal, stop_mask_status_default);
 
 						-- The shape is the same on top and on bottom side.
-						terminal.pad_shape_tht := (top => shape, bottom => shape);
+						set_pad_shape_tht (terminal, (top => shape, bottom => shape));
 
 						-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 						-- It should be investigated whether kicad supports other stop mask
-						-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+						-- types like AS_PAD or USER_SPECIFIC (see et_terminal.type_stop_mask_shape).
 						-- It should also be checked whether kicad supports different contours
 						-- of top and bottom side of the pad.
-						terminal.stop_mask_shape_tht := (others => <>);
 
-						terminal.width_inner_layers	:= terminal_copper_width_inner_layers;
-						terminal.drill_size := terminal_drill_size;
+						set_width_inner_layers (terminal, terminal_copper_width_inner_layers);
+						set_drill_size (terminal, terminal_drill_size);
 
 						-- the pad is connected with a certain net
 						terminal.net_name := terminal_net_name;
@@ -3975,22 +3974,21 @@ package body et_kicad.pcb is
 
 						-- CS: We assume there is no option in kicad to cover
 						-- a THT pad with stop laquer.
-						terminal.stop_mask_status_tht := stop_mask_status_default;
+						terminal.set_stop_mask_status_tht (stop_mask_status_default);
 
 						-- The shape is the same on top and on bottom side.
-						terminal.pad_shape_tht := (top => shape, bottom => shape);
+						terminal.set_pad_shape_tht ((top => shape, bottom => shape));
 
 						-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 						-- It should be investigated whether kicad supports other stop mask
-						-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+						-- types like AS_PAD or USER_SPECIFIC (see et_terminal.type_stop_mask_shape).
 						-- It should also be checked whether kicad supports different contours
 						-- of top and bottom side of the pad.
-						terminal.stop_mask_shape_tht := (others => <>);
 
-						terminal.width_inner_layers	:= terminal_copper_width_inner_layers;
+						terminal.set_width_inner_layers (terminal_copper_width_inner_layers);
 
 						-- The plated millings of the hole is a list of lines.
-						terminal.millings := millings;
+						terminal.set_millings (millings);
 
 						-- the pad is connected with a certain net
 						terminal.net_name := terminal_net_name;
@@ -4034,20 +4032,19 @@ package body et_kicad.pcb is
 
 					-- CS: We assume there is no option in kicad to cover
 					-- a THT pad with stop laquer.
-					terminal.stop_mask_status_tht := stop_mask_status_default;
+					terminal.set_stop_mask_status_tht (stop_mask_status_default);
 
 					-- The shape is the same on top and on bottom side.
-					terminal.pad_shape_tht := (top => shape, bottom => shape);
+					terminal.set_pad_shape_tht ((top => shape, bottom => shape));
 
 					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 					-- It should be investigated whether kicad supports other stop mask
-					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminal.type_stop_mask_shape).
 					-- It should also be checked whether kicad supports different contours
 					-- of top and bottom side of the pad.
-					terminal.stop_mask_shape_tht := (others => <>);
 
-					terminal.width_inner_layers	:= terminal_copper_width_inner_layers;
-					terminal.drill_size := terminal_drill_size;
+					terminal.set_width_inner_layers	(terminal_copper_width_inner_layers);
+					terminal.set_drill_size (terminal_drill_size);
 
 					-- the pad is connected with a certain net
 					terminal.net_name := terminal_net_name;
@@ -4074,21 +4071,19 @@ package body et_kicad.pcb is
 
 					terminal.set_place (terminal_position.place);
 					terminal.set_rotation (terminal_position.rotation);
-					terminal.pad_shape_smt := shape;
+					terminal.set_pad_shape_smt (shape);
 
 					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 					-- It should be investigated whether kicad supports other stop mask
-					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-					terminal.stop_mask_shape_smt := (others => <>);
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminal.type_stop_mask_shape).
 
-					terminal.face := terminal_face;
-					terminal.stop_mask_status_smt := terminal_stop_mask_status;
-					terminal.solder_paste_status := terminal_solder_paste;
+					terminal.set_face (terminal_face);
+					terminal.set_stop_mask_status_smt (terminal_stop_mask_status);
+					terminal.set_solder_paste_status (terminal_solder_paste);
 
 					-- CS: For the stencil shape we assume it is just the same as the pad shape.
 					-- It should be investigated whether kicad supports other stencil shapes
-					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-					terminal.stencil_shape := (others => <>);
+					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminal.type_stencil_shape).
 
 					-- the pad is connected with a certain net
 					terminal.net_name := terminal_net_name;
@@ -4116,21 +4111,19 @@ package body et_kicad.pcb is
 
 					terminal.set_place (terminal_position.place);
 					terminal.set_rotation (terminal_position.rotation);
-					terminal.pad_shape_smt := shape;
+					terminal.set_pad_shape_smt (shape);
 
 					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 					-- It should be investigated whether kicad supports other stop mask
-					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-					terminal.stop_mask_shape_smt := (others => <>);
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminal.type_stop_mask_shape).
 
-					terminal.face := terminal_face;
-					terminal.stop_mask_status_smt := terminal_stop_mask_status;
-					terminal.solder_paste_status := terminal_solder_paste;
+					terminal.set_face (terminal_face);
+					terminal.set_stop_mask_status_smt (terminal_stop_mask_status);
+					terminal.set_solder_paste_status (terminal_solder_paste);
 
 					-- CS: For the stencil shape we assume it is just the same as the pad shape.
 					-- It should be investigated whether kicad supports other stencil shapes
-					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-					terminal.stencil_shape := (others => <>);
+					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminal.type_stencil_shape).
 
 					-- the pad is connected with a certain net
 					terminal.net_name := terminal_net_name;
@@ -4158,21 +4151,19 @@ package body et_kicad.pcb is
 
 					terminal.set_place (terminal_position.place);
 					terminal.set_rotation (terminal_position.rotation);
-					terminal.pad_shape_smt := shape;
+					terminal.set_pad_shape_smt (shape);
 
 					-- CS: For the stop mask we assume it is just an expansion of the pad shape.
 					-- It should be investigated whether kicad supports other stop mask
-					-- types like AS_PAD or USER_SPECIFIC (see et_terminals.type_stop_mask_shape).
-					terminal.stop_mask_shape_smt := (others => <>);
+					-- types like AS_PAD or USER_SPECIFIC (see et_terminal.type_stop_mask_shape).
 
-					terminal.face := terminal_face;
-					terminal.stop_mask_status_smt := terminal_stop_mask_status;
-					terminal.solder_paste_status := terminal_solder_paste;
+					terminal.set_face (terminal_face);
+					terminal.set_stop_mask_status_smt (terminal_stop_mask_status);
+					terminal.set_solder_paste_status (terminal_solder_paste);
 
 					-- CS: For the stencil shape we assume it is just the same as the pad shape.
 					-- It should be investigated whether kicad supports other stencil shapes
-					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminals.type_stencil_shape).
-					terminal.stencil_shape := (others => <>);
+					-- types like SHRINK_PAD or USER_SPECIFIC (see et_terminal.type_stencil_shape).
 
 					-- the pad is connected with a certain net
 					terminal.net_name := terminal_net_name;

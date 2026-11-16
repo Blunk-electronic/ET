@@ -72,87 +72,12 @@ package et_terminal is
 
 
 
-
-
-
-	type type_terminal ( -- CS: should be private
+	type type_terminal (
 		technology	: type_assembly_technology; -- smt/tht
 
 		 -- drilled/milled, without meaning if technology is SMT
 		tht_hole	: type_terminal_tht_hole)
-	is new type_object_with_rotation with record
-
-		-- The terminal position (x/y) relative to the package position.
-		-- The rotation is the rotation of the terminal about itself:
-
-		-- For SMT pads this should be the geometical center of the pad.
-		-- The rotation has no meaning for THT pads with round shape.
-		-- The rotation is useful for exotic pad contours. The operator
-		-- would be drawing the contour with zero rotation
-		-- first (which is easier) in the package model. Then, by applying an angle,
-		-- the countour would be rotated to its final position.
-
-		-- CS: When reading a package model, make sure position is inside
-		-- the pad shape.
-
-		case technology is
-			when THT =>
-				-- The shape of the pad on top and bottom side.
-				pad_shape_tht			: type_pad_outline_tht;
-
-				stop_mask_status_tht	: type_stop_mask_status := stop_mask_status_default;
-				-- CS: The stop mask status applies to both top and bottom of the pad.
-
-				stop_mask_shape_tht		: type_stopmask_tht;
-
-				-- This is the width of the conductor surrounding the
-				-- hole in inner layers.
-				-- Since the hole can be of any shape we do not speak about "restring".
-				-- Nevertheless the type_restring_width is used.
-				-- The shape of the conductor area around the hole is the same as
-				-- the shape of the hole. No further extra contours possible.
-				width_inner_layers	: type_restring_width;
-
-				case tht_hole is
-					when DRILLED =>
-						-- The hole is just a circular drilling
-						-- with its center at position (see above)
-						-- and this diameter:
-						drill_size	: type_drill_size_tht;
-
-					when MILLED =>
-						-- This structure has a closed circumfence with
-						-- an arbitrary outline (so called "plated millings").
-						-- This is the inner contour of the milled hole.
-						-- The conductor strip around has a width as defined
-						-- by width_inner_layers (see above):
-						millings	: type_contour;
-				end case;
-
-
-			when SMT =>
-				pad_shape_smt			: type_contour;
-
-				-- In the package model, an SMT pad can be placed
-				-- on top or on bottom side:
-				face					: type_face;
-
-				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
-				stop_mask_shape_smt		: type_stopmask_smt;
-
-				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
-				stencil_shape			: type_stencil_shape;
-
-		end case;
-
-		-- CS: For the future:
-		-- Automatically generated thermal reliefs may not suffice
-		-- for large terminals. A flag that determines whether reliefs should be
-		-- automatically computed or user defined origins of spokes should be used.
-		-- There could be user defined points where the spokes start.
-
-		-- CS thermal_relief on/off ?
-	end record;
+	is new type_object_with_rotation with private;
 
 
 
@@ -276,6 +201,8 @@ package et_terminal is
 
 
 
+
+
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
 	-- NOTE: This type is used in a package model. It uses fixed point numbers for
@@ -349,6 +276,89 @@ package et_terminal is
 		name			: in type_terminal_name;
 		log_threshold	: in type_log_level);
 
+
+
+
+private
+
+	type type_terminal (
+		technology	: type_assembly_technology; -- smt/tht
+
+		 -- drilled/milled, without meaning if technology is SMT
+		tht_hole	: type_terminal_tht_hole)
+	is new type_object_with_rotation with record
+
+		-- The terminal position (x/y) relative to the package position.
+		-- The rotation is the rotation of the terminal about itself:
+
+		-- For SMT pads this should be the geometical center of the pad.
+		-- The rotation has no meaning for THT pads with round shape.
+		-- The rotation is useful for exotic pad contours. The operator
+		-- would be drawing the contour with zero rotation
+		-- first (which is easier) in the package model. Then, by applying an angle,
+		-- the countour would be rotated to its final position.
+
+		-- CS: When reading a package model, make sure position is inside
+		-- the pad shape.
+
+		case technology is
+			when THT =>
+				-- The shape of the pad on top and bottom side.
+				pad_shape_tht			: type_pad_outline_tht;
+
+				stop_mask_status_tht	: type_stop_mask_status := stop_mask_status_default;
+				-- CS: The stop mask status applies to both top and bottom of the pad.
+
+				stop_mask_shape_tht		: type_stopmask_tht;
+
+				-- This is the width of the conductor surrounding the
+				-- hole in inner layers.
+				-- Since the hole can be of any shape we do not speak about "restring".
+				-- Nevertheless the type_restring_width is used.
+				-- The shape of the conductor area around the hole is the same as
+				-- the shape of the hole. No further extra contours possible.
+				width_inner_layers	: type_restring_width;
+
+				case tht_hole is
+					when DRILLED =>
+						-- The hole is just a circular drilling
+						-- with its center at position (see above)
+						-- and this diameter:
+						drill_size	: type_drill_size_tht;
+
+					when MILLED =>
+						-- This structure has a closed circumfence with
+						-- an arbitrary outline (so called "plated millings").
+						-- This is the inner contour of the milled hole.
+						-- The conductor strip around has a width as defined
+						-- by width_inner_layers (see above):
+						millings	: type_contour;
+				end case;
+
+
+			when SMT =>
+				pad_shape_smt			: type_contour;
+
+				-- In the package model, an SMT pad can be placed
+				-- on top or on bottom side:
+				face					: type_face;
+
+				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
+				stop_mask_shape_smt		: type_stopmask_smt;
+
+				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
+				stencil_shape			: type_stencil_shape;
+
+		end case;
+
+		-- CS: For the future:
+		-- Automatically generated thermal reliefs may not suffice
+		-- for large terminals. A flag that determines whether reliefs should be
+		-- automatically computed or user defined origins of spokes should be used.
+		-- There could be user defined points where the spokes start.
+
+		-- CS thermal_relief on/off ?
+	end record;
 
 end et_terminal;
 

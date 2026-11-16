@@ -4643,7 +4643,7 @@ package body et_board_ops_devices is
 
 				case terminal_technology is
 					when SMT =>
-						if element (terminal_cursor).face = TOP then
+						if element (terminal_cursor).get_face = TOP then
 							terminal_position_face := BOTTOM;
 						else
 							terminal_position_face := TOP;
@@ -4665,7 +4665,7 @@ package body et_board_ops_devices is
 
 				case terminal_technology is
 					when SMT =>
-						terminal_position_face := element (terminal_cursor).face;
+						terminal_position_face := element (terminal_cursor).get_face;
 
 					when THT =>
 						terminal_position_face := TOP;

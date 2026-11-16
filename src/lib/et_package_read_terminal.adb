@@ -289,11 +289,11 @@ package body et_package_read_terminal is
 			terminal.set_place (terminal_position.place);
 			terminal.set_rotation (terminal_position.rotation);
 
-			terminal.drill_size := tht_drill_size;
-			terminal.pad_shape_tht := tht_pad_shape;
-			terminal.stop_mask_status_tht := tht_stop_mask_status;
-			terminal.stop_mask_shape_tht := make_stop_mask_tht;
-			terminal.width_inner_layers := tht_width_inner_layers;
+			terminal.set_drill_size (tht_drill_size);
+			terminal.set_pad_shape_tht (tht_pad_shape);
+			terminal.set_stop_mask_status_tht (tht_stop_mask_status);
+			terminal.set_stop_mask_shape_tht (make_stop_mask_tht);
+			terminal.set_width_inner_layers (tht_width_inner_layers);
 
 			pac_terminals.insert (
 				container	=> packge.terminals,
@@ -308,14 +308,14 @@ package body et_package_read_terminal is
 		procedure insert_tht_milled is
 			terminal : type_terminal (THT, MILLED);
 		begin
-			terminal.millings := tht_millings;
+			terminal.set_millings (tht_millings);
 
 			terminal.set_place (terminal_position.place);
 			terminal.set_rotation (terminal_position.rotation);
-			terminal.pad_shape_tht := tht_pad_shape;
-			terminal.stop_mask_status_tht := tht_stop_mask_status;
-			terminal.stop_mask_shape_tht := make_stop_mask_tht;
-			terminal.width_inner_layers := tht_width_inner_layers;
+			terminal.set_pad_shape_tht (tht_pad_shape);
+			terminal.set_stop_mask_status_tht (tht_stop_mask_status);
+			terminal.set_stop_mask_shape_tht (make_stop_mask_tht);
+			terminal.set_width_inner_layers (tht_width_inner_layers);
 
 			pac_terminals.insert (
 				container	=> packge.terminals,
@@ -332,14 +332,14 @@ package body et_package_read_terminal is
 			-- NOTE: Discriminant for tht_hole is not relevant here.
 			-- See specification of type_terminal.
 		begin
-			terminal.face := smt_pad_face;
+			terminal.set_face (smt_pad_face);
 			terminal.set_place (terminal_position.place);
 			terminal.set_rotation (terminal_position.rotation);
-			terminal.pad_shape_smt := smt_pad_shape;
-			terminal.stop_mask_status_smt := smt_stop_mask_status;
-			terminal.stop_mask_shape_smt := make_stop_mask_smt;
-			terminal.solder_paste_status := smt_solder_paste_status;
-			terminal.stencil_shape := make_stencil;
+			terminal.set_pad_shape_smt (smt_pad_shape);
+			terminal.set_stop_mask_status_smt (smt_stop_mask_status);
+			terminal.set_stop_mask_shape_smt (make_stop_mask_smt);
+			terminal.set_solder_paste_status (smt_solder_paste_status);
+			terminal.set_stencil_shape (make_stencil);
 
 			pac_terminals.insert (
 				container	=> packge.terminals,

@@ -1535,7 +1535,7 @@ is
 								-- inner restring should be processed also.
 
 								b := get_bounding_box (
-									contour		=> t.pad_shape_tht.top,
+									contour		=> t.get_pad_shape_tht.top,
 									offset_1	=> t.get_place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
@@ -1544,7 +1544,7 @@ is
 								merge_areas (bbox_new, b);
 
 								b := get_bounding_box (
-									contour		=> t.pad_shape_tht.bottom,
+									contour		=> t.get_pad_shape_tht.bottom,
 									offset_1	=> t.get_place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
@@ -1559,7 +1559,7 @@ is
 								-- stop mask expansion, stencil opening should be processed also.
 
 								b := get_bounding_box (
-									contour		=> t.pad_shape_smt,
+									contour		=> t.get_pad_shape_smt,
 									offset_1	=> t.get_place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,

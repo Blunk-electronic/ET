@@ -150,35 +150,35 @@ is
 		if flip then
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.bottom,
+					pad_contours	=> t.get_pad_shape_tht.bottom,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					drill_size		=> t.drill_size);
+					drill_size		=> t.get_drill_size);
 			end if;
 
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.top,
+					pad_contours	=> t.get_pad_shape_tht.top,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					drill_size		=> t.drill_size);
+					drill_size		=> t.get_drill_size);
 			end if;
 
 		else -- no flip
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.top,
+					pad_contours	=> t.get_pad_shape_tht.top,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					drill_size		=> t.drill_size);
+					drill_size		=> t.get_drill_size);
 			end if;
 
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.bottom,
+					pad_contours	=> t.get_pad_shape_tht.bottom,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					drill_size		=> t.drill_size);
+					drill_size		=> t.get_drill_size);
 			end if;
 
 		end if;
@@ -191,36 +191,36 @@ is
 		if flip then
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.bottom,
+					pad_contours	=> t.get_pad_shape_tht.bottom,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					hole_contours	=> t.millings);
+					hole_contours	=> t.get_millings);
 			end if;
 
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.top,
+					pad_contours	=> t.get_pad_shape_tht.top,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					hole_contours	=> t.millings);
+					hole_contours	=> t.get_millings);
 
 			end if;
 
 		else
 			if conductor_enabled (face_to_layer (TOP)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.top,
+					pad_contours	=> t.get_pad_shape_tht.top,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					hole_contours	=> t.millings);
+					hole_contours	=> t.get_millings);
 			end if;
 
 			if conductor_enabled (face_to_layer (BOTTOM)) then
 				tht_outer_layer (
-					pad_contours	=> t.pad_shape_tht.bottom,
+					pad_contours	=> t.get_pad_shape_tht.bottom,
 					pad_position	=> (t.get_place, t.get_rotation),
 					drilled_milled	=> t.tht_hole,
-					hole_contours	=> t.millings);
+					hole_contours	=> t.get_millings);
 			end if;
 		end if;
 	end draw_tht_outer_layers_milled;
@@ -253,7 +253,7 @@ is
 				-- Draw the restring:
 				draw_circle (
 					circle	=> circle,
-					pos				=> (get_place (package_position), get_rotation (package_position)),
+					pos		=> (get_place (package_position), get_rotation (package_position)),
 					filled	=> NO,
 					width	=> restring,
 					mirror	=> mirror,
@@ -286,8 +286,8 @@ is
 
 	begin
 		do_it (
-			drill_size		=> t.drill_size,
-			restring		=> t.width_inner_layers,
+			drill_size		=> t.get_drill_size,
+			restring		=> t.get_width_inner_layers,
 			pad_position	=> (t.get_place, t.get_rotation));
 
 	end draw_tht_inner_layers_drilled;
@@ -347,8 +347,8 @@ is
 
 	begin
 		do_it (
-			hole_contours	=> t.millings,
-			restring_width	=> t.width_inner_layers,
+			hole_contours	=> t.get_millings,
+			restring_width	=> t.get_width_inner_layers,
 			pad_position	=> (t.get_place, t.get_rotation));
 
 	end draw_tht_inner_layers_milled;
@@ -444,8 +444,8 @@ is
 				set_color_stop_mask (TOP, brightness);
 
 				draw_stopmask (
-					pad_contours	=> t.pad_shape_tht.bottom,
-					stopmask		=> t.stop_mask_shape_tht.bottom,
+					pad_contours	=> t.get_pad_shape_tht.bottom,
+					stopmask		=> t.get_stop_mask_shape_tht.bottom,
 					pad_position	=> (t.get_place, t.get_rotation));
 			end if;
 
@@ -453,8 +453,8 @@ is
 				set_color_stop_mask (BOTTOM, brightness);
 
 				draw_stopmask (
-					pad_contours	=> t.pad_shape_tht.top,
-					stopmask		=> t.stop_mask_shape_tht.top,
+					pad_contours	=> t.get_pad_shape_tht.top,
+					stopmask		=> t.get_stop_mask_shape_tht.top,
 					pad_position	=> (t.get_place, t.get_rotation));
 			end if;
 
@@ -463,8 +463,8 @@ is
 				set_color_stop_mask (TOP, brightness);
 
 				draw_stopmask (
-					pad_contours	=> t.pad_shape_tht.top,
-					stopmask		=> t.stop_mask_shape_tht.top,
+					pad_contours	=> t.get_pad_shape_tht.top,
+					stopmask		=> t.get_stop_mask_shape_tht.top,
 					pad_position	=> (t.get_place, t.get_rotation));
 			end if;
 
@@ -472,8 +472,8 @@ is
 				set_color_stop_mask (BOTTOM, brightness);
 
 				draw_stopmask (
-					pad_contours	=> t.pad_shape_tht.bottom,
-					stopmask		=> t.stop_mask_shape_tht.bottom,
+					pad_contours	=> t.get_pad_shape_tht.bottom,
+					stopmask		=> t.get_stop_mask_shape_tht.bottom,
 					pad_position	=> (t.get_place, t.get_rotation));
 
 			end if;
@@ -940,8 +940,8 @@ begin -- query_terminal
 
 		when SMT =>
 
-			draw_pad_smt (t.pad_shape_smt, t.stop_mask_shape_smt,
-				t.stencil_shape, (t.get_place, t.get_rotation), t.face);
+			draw_pad_smt (t.get_pad_shape_smt, t.get_stop_mask_shape_smt,
+				t.get_stencil_shape, (t.get_place, t.get_rotation), t.get_face);
 	end case;
 
 end draw_terminal;
