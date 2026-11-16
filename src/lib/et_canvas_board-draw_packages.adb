@@ -57,6 +57,7 @@ with et_package_model;				use et_package_model;
 with et_package_library;			use et_package_library;
 with et_terminals;
 
+with et_device_electrical;				use et_device_electrical;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 

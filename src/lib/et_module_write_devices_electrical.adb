@@ -67,6 +67,7 @@ with et_device_partcode;
 
 with et_package_variant_name;
 
+with et_device_electrical;				use et_device_electrical;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 

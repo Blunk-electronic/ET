@@ -66,15 +66,20 @@ with et_stencil;						use et_stencil;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_sides;						use et_pcb_sides;
 
+with et_device_electrical;				use et_device_electrical;
 with et_device_purpose;
+with et_device_partcode;				use et_device_partcode;
 with et_device_value;
+with et_device_placeholders;			use et_device_placeholders;
 with et_port_names;						use et_port_names;
 with et_unit_name;						use et_unit_name;
 with et_device_partcode;
-with et_package_variant;
+with et_package_variant_name;			use et_package_variant_name;
+with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
 with et_conductors_floating_package;	use et_conductors_floating_package;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_logging;						use et_logging;
 
 
 package et_devices_electrical.packages is

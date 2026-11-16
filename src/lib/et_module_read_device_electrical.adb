@@ -67,6 +67,7 @@ with et_device_library;				use et_device_library;
 with et_device_partcode;
 with et_device_read;
 
+with et_device_electrical;
 with et_devices_electrical;
 
 with et_device_non_electrical;
@@ -105,9 +106,8 @@ package body et_module_read_device_electrical is
 
 
 
-
 	-- The temporarily device will exist where "device" points at:
-	device				: access et_devices_electrical.type_device_electrical;
+	device				: access et_device_electrical.type_device_electrical;
 
 	device_name			: et_device_name.type_device_name; -- C12
 	device_model_name	: et_device_model_names.type_device_model_name; -- ../libraries/transistor/pnp.dev
@@ -134,7 +134,7 @@ package body et_module_read_device_electrical is
 	is
 		use et_device_purpose;
 		use et_device_model_names;
-		use et_devices_electrical;
+		use et_device_electrical;
 		use et_device_appearance;
 		use et_device_value;
 		use et_device_partcode;
@@ -363,7 +363,7 @@ package body et_module_read_device_electrical is
 
 				-- The device name must not be in use by any electrical device:
 				if not inserted then
-					et_devices_electrical.device_name_in_use (device_name);
+					et_device_electrical.device_name_in_use (device_name);
 				end if;
 
 				-- The device name must not be in use by any non-electrical device:

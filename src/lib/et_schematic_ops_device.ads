@@ -57,6 +57,7 @@ with et_unit_name;				use et_unit_name;
 with et_device_prefix;			use et_device_prefix;
 with et_device_model_names;		use et_device_model_names;
 with et_device_library;			use et_device_library;
+with et_device_electrical;		use et_device_electrical;
 with et_devices_electrical;		use et_devices_electrical;
 with et_device_renumbering;		use et_device_renumbering;
 

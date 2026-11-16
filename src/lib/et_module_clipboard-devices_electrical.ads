@@ -43,7 +43,10 @@
 with et_module;
 with et_generic_modules;			use et_generic_modules;
 with et_schematic_coordinates;		use et_schematic_coordinates;
+
+with et_device_electrical;			use et_device_electrical;
 with et_devices_electrical;			use et_devices_electrical;
+
 with et_units;						use et_units;
 with et_logging;					use et_logging;
 

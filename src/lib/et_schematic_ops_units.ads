@@ -56,12 +56,15 @@ with et_unit_name;						use et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_object_status;					use et_object_status;
 with et_rotation_docu;					use et_rotation_docu;
+
+with et_device_electrical;				use et_device_electrical;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_device_partcode;				use et_device_partcode;
 with et_device_purpose;					use et_device_purpose;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
+
 with et_package_variant_name;			use et_package_variant_name;
 with et_symbol_ports;					use et_symbol_ports;
 with et_port_names;						-- use et_port_names;

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         DEVICES ELECTRICAL                               --
+--                         DEVICES ELECTRICAL LISTS                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -51,160 +51,25 @@ with ada.containers;			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
-with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 
-with et_board_coordinates;
+with et_device_electrical;				use et_device_electrical;
 with et_text_content;					use et_text_content;
-with et_device_unit;					use et_device_unit;
 with et_device_prefix;					use et_device_prefix;
-with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_names;				use et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
-with et_device_partcode;				use et_device_partcode;
 with et_device_library;					use et_device_library;
 with et_package_model_name;				use et_package_model_name;
-with et_package_variant_name;			use et_package_variant_name;
-with et_package_variant;				use et_package_variant;
-with et_package_model;
 with et_package_library;				use et_package_library;
 with et_commit;
 with et_object_status;					use et_object_status;
-with et_units;							use et_units;
-with et_logging;						use et_logging;
 
 
 package et_devices_electrical is
 
 
-
-
-	-- This is a device as it appears in the schematic.
-	type type_device_electrical (  -- CS should be private
-		appearance : type_appearance_schematic)
-	is record
-		-- The link to the device model like
-		-- "../libraries/devices/transistor/pnp.dev"
-		-- is a cursor to the device library:
-		model_cursor : pac_device_models.cursor;
-
-		-- IMPORTANT: When reading the module file, the
-		-- device model must have been read beforehand.
-		-- Otherwise a valid cursor can not be assigned
-		-- to the device !
-
-		-- The deployed units like PWR, A, B, ...
-		-- Virtual devices have only one unit (like the GND symbol).
-		-- Real devices like a single resistor have one unit.
-		-- Real devices like FPGAs have many units (like PWR1, PWR2, GPIO1, GPIO2, ...):
-		units	: pac_units.map;
-
-		case appearance is
-			-- If a device appears in both schematic and layout it has got:
-			when APPEARANCE_PCB =>
-				value		: type_device_value; -- 470R
-
-				partcode	: type_device_partcode; -- R_PAC_S_0805_VAL_100R
-				-- For virtual packages (test points, edge connectors, ...)
-				-- usually no partcode is required.
-
-				-- The purpose indicates what the device is doing.
-				-- It is usually required for devices that require interaction
-				-- with the user of a PCBA:
-				purpose		: type_device_purpose; -- brightness_control
-
-				-- The package variant:
-				variant		: type_package_variant_name; -- D, N
-
-				-- This is layout related. In the layout, the package has a position
-				-- and placeholders for name, value and purpose.
-				-- The assembly side of a package is by default TOP.
-				-- As a result of a flip operation, position.face changes from top to bottom
-				-- or vice versa.
-				-- Flipping a device to top or bottom means it will be drawn
-				-- mirrored along its Y-axis.
-				position	: et_board_coordinates.type_board_object;
-				-- incl. place, rotation, face and status
-
-				-- Text placeholders in the board drawing
-				-- for value, name, purpose, ...
-				placeholders	: et_device_placeholders.packages.type_text_placeholders;
-
-
-			when APPEARANCE_VIRTUAL => null;
-
-		end case;
-	end record;
-
-
-	-- Returns true if the given device has a physical
-	-- representation in the board drawing:
-	function is_real (
-		device : in type_device_electrical)
-		return boolean;
-
-
-	-- This function copies a given device but
-	-- removes all units so that a bare device
-	-- with all properties of the original device is
-	-- created on return.
-	-- If the given device is real, then the status of
-	-- the copy will be reset:
-	function copy_bare_device (
-		device_in : in type_device_electrical)
-		return type_device_electrical;
-
-
-
-	function get_position (
-		device : in type_device_electrical)
-		return et_board_coordinates.type_board_object;
-
-
-
-
-
-
-
-	function get_device_model_file (
-		device : type_device_electrical)
-		return type_device_model_name; -- *.dev
-	-- CS rename to get_device_model_name
-
-
-	function get_device_model_name (
-		device : type_device_electrical)
-		return string;
-
-
-
-	-- Maps from schematic device to
-	-- cursor to device model (in library):
-	function get_device_model (
-		device : in type_device_electrical)
-		return pac_device_models.cursor;
-
-
-
-
-
-
-	-- Returns the name of the package model of the given device
-	-- according to the current package variant of the device.
-	-- The package model name is something like "libraries/packages/smd/SOT23.pac"
-	-- The given device must be real. Otherwise constraint error arises here.
-	function get_package_model_name (
-		device : in type_device_electrical)
-		return type_package_model_name;
-
-
-
-
-
-	-- CS: move list related stuff to et_devices_electrical
-	-- rename this package to et_devices_electrical
 
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
@@ -274,80 +139,6 @@ package et_devices_electrical is
 
 
 
-	procedure device_name_in_use (
-		name : in type_device_name); -- IC1, R1, ...
-
-
-
-
-
-
-
-
--- DEVICE STATUS OPERATIONS:
-
-	-- NOTE: Operations regarding the status
-	-- apply to the package of the device (in the board domain)
-	-- which implies that the targeted device is real.
-	-- Status opertions for individual units (in the schematic)
-	-- are specified in the package et_units.
-	-- Regarding set and clear operations: If the device
-	-- is not real then the operation has no effect.
-	-- Regarding query operations like is_selected or is_moving: If
-	-- the device is not real then the return is always false.
-
-	procedure set_selected (
-		device : in out type_device_electrical);
-
-
-	procedure clear_selected (
-		device : in out type_device_electrical);
-
-
-	function is_selected (
-		device : in type_device_electrical)
-		return boolean;
-
-
-
-	procedure set_proposed (
-		device : in out type_device_electrical);
-
-
-	procedure clear_proposed (
-		device : in out type_device_electrical);
-
-
-	function is_proposed (
-		device : in type_device_electrical)
-		return boolean;
-
-
-
-
-	procedure set_moving (
-		device : in out type_device_electrical);
-
-
-	procedure clear_moving (
-		device : in out type_device_electrical);
-
-
-	function is_moving (
-		device : in type_device_electrical)
-		return boolean;
-
-
-
-
-	procedure modify_status (
-		device		: in out type_device_electrical;
-		operation	: in type_status_operation);
-
-
-
-	procedure reset_status (
-		device : in out type_device_electrical);
 
 
 
@@ -361,6 +152,7 @@ package et_devices_electrical is
 
 
 
+-- STATUS:
 
 	function is_proposed (
 		device : in pac_devices_electrical.cursor)

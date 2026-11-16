@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         DEVICES ELECTRICAL                               --
+--                         DEVICES ELECTRICAL LISTS                         --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -45,110 +45,6 @@ with et_device_library.packages;
 
 
 package body et_devices_electrical is
-
-
-	function is_real (
-		device : in type_device_electrical)
-		return boolean
-	is (device.appearance = APPEARANCE_PCB);
-
-
-
-
-
-	function copy_bare_device (
-		device_in : in type_device_electrical)
-		return type_device_electrical
-	is
-		device_out : type_device_electrical := device_in;
-	begin
-		-- Delete already deployed units:
-		device_out.units.clear;
-
-		-- If the given device is real, then reset
-		-- the status flags of the copy:
-		if is_real (device_in) then
-			reset_status (device_out.position.status);
-		end if;
-
-		return device_out;
-	end copy_bare_device;
-
-
-
-
-
-
-	function get_position (
-		device : in type_device_electrical)
-		return et_board_coordinates.type_board_object
-	is (device.position);
-
-
-
-
-
-
-
-
-	function get_device_model_file (
-		device : type_device_electrical)
-		return type_device_model_name
-	is
-		use pac_device_models;
-	begin
-		return key (device.model_cursor);
-	end get_device_model_file;
-
-
-
-
-	function get_device_model_name (
-		device : type_device_electrical)
-		return string
-	is
-		use pac_device_models;
-	begin
-		return to_string (key (device.model_cursor));
-	end get_device_model_name;
-
-
-
-
-
-
-	function get_device_model (
-		device : in type_device_electrical)
-		return pac_device_models.cursor
-	is
-		use et_device_model_names;
-		model_file : type_device_model_name;
-	begin
-		-- The name of the device model file is THE link
-		-- from device in schematic to device in library:
-		model_file := get_device_model_file (device);
-
-		-- Locate the device model in the library:
-		return get_device_model (model_file);
-	end get_device_model;
-
-
-
-
-
-
-
-
-	function get_package_model_name (
-		device : in type_device_electrical)
-		return type_package_model_name
-	is
-		use et_device_library.packages;
-	begin
-		return get_package_model (device.model_cursor, device.variant);
-	end get_package_model_name;
-
-
 
 
 
@@ -247,26 +143,11 @@ package body et_devices_electrical is
 
 
 
-	procedure device_name_in_use (
-		name : in type_device_name)
-	is
-		use et_logging;
-	begin
-		log (SEVERITY_ERROR, "Name " & enclose_in_quotes (to_string (name)) &
-			 " already used by another electrical device !",
-			 console => true);
-
-		raise constraint_error;
-	end device_name_in_use;
 
 
 
 
-
-
-
-
-
+-- STATUS:
 
 	procedure set_selected (
 		device : in out type_device_electrical)

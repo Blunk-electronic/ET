@@ -127,6 +127,7 @@ with et_assy_doc;
 with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
 with et_object_status;
+with et_device_electrical;
 with et_devices_electrical;
 
 
@@ -2701,6 +2702,7 @@ package body et_kicad_to_native is
 		-- Changes the links to device models so that they point to the libraries
 		-- in project/libraries/devices/...
 		procedure copy_components is
+			use et_device_electrical;
 			use et_devices_electrical;
 			use et_device_appearance;
 			use et_device_purpose;

@@ -51,6 +51,8 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_device_prefix;					use et_device_prefix;
 with et_device_name;					use et_device_name;
 with et_device_property_level;			use et_device_property_level;
+
+with et_device_electrical;				use et_device_electrical;
 with et_devices_electrical;				use et_devices_electrical;
 
 with et_device_non_electrical;			use et_device_non_electrical;

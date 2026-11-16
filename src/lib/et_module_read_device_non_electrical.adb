@@ -57,7 +57,7 @@ with et_device_value;
 with et_device_partcode;
 with et_package_variant_name;
 
-with et_devices_electrical;
+with et_device_electrical;
 
 with et_device_non_electrical;		use et_device_non_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
@@ -231,7 +231,7 @@ package body et_module_read_device_non_electrical is
 
 				-- The device name must not be in use by an electrical device:
 				if module.devices.contains (device_name) then
-					et_devices_electrical.device_name_in_use (device_name);
+					et_device_electrical.device_name_in_use (device_name);
 				end if;
 
 				log_indentation_down;

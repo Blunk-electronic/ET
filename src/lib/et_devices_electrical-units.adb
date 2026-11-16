@@ -45,6 +45,8 @@ with ada.exceptions;
 
 with et_mirroring;
 
+with et_package_variant_name;				use et_package_variant_name;
+
 with et_devices_electrical.packages;
 
 with et_symbol_library;
