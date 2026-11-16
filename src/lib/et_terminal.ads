@@ -138,7 +138,7 @@ package et_terminal is
 				face					: type_face;
 
 				stop_mask_status_smt	: type_stop_mask_status := stop_mask_status_default;
-				stop_mask_shape_smt	: type_stopmask_smt;
+				stop_mask_shape_smt		: type_stopmask_smt;
 
 				solder_paste_status		: type_solder_paste_status := solder_paste_status_default;
 				stencil_shape			: type_stencil_shape;
@@ -155,7 +155,124 @@ package et_terminal is
 	end record;
 
 
-	-- CS: overriding set_position ?
+
+
+
+
+	-- These subprograms an only applied to terminals
+	-- with technology THT, otherwise exeception will be raised:
+
+	procedure set_pad_shape_tht (
+		terminal	: in out type_terminal;
+		shape		: in type_pad_outline_tht);
+
+	function get_pad_shape_tht (
+		terminal	: in type_terminal)
+		return type_pad_outline_tht;
+
+
+	procedure set_stop_mask_status_tht (
+		terminal	: in out type_terminal;
+		status		: in type_stop_mask_status);
+
+	function get_stop_mask_status_tht (
+		terminal	: in type_terminal)
+		return type_stop_mask_status;
+
+
+	procedure set_stop_mask_shape_tht (
+		terminal	: in out type_terminal;
+		shape		: in type_stopmask_tht);
+
+	function get_stop_mask_shape_tht (
+		terminal	: in type_terminal)
+		return type_stopmask_tht;
+
+
+	procedure set_width_inner_layers (
+		terminal	: in out type_terminal;
+		width		: in type_restring_width);
+
+	function get_width_inner_layers (
+		terminal	: in type_terminal)
+		return type_restring_width;
+
+
+	procedure set_drill_size (
+		terminal	: in out type_terminal;
+		size		: in type_drill_size_tht);
+
+	function get_drill_size (
+		terminal	: in type_terminal)
+		return type_drill_size_tht;
+
+
+	procedure set_millings (
+		terminal	: in out type_terminal;
+		millings	: in type_contour);
+
+	function get_millings (
+		terminal	: in type_terminal)
+		return type_contour;
+
+
+
+
+	-- These subprograms an only applied to terminals
+	-- with technology SMT, otherwise exeception will be raised:
+
+	procedure set_pad_shape_smt (
+		terminal	: in out type_terminal;
+		shape		: in type_contour);
+
+	function get_pad_shape_smt (
+		terminal	: in type_terminal)
+		return type_contour;
+
+
+	procedure set_face (
+		terminal	: in out type_terminal;
+		face		: in type_face);
+
+	function get_face (
+		terminal	: in type_terminal)
+		return type_face;
+
+
+	procedure set_stop_mask_status_smt (
+		terminal	: in out type_terminal;
+		status		: in type_stop_mask_status);
+
+	function get_stop_mask_status_smt (
+		terminal	: in type_terminal)
+		return type_stop_mask_status;
+
+
+	procedure set_stop_mask_shape_smt (
+		terminal	: in out type_terminal;
+		shape		: in type_stopmask_smt);
+
+	function get_stop_mask_shape_smt (
+		terminal	: in type_terminal)
+		return type_stopmask_smt;
+
+
+	procedure set_solder_paste_status (
+		terminal	: in out type_terminal;
+		status		: in type_solder_paste_status);
+
+	function get_solder_paste_status (
+		terminal	: in type_terminal)
+		return type_solder_paste_status;
+
+
+	procedure set_stencil_shape (
+		terminal	: in out type_terminal;
+		shape		: in type_stencil_shape);
+
+	function get_stencil_shape (
+		terminal	: in type_terminal)
+		return type_stencil_shape;
 
 
 

@@ -41,6 +41,170 @@ with ada.text_io;				use ada.text_io;
 
 package body et_terminal is
 
+-- THT:
+
+	procedure set_pad_shape_tht (
+		terminal	: in out type_terminal;
+		shape		: in type_pad_outline_tht)
+	is begin
+		terminal.pad_shape_tht := shape;
+	end set_pad_shape_tht;
+
+	function get_pad_shape_tht (
+		terminal	: in type_terminal)
+		return type_pad_outline_tht
+	is (terminal.pad_shape_tht);
+
+
+	procedure set_stop_mask_status_tht (
+		terminal	: in out type_terminal;
+		status		: in type_stop_mask_status)
+	is begin
+		terminal.stop_mask_status_tht := status;
+	end set_stop_mask_status_tht;
+
+	function get_stop_mask_status_tht (
+		terminal	: in type_terminal)
+		return type_stop_mask_status
+	is (terminal.stop_mask_status_tht);
+
+
+	procedure set_stop_mask_shape_tht (
+		terminal	: in out type_terminal;
+		shape		: in type_stopmask_tht)
+	is begin
+		terminal.stop_mask_shape_tht := shape;
+	end set_stop_mask_shape_tht;
+
+	function get_stop_mask_shape_tht (
+		terminal	: in type_terminal)
+		return type_stopmask_tht
+	is (terminal.stop_mask_shape_tht);
+
+
+	procedure set_width_inner_layers (
+		terminal	: in out type_terminal;
+		width		: in type_restring_width)
+	is begin
+		terminal.width_inner_layers := width;
+	end set_width_inner_layers;
+
+	function get_width_inner_layers (
+		terminal	: in type_terminal)
+		return type_restring_width
+	is (terminal.width_inner_layers);
+
+
+	procedure set_drill_size (
+		terminal	: in out type_terminal;
+		size		: in type_drill_size_tht)
+	is begin
+		terminal.drill_size := size;
+	end set_drill_size;
+
+	function get_drill_size (
+		terminal	: in type_terminal)
+		return type_drill_size_tht
+	is (terminal.drill_size);
+
+
+	procedure set_millings (
+		terminal	: in out type_terminal;
+		millings	: in type_contour)
+	is begin
+		terminal.millings := millings;
+	end set_millings;
+
+	function get_millings (
+		terminal	: in type_terminal)
+		return type_contour
+	is (terminal.millings);
+
+
+
+-- SMT:
+
+	procedure set_pad_shape_smt (
+		terminal	: in out type_terminal;
+		shape		: in type_contour)
+	is begin
+		terminal.pad_shape_smt := shape;
+	end set_pad_shape_smt;
+
+	function get_pad_shape_smt (
+		terminal	: in type_terminal)
+		return type_contour
+	is (terminal.pad_shape_smt);
+
+
+	procedure set_face (
+		terminal	: in out type_terminal;
+		face		: in type_face)
+	is begin
+		terminal.face := face;
+	end set_face;
+
+	function get_face (
+		terminal	: in type_terminal)
+		return type_face
+	is (terminal.face);
+
+
+	procedure set_stop_mask_status_smt (
+		terminal	: in out type_terminal;
+		status		: in type_stop_mask_status)
+	is begin
+		terminal.stop_mask_status_smt := status;
+	end set_stop_mask_status_smt;
+
+	function get_stop_mask_status_smt (
+		terminal	: in type_terminal)
+		return type_stop_mask_status
+	is (terminal.stop_mask_status_smt);
+
+
+	procedure set_stop_mask_shape_smt (
+		terminal	: in out type_terminal;
+		shape		: in type_stopmask_smt)
+	is begin
+		terminal.stop_mask_shape_smt := shape;
+	end set_stop_mask_shape_smt;
+
+	function get_stop_mask_shape_smt (
+		terminal	: in type_terminal)
+		return type_stopmask_smt
+	is (terminal.stop_mask_shape_smt);
+
+
+	procedure set_solder_paste_status (
+		terminal	: in out type_terminal;
+		status		: in type_solder_paste_status)
+	is begin
+		terminal.solder_paste_status := status;
+	end set_solder_paste_status;
+
+	function get_solder_paste_status (
+		terminal	: in type_terminal)
+		return type_solder_paste_status
+	is (terminal.solder_paste_status);
+
+
+	procedure set_stencil_shape (
+		terminal	: in out type_terminal;
+		shape		: in type_stencil_shape)
+	is begin
+		terminal.stencil_shape := shape;
+	end set_stencil_shape;
+
+	function get_stencil_shape (
+		terminal	: in type_terminal)
+		return type_stencil_shape
+	is (terminal.stencil_shape);
+
+
+
+
+
 
 	function to_position (
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0 face top"
