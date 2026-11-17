@@ -1175,8 +1175,8 @@ procedure draw_units is
 			-- If the candidate device is real, then fetch its
 			-- value and purpose:
 			if is_real (device) then
-				device_value := device.value; -- like 100R or TL084
-				device_purpose := device.purpose; -- like "brightness control"
+				device_value := get_value (device); -- like 100R or TL084
+				device_purpose := get_purpose (device); -- like "brightness control"
 			end if;
 
 			-- Iterate through the units of the candidate device:
@@ -1445,8 +1445,8 @@ procedure draw_units is
 			-- If the candidate device is real, then fetch its
 			-- value and purpose:
 			if is_real (device) then
-				device_value := device.value; -- like 100R or TL084
-				device_purpose := device.purpose; -- like "brightness control"
+				device_value := get_value (device); -- like 100R or TL084
+				device_purpose := get_purpose (device); -- like "brightness control"
 			end if;
 
 			-- Iterate through the units of the candidate device:

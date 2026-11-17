@@ -148,29 +148,25 @@ is
 				log (text => "insert_device", level => log_threshold + 3);
 				log_indentation_up;
 
-				device := (
-					appearance		=> APPEARANCE_PCB,
-					model_cursor	=> device_cursor_lib,
-					units			=> pac_units.empty_map, -- no units yet
-					value			=> get_default_value (device_cursor_lib), -- if predefined in dev. model
-					variant			=> selected_variant,
+				set_value (device, get_default_value (device_cursor_lib));
+				-- if predefined in dev. model
 
-					-- Text placeholders in the board drawing:
-					--
-					-- Initially, the text placeholders are copies of
-					-- the placeholders as they are defined in the package model.
-					-- This approach has the following implication:
-					-- If the position of a placeholder in the package model
-					-- is changed AFTER the device has been added to the drawing,
-					-- then it DOES NOT get updated.
-					placeholders	=> get_default_placeholders (
-										device_cursor_lib, selected_variant),
+				device.model_cursor	:= device_cursor_lib;
+				device.variant := selected_variant;
 
+				-- Text placeholders in the board drawing:
+				--
+				-- Initially, the text placeholders are copies of
+				-- the placeholders as they are defined in the package model.
+				-- This approach has the following implication:
+				-- If the position of a placeholder in the package model
+				-- is changed AFTER the device has been added to the drawing,
+				-- then it DOES NOT get updated.
+				device.placeholders	:= get_default_placeholders (
+					device_cursor_lib, selected_variant);
 
-					-- Use default position of the device in the layout.
-					-- CS: do not place the package on top of others
-					others		=> <>);
-
+				-- Use default position of the device in the layout.
+				-- CS: do not place the package on top of others
 
 				-- Insert the device in the schematic:
 				pac_devices_electrical.insert (

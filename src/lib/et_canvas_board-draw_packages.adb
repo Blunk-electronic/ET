@@ -896,8 +896,8 @@ procedure draw_packages is
 		if is_real (device) then
 
 			device_name := name;
-			device_value := device.value;
-			device_purpose := device.purpose;
+			device_value := get_value (device);
+			device_purpose := get_purpose (device);
 			device_placeholders := device.placeholders;
 
 			-- Get the name of the package model
@@ -960,8 +960,8 @@ procedure draw_packages is
 		-- put_line ("device " & to_string (name));
 
 		device_name := name;
-		device_value := device.value;
-		device_purpose := device.purpose;
+		device_value := get_value (device);
+		device_purpose := get_purpose (device);
 		device_placeholders := device.placeholders;
 
 		-- Fetch the complete position of the device
@@ -1109,8 +1109,8 @@ procedure draw_packages is
 
 			-- Get the device properties:
 			device_name := name;
-			device_value := device.value;
-			device_purpose := device.purpose;
+			device_value := get_value (device);
+			device_purpose := get_purpose (device);
 			device_placeholders := device.placeholders;
 
 			-- Fetch the complete position of the device

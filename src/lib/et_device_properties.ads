@@ -36,7 +36,7 @@
 --   history of changes:
 --
 -- To Do:
---
+-- 1. Subprograms to check properties (length, characters, ...)
 --
 --
 --
@@ -90,6 +90,11 @@ package et_device_properties is
 	function get_purpose (
 		properties	: in type_device_properties)
 		return type_device_purpose;
+
+
+
+	procedure reset_properties (
+		properties : in out type_device_properties);
 
 
 private

@@ -37,7 +37,7 @@
 --   history of changes:
 --
 -- ToDo:
--- - clean up
+-- - clean up. rework
 --
 --
 --
@@ -65,9 +65,10 @@ with et_device_model_names;
 with et_device_value;
 with et_device_library;				use et_device_library;
 with et_device_partcode;
+with et_device_properties;			use et_device_properties;
 with et_device_read;
 
-with et_device_electrical;
+with et_device_electrical;			use et_device_electrical;
 with et_devices_electrical;
 
 with et_device_non_electrical;
@@ -104,14 +105,9 @@ with et_object_status;
 
 package body et_module_read_device_electrical is
 
-
-
-	-- The temporarily device will exist where "device" points at:
-	device				: access et_device_electrical.type_device_electrical;
-
 	device_name			: et_device_name.type_device_name; -- C12
 	device_model_name	: et_device_model_names.type_device_model_name; -- ../libraries/transistor/pnp.dev
-
+	device_model_cursor	: pac_device_models.cursor;
 	device_value		: et_device_value.type_device_value; -- 470R
 	device_appearance	: et_device_unit.type_appearance_schematic;
 
@@ -119,13 +115,52 @@ package body et_module_read_device_electrical is
 	device_partcode	: et_device_partcode.type_device_partcode;
 	device_purpose	: et_device_purpose.type_device_purpose;
 	device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
-
+	-- CS: use device_properties instead (see below)
+	device_properties : type_device_properties;
 
 	-- temporarily collection of units:
 	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
 
 	device_position	: et_board_coordinates.type_board_object; -- in the layout ! incl. angle and face
 
+
+
+
+	-- These two variables assist when a particular placeholder is appended to the
+	-- list of placholders in silk screen, assy doc and their top or bottom face:
+	device_text_placeholder_position : et_board_coordinates.type_board_object := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
+
+	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer :=
+	et_device_placeholders.packages.type_placeholder_layer'first; -- silkscreen/assembly_documentation
+
+	-- a single temporarily placeholder of a package
+	device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
+
+	-- the temporarily collection of placeholders of packages (in the layout)
+	device_text_placeholders : et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
+
+
+
+
+
+	device_unit_mirror		: type_mirror := MIRROR_NO;
+	device_unit_name		: et_unit_name.type_unit_name; -- GPIO_BANK_1
+	-- device_unit_position	: et_schematic_coordinates.type_object_position; -- x,y,sheet,rotation
+	device_unit_position	: et_schematic_coordinates.type_schematic_object;
+
+	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
+	-- CS: rename to unit_placeholder_name
+
+	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
+	unit_placeholder_purpose	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
+
+
+
+
+	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
+	unit_placeholder			: et_schematic_text.type_text_basic;
+	unit_placeholder_position	: et_schematic_geometry.pac_geometry_2.type_vector_model;
+	unit_placeholder_meaning	: et_device_placeholders.type_placeholder_meaning := et_device_placeholders.placeholder_meaning_default;
 
 
 
@@ -153,17 +188,17 @@ package body et_module_read_device_electrical is
 			expect_field_count (line, 2);
 			device_appearance := to_appearance (f (line, 2));
 
-			case device_appearance is
-				when APPEARANCE_VIRTUAL =>
-					device := new type_device_electrical'(
-						appearance	=> APPEARANCE_VIRTUAL,
-						others		=> <>);
+			-- case device_appearance is
+			-- 	when APPEARANCE_VIRTUAL =>
+			-- 		device := new type_device_electrical'(
+			-- 			appearance	=> APPEARANCE_VIRTUAL,
+			-- 			others		=> <>);
 
-				when APPEARANCE_PCB =>
-					device := new type_device_electrical'(
-						appearance	=> APPEARANCE_PCB,
-						others		=> <>);
-			end case;
+			-- 	when APPEARANCE_PCB =>
+			-- 		device := new type_device_electrical'(
+			-- 			appearance	=> APPEARANCE_PCB,
+			-- 			others		=> <>);
+			-- end case;
 
 		elsif kw = keyword_value then -- value 100n
 			expect_field_count (line, 2);
@@ -197,13 +232,6 @@ package body et_module_read_device_electrical is
 			invalid_keyword (kw);
 		end if;
 	end read_device_electrical;
-
-
-
-
-
-
-
 
 
 
@@ -279,9 +307,8 @@ package body et_module_read_device_electrical is
 			-- Otherwise nothing happens here:
 			procedure check_characters is
 				use et_package_variant_name;
-				use et_package_variant_name;
 			begin
-				if device.appearance = APPEARANCE_PCB then
+				if device_appearance = APPEARANCE_PCB then
 					log (text => "check characters", level => log_threshold + 2);
 					log_indentation_up;
 
@@ -295,7 +322,7 @@ package body et_module_read_device_electrical is
 					end if;
 
 					log (text => "value " & to_string (device_value), level => log_threshold + 2);
-					device.value := device_value;
+
 					if not et_conventions.value_valid (device_value, get_prefix (device_name)) then
 						log (SEVERITY_WARNING, "value of " & to_string (device_name) &
 							" not conformant with conventions !");
@@ -305,7 +332,7 @@ package body et_module_read_device_electrical is
 					-- partcode:
 					log (text => "partcode " & to_string (device_partcode), level => log_threshold + 2);
 					if partcode_characters_valid (device_partcode) then
-						device.partcode	:= device_partcode;
+						null;
 					else
 						log_indentation_reset; -- CS no need ?
 						partcode_invalid (to_string (device_partcode));
@@ -315,7 +342,7 @@ package body et_module_read_device_electrical is
 					-- purpose:
 					log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
 					if purpose_characters_valid (device_purpose) then
-						device.purpose	:= device_purpose;
+						null;
 					else
 						log_indentation_reset; -- CS no need ?
 						purpose_invalid (to_string (device_purpose));
@@ -325,7 +352,6 @@ package body et_module_read_device_electrical is
 					-- variant:
 					log (text => "variant " & to_string (device_variant), level => log_threshold + 2);
 					check_variant_name_characters (device_variant);
-					device.variant	:= device_variant;
 
 					-- CS: warn operator if provided but ignored due to the fact that device is virtual
 
@@ -339,16 +365,31 @@ package body et_module_read_device_electrical is
 			-- Adds the device to the schematic:
 			procedure add_device_to_schematic is
 				device_cursor : pac_devices_electrical.cursor;
+				device : type_device_electrical (device_appearance);
 			begin
 				log (text => "add device to schematic", level => log_threshold + 2);
 				log_indentation_up;
+
+				device.model_cursor := device_model_cursor;
+				device.units := device_units;
+
+				if device_appearance = APPEARANCE_PCB then
+					device.variant := device_variant;
+					device.position := device_position;
+					device.placeholders := device_text_placeholders;
+
+					set_value (device_properties, device_value);
+					set_partcode (device_properties, device_partcode);
+					set_purpose (device_properties, device_purpose);
+					device.properties := device_properties;
+				end if;
 
 				pac_devices_electrical.insert (
 					container	=> module.devices,
 					position	=> device_cursor,
 					inserted	=> inserted,
 					key			=> device_name, -- IC23, R5, LED12
-					new_item	=> device.all);
+					new_item	=> device);
 
 				log_indentation_down;
 			end add_device_to_schematic;
@@ -376,7 +417,7 @@ package body et_module_read_device_electrical is
 
 
 
-			-- Derives the package name from the model and parackage
+			-- Derives the package name from the model and package
 			-- variant. Checks if variant exits in device model.
 			function get_package_name
 				return type_package_name
@@ -398,11 +439,11 @@ package body et_module_read_device_electrical is
 					-- the device model.
 					variant_cursor := pac_package_variants.find (
 						container	=> dev_lib.variants,
-						key			=> device.variant); -- the variant name from the module !
+						key			=> device_variant); -- the variant name from the module !
 
 					-- The variant should be there. Otherwise abort.
 					if variant_cursor = pac_package_variants.no_element then
-						log (SEVERITY_ERROR, "variant " & to_string (device.variant) &
+						log (SEVERITY_ERROR, "variant " & to_string (device_variant) &
 							" not available in device model " & to_string (model) & " !");
 						raise constraint_error;
 					else
@@ -415,13 +456,13 @@ package body et_module_read_device_electrical is
 			begin
 				log_indentation_up;
 
-				log (text => "verify package variant " & to_string (device.variant)
-					 & " in device model " & get_device_model_name (device.model_cursor),
+				log (text => "verify package variant " & to_string (device_variant)
+					 & " in device model " & get_device_model_name (device_model_cursor),
 					 level => log_threshold + 2);
 
 				-- Query package variants
 				pac_device_models.query_element (
-					position	=> device.model_cursor,
+					position	=> device_model_cursor,
 					process		=> query_variants'access);
 
 				log_indentation_down;
@@ -436,16 +477,16 @@ package body et_module_read_device_electrical is
 				log_indentation_up;
 
 				-- Validate partcode according to category, package and value:
-				if device.appearance = APPEARANCE_PCB then
+				if device_appearance = APPEARANCE_PCB then
 					et_conventions.validate_partcode (
-						partcode		=> device.partcode,
+						partcode		=> device_partcode,
 						device_name		=> device_name,
 
 						-- Derive package name from device.model and device.variant.
 						-- Check if variant specified in device.model.
 						packge			=> get_package_name,
 
-						value			=> device.value,
+						value			=> device_value,
 						log_threshold	=> log_threshold + 3);
 				end if;
 
@@ -457,18 +498,20 @@ package body et_module_read_device_electrical is
 			procedure clean_up is
 				use et_package_variant_name;
 			begin
-				-- reset pointer "device" so that the old device gets destroyed
-				device := null;
-				-- CS free memory ?
-
 				-- clean up temporarily variables for next device
 				-- CS ? device_name		:= (others => <>);
+				device_position		:= et_board_coordinates.package_position_default;
 				device_model_name	:= to_file_name ("");
 				device_value		:= type_device_value (pac_device_value.to_bounded_string (""));
 				device_purpose		:= type_device_purpose (pac_device_purpose.to_bounded_string (""));
-				device_partcode	:= type_device_partcode (pac_device_partcode.to_bounded_string (""));
+				device_partcode		:= type_device_partcode (pac_device_partcode.to_bounded_string (""));
 				device_variant		:= to_variant_name ("");
+				device_units.clear;
+				device_text_placeholders := (others => <>);
+				reset_properties (device_properties);
 				-- CS use constant for emtpy variant
+				-- Better: Use procedures that reset the variables
+				-- to their default values.
 			end clean_up;
 
 
@@ -486,7 +529,7 @@ package body et_module_read_device_electrical is
 			validate_prefix;
 
 			-- Assign the cursor to the device model;
-			device.model_cursor := get_device_model (device_model_name);
+			device_model_cursor := get_device_model (device_model_name);
 
 			check_characters;
 
@@ -554,25 +597,17 @@ package body et_module_read_device_electrical is
 		-- Assign coordinates of package to temporarily device:
 		-- CS: constraint error will arise here if the device is virtual.
 		-- issue warning and skip this statement in this case:
-		device.position := device_position;
+		--device.position := device_position;
+		null;
 
 		-- reset device package position for next device
-		device_position := et_board_coordinates.package_position_default;
+		-- device_position := et_board_coordinates.package_position_default;
 	end set_package_position;
 
 
 
 
 
-
-	device_unit_mirror		: type_mirror := MIRROR_NO;
-	device_unit_name		: et_unit_name.type_unit_name; -- GPIO_BANK_1
-	-- device_unit_position	: et_schematic_coordinates.type_object_position; -- x,y,sheet,rotation
-	device_unit_position	: et_schematic_coordinates.type_schematic_object;
-
-	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
-	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
-	unit_placeholder_purpose	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 
 
 
@@ -699,21 +734,18 @@ package body et_module_read_device_electrical is
 
 
 	procedure insert_units is begin
-			-- insert temporarily collection of units in device
-		device.units := device_units;
+		-- insert temporarily collection of units in device
+		-- device.units := device_units;
+		null;
 
 		-- clear temporarily collection of units for next device
-		et_units.pac_units.clear (device_units);
+		-- et_units.pac_units.clear (device_units);
 	end insert_units;
 
 
 
 
 
-	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
-	unit_placeholder			: et_schematic_text.type_text_basic;
-	unit_placeholder_position	: et_schematic_geometry.pac_geometry_2.type_vector_model;
-	unit_placeholder_meaning	: et_device_placeholders.type_placeholder_meaning := et_device_placeholders.placeholder_meaning_default;
 
 
 
@@ -806,28 +838,6 @@ package body et_module_read_device_electrical is
 	end build_unit_placeholder;
 
 
-
-
-
-
-
-
-	-- These two variables assist when a particular placeholder is appended to the
-	-- list of placholders in silk screen, assy doc and their top or bottom face:
-	device_text_placeholder_position : et_board_coordinates.type_board_object := et_board_coordinates.placeholder_position_default; -- incl. rotation and face
-
-
-	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer :=
-	et_device_placeholders.packages.type_placeholder_layer'first; -- silkscreen/assembly_documentation
-
-
-
-	-- a single temporarily placeholder of a package
-	device_text_placeholder : et_device_placeholders.packages.type_text_placeholder;
-
-
-	-- the temporarily collection of placeholders of packages (in the layout)
-	device_text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
 
 
@@ -941,10 +951,12 @@ package body et_module_read_device_electrical is
 		-- Insert placeholder collection in temporarily device:
 		-- CS: constraint error will arise here if the device is virtual.
 		-- issue warning and skip this statement in this case:
-		device.placeholders := device_text_placeholders;
+		-- device.placeholders := device_text_placeholders;
+		null;
 
 		-- clean up for next collection of placeholders
-		device_text_placeholders := (others => <>);
+		-- CS ?
+		-- device_text_placeholders := (others => <>);
 	end insert_placeholders;
 
 

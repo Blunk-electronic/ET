@@ -43,8 +43,11 @@
 
 -- with ada.text_io;			use ada.text_io;
 with et_net_ports;						use et_net_ports;
+
+with et_device_electrical;				use et_device_electrical;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_partcode;				use et_device_partcode;
+
 with et_schematic_ops_netchangers;		use et_schematic_ops_netchangers;
 with ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -4268,9 +4271,13 @@ package body et_schematic_ops_submodules is
 					end test_partcode;
 
 
-					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is
-						cursor_bom : pac_bom_devices.cursor;
+					procedure query_properties_default (
+						cursor_schematic : in pac_devices_electrical.cursor)
+					is
 						use pac_devices_electrical;
+						device : type_device_electrical renames element (cursor_schematic);
+
+						cursor_bom : pac_bom_devices.cursor;
 					begin
 						-- the device must be real
 						if is_real (cursor_schematic) then -- skip virtual devices
@@ -4281,7 +4288,7 @@ package body et_schematic_ops_submodules is
 								device_name := pac_devices_electrical.key (cursor_schematic);
 
 								-- issue warning if device has no partcode
-								test_partcode (element (cursor_schematic).partcode);
+								test_partcode (get_partcode (device));
 
 								-- Store device in bill_of_material as it is:
 
@@ -4291,9 +4298,9 @@ package body et_schematic_ops_submodules is
 									container	=> bill_of_material,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
-										value		=> element (cursor_schematic).VALUE,
-										partcode	=> element (cursor_schematic).PARTCODE,
-										purpose		=> element (cursor_schematic).PURPOSE,
+										value		=> get_value (device),
+										partcode	=> get_partcode (device),
+										purpose		=> get_purpose (device),
 										packge		=> get_package_model_name (cursor_schematic)),
 									position	=> cursor_bom,
 									inserted	=> inserted);
@@ -4306,23 +4313,28 @@ package body et_schematic_ops_submodules is
 
 
 
-					procedure query_properties_variants (cursor_schematic : in pac_devices_electrical.cursor) is
+					procedure query_properties_variants (
+						device_cursor : in pac_devices_electrical.cursor)
+					is
+						use pac_devices_electrical;
+						device : type_device_electrical renames element (device_cursor);
+
 						cursor_bom : pac_bom_devices.cursor;
 
-						use pac_devices_electrical;
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
+
 						use et_assembly_variants.pac_device_variants;
 						use et_device_appearance;
 						use et_package_name;
 						use et_package_model_name;
 					begin
 						-- the device must be real
-						if is_real (cursor_schematic) then -- skip virtual devices
+						if is_real (device_cursor) then -- skip virtual devices
 
 							-- the package must be real
-							if is_bom_relevant (cursor_schematic) then
+							if is_bom_relevant (device_cursor) then
 
-								device_name := pac_devices_electrical.key (cursor_schematic);
+								device_name := pac_devices_electrical.key (device_cursor);
 
 								-- Get a cursor to the alternative device as specified in the assembly variant:
 								alt_dev_cursor := get_alternative_device (module_cursor, variant, device_name);
@@ -4331,7 +4343,7 @@ package body et_schematic_ops_submodules is
 								-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 
 									-- issue warning if device has no partcode
-									test_partcode (element (cursor_schematic).partcode);
+									test_partcode (get_partcode (device));
 
 									apply_offset (device_name, offset, log_threshold + 2);
 
@@ -4339,10 +4351,10 @@ package body et_schematic_ops_submodules is
 										container	=> bill_of_material,
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
-											value		=> element (cursor_schematic).value,
-											partcode	=> element (cursor_schematic).partcode,
-											purpose		=> element (cursor_schematic).purpose,
-											packge		=> get_package_model_name (cursor_schematic)),
+											value		=> get_value (device),
+											partcode	=> get_partcode (device),
+											purpose		=> get_purpose (device),
+											packge		=> get_package_model_name (device_cursor)),
 										position	=> cursor_bom,
 										inserted	=> inserted);
 
@@ -4372,7 +4384,7 @@ package body et_schematic_ops_submodules is
 													value		=> element (alt_dev_cursor).value,
 													partcode	=> element (alt_dev_cursor).partcode,
 													purpose		=> element (alt_dev_cursor).purpose,
-													packge		=> get_package_model_name (cursor_schematic)),
+													packge		=> get_package_model_name (device_cursor)),
 												position	=> cursor_bom,
 												inserted	=> inserted);
 

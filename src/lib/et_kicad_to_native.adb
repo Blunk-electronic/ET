@@ -2831,6 +2831,47 @@ package body et_kicad_to_native is
 			end copy_units;
 
 
+
+
+			procedure copy_real is
+				device : type_device_electrical (APPEARANCE_PCB);
+			begin
+--						log (text => "placeholders silk top" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.silkscreen.top)));
+--
+--						log (text => "placeholders silk bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.silkscreen.bottom)));
+--
+--						log (text => "placeholders assy top" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.assy_doc.top)));
+--
+--						log (text => "placeholders assy bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
+--							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
+
+
+				-- The link to the device model is a composition
+				-- of path,file and generic name:
+				model_name := concatenate_lib_name_and_generic_name (
+					library	=> element (component_cursor_kicad).library_name,
+					device	=> element (component_cursor_kicad).generic_name);
+
+				device.model_cursor	:= get_device_model (model_name);
+				set_value (device, element (component_cursor_kicad).value);
+				device.variant := element (component_cursor_kicad).variant;
+
+				device.position := element (component_cursor_kicad).position;
+				device.placeholders	:= element (component_cursor_kicad).text_placeholders;
+
+				pac_devices_electrical.insert (
+					container	=> module.devices,
+					key			=> key (component_cursor_kicad), -- IC308, R12
+					position	=> component_cursor_native,
+					new_item	=> device,
+					inserted	=> component_inserted); -- should always be true
+
+			end copy_real;
+
+
 		begin -- copy_components
 			log (text => "copying schematic devices ...", level => log_threshold + 1);
 			log_indentation_up;
@@ -2849,6 +2890,7 @@ package body et_kicad_to_native is
 				-- Kicad stuff like the boolean power_flag is ignored.
 				case element (component_cursor_kicad).appearance is
 					when APPEARANCE_VIRTUAL =>
+						-- CS: procedure copy_virtual
 
 						-- The link to the device model is a composition
 						-- of path,file and generic name:
@@ -2874,43 +2916,8 @@ package body et_kicad_to_native is
 
 
 					when APPEARANCE_PCB =>
---						log (text => "placeholders silk top" & count_type'image (et_package_library.pac_text_placeholders.length (
---							element (component_cursor_kicad).text_placeholders.silkscreen.top)));
---
---						log (text => "placeholders silk bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
---							element (component_cursor_kicad).text_placeholders.silkscreen.bottom)));
---
---						log (text => "placeholders assy top" & count_type'image (et_package_library.pac_text_placeholders.length (
---							element (component_cursor_kicad).text_placeholders.assy_doc.top)));
---
---						log (text => "placeholders assy bottom" & count_type'image (et_package_library.pac_text_placeholders.length (
---							element (component_cursor_kicad).text_placeholders.assy_doc.bottom)));
+						copy_real;
 
-
-						-- The link to the device model is a composition
-						-- of path,file and generic name:
-						model_name := concatenate_lib_name_and_generic_name (
-							library	=> element (component_cursor_kicad).library_name,
-							device	=> element (component_cursor_kicad).generic_name);
-
-
-						pac_devices_electrical.insert (
-							container	=> module.devices,
-							key			=> key (component_cursor_kicad), -- IC308, R12
-							position	=> component_cursor_native,
-							new_item	=> (
-								appearance		=> APPEARANCE_PCB,
-								model_cursor	=> get_device_model (model_name),
-								value			=> element (component_cursor_kicad).value,
-								partcode		=> to_partcode (partcode_default), -- not provided by kicad
-								purpose			=> empty_purpose, -- not provided by kicad
-								variant			=> element (component_cursor_kicad).variant,
-
-								position		=> element (component_cursor_kicad).position,
-								placeholders	=> element (component_cursor_kicad).text_placeholders,
-								others			=> <>), -- unit list is empty at this time
-
-							inserted	=> component_inserted); -- should always be true
 				end case;
 
 				-- copy the units from the kicad component to the native device

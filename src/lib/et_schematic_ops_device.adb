@@ -584,7 +584,7 @@ package body et_schematic_ops_device is
 				pragma unreferenced (device_name);
 			begin
 				-- CS log value old and value new
-				device.value := value;
+				set_value (device, value);
 			end set_value;
 
 
@@ -685,7 +685,7 @@ package body et_schematic_ops_device is
 			is
 				pragma unreferenced (device_name);
 			begin
-				device.purpose := purpose;
+				set_purpose (device, purpose);
 				-- CS log purpose before and after
 			end set_purpose;
 
@@ -775,7 +775,7 @@ package body et_schematic_ops_device is
 			is
 				pragma unreferenced (device_name);
 			begin
-				device.partcode := partcode;
+				set_partcode (device, partcode);
 				-- CS log old and new partcode
 			end set_partcode;
 

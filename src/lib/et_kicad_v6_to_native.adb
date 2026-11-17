@@ -1314,38 +1314,45 @@ package body et_kicad_v6_to_native is
 
 			case element (model_cursor).appearance is
 				when APPEARANCE_VIRTUAL =>
-					pac_devices_electrical.insert (
-						container	=> module.devices,
-						key			=> device_name,
-						position	=> device_cursor,
-						inserted	=> device_inserted,
-						new_item	=> (
-							appearance		=> APPEARANCE_VIRTUAL,
-							model_cursor	=> model_cursor,
-							others			=> <>));
+					declare
+						device : type_device_electrical (APPEARANCE_VIRTUAL);
+					begin
+						device.model_cursor := model_cursor;
+
+						pac_devices_electrical.insert (
+							container	=> module.devices,
+							key			=> device_name,
+							position	=> device_cursor,
+							inserted	=> device_inserted,
+							new_item	=> device);
+					end;
 
 				when APPEARANCE_PCB =>
-					pac_devices_electrical.insert (
-						container	=> module.devices,
-						key			=> device_name,
-						position	=> device_cursor,
-						inserted	=> device_inserted,
-						new_item	=> (
-							appearance		=> APPEARANCE_PCB,
-							model_cursor	=> model_cursor,
-							value			=> sanitize_device_value (to_string (inst.value)),
-							partcode		=> et_device_partcode.to_partcode (et_device_partcode.partcode_default),
-							purpose			=> extract_purpose (sym.properties),
-							-- No footprint/package data in this KiCad
-							-- schematic-only project (out of scope --
-							-- see the package spec) -- et_module_write
-							-- always writes "variant <name>" with a
-							-- mandatory argument, so an empty name here
-							-- would produce an unparseable *.mod line:
-							variant			=> et_package_variant_name.to_variant_name (placeholder_not_assigned),
-							position		=> et_board_coordinates.package_position_default,
-							placeholders	=> (others => <>),
-							others			=> <>));
+					declare
+						device : type_device_electrical (APPEARANCE_PCB);
+					begin
+						set_value (device, sanitize_device_value (to_string (inst.value)));
+						set_partcode (device, et_device_partcode.to_partcode (et_device_partcode.partcode_default));
+						set_purpose	(device, extract_purpose (sym.properties));
+
+						device.position := et_board_coordinates.package_position_default;
+						device.model_cursor	:= model_cursor;
+
+						device.variant := et_package_variant_name.to_variant_name (placeholder_not_assigned);
+						-- No footprint/package data in this KiCad
+						-- schematic-only project (out of scope --
+						-- see the package spec) -- et_module_write
+						-- always writes "variant <name>" with a
+						-- mandatory argument, so an empty name here
+						-- would produce an unparseable *.mod line:
+
+						pac_devices_electrical.insert (
+							container	=> module.devices,
+							key			=> device_name,
+							position	=> device_cursor,
+							inserted	=> device_inserted,
+							new_item	=> device);
+					end;
 			end case;
 
 			pac_devices_electrical.update_element (

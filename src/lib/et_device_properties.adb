@@ -91,6 +91,13 @@ package body et_device_properties is
 	is (properties.purpose);
 
 
+	procedure reset_properties (
+		properties : in out type_device_properties)
+	is
+		p : type_device_properties;
+	begin
+		properties := p;
+	end reset_properties;
 
 
 end et_device_properties;

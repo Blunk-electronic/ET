@@ -110,6 +110,29 @@ is
 		procedure copy_bare_device is
 			original : type_device_electrical renames element (device_cursor_sch);
 			inserted : boolean;
+
+			procedure copy_real is
+				device : type_device_electrical (APPEARANCE_PCB);
+			begin
+				device.model_cursor := device_cursor_lib;
+				set_value (device, get_value (original));
+				set_partcode (device, get_partcode (original));
+				set_purpose (device, get_purpose (original));
+				device.variant := original.variant;
+				device.placeholders	:= original.placeholders; -- layout related
+
+				-- CS: The position in layout assumes default. Should be
+				-- so that it is not placed on top of another device.
+
+				module.devices.insert (
+					key			=> next_name,
+					inserted	=> inserted,
+					position	=> device_cursor_sch,
+					new_item	=> device);
+
+			end copy_real;
+
+
 		begin
 			log (text => "copy_bare_device", level => log_threshold + 1);
 			log_indentation_up;
@@ -117,22 +140,8 @@ is
 			-- Create a new device. Copy properties from the original device.
 			-- The unit list is empty for the time being:
 			if is_real (original) then
-				module.devices.insert (
-					key			=> next_name,
-					inserted	=> inserted,
-					position	=> device_cursor_sch,
-					new_item	=> (
-						appearance		=> APPEARANCE_PCB,
-						model_cursor	=> device_cursor_lib,
-						units			=> pac_units.empty_map,
-						value			=> original.value,
-						partcode		=> original.partcode,
-						purpose			=> original.purpose,
-						variant			=> original.variant,
-						placeholders	=> original.placeholders, -- layout related
-						others			=> <>));
-						-- CS: The position in layout assumes default. Should be
-						-- so that it is not placed on top of another device.
+				copy_real;
+
 
 			else
 				module.devices.insert (

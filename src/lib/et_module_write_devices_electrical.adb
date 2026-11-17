@@ -277,7 +277,7 @@ package body et_module_write_devices_electrical is
 
 		procedure write (d : in pac_devices_electrical.cursor) is
 			device : type_device_electrical renames element (d);
-			-- CS use "device" instead of "element (d)"
+
 			use et_device_appearance;
 			use et_device_purpose;
 			use et_device_value;
@@ -288,8 +288,11 @@ package body et_module_write_devices_electrical is
 			log (text => get_device_name (d), level => log_threshold + 1);
 
 			section_mark (section_device, HEADER);
-			write (keyword => keyword_name, parameters => to_string (key (d)));
-			write (keyword => keyword_appearance, parameters => to_string (element (d).appearance));
+			write (keyword => keyword_name,
+				parameters => to_string (key (d)));
+
+			write (keyword => keyword_appearance,
+				parameters => to_string (device.appearance));
 
 			-- Write the relative path to the device model like
 			-- "model passive/capacitors/capacitor.dev"
@@ -299,20 +302,24 @@ package body et_module_write_devices_electrical is
 			case element (d).appearance is
 				when APPEARANCE_PCB =>
 					-- write the value if a value exists for the device:
-					if not is_empty (element (d).value) then
-						write (keyword => keyword_value, parameters => to_string (element (d).value));
+					if has_value (device) then
+						write (keyword => keyword_value,
+							parameters => get_value (device));
 					end if;
 
-					write (keyword => keyword_variant, parameters => to_string (element (d).variant));
+					write (keyword => keyword_variant,
+						parameters => to_string (device.variant));
 
 					-- write the partcode if a partcode exists for the device;
-					if not is_empty (element (d).partcode) then
-						write (keyword => keyword_partcode, parameters => to_string (element (d).partcode));
+					if has_partcode (device) then
+						write (keyword => keyword_partcode,
+							parameters => get_partcode (device));
 					end if;
 
 					-- write the purpose if a purpose exists for the device;
-					if not is_empty (element (d).purpose) then
-						write (keyword => keyword_purpose, parameters => to_string (element (d).purpose), wrap => true);
+					if has_purpose (device) then
+						write (keyword => keyword_purpose,
+							parameters => get_purpose (device), wrap => true);
 					end if;
 
 					section_mark (section_package, HEADER);
