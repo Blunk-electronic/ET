@@ -217,9 +217,7 @@ package et_devices_electrical is
 
 
 
--- DEVICE QUERY OPERATIONS:
-
-
+-- PACKAGE MODEL:
 
 
 	-- Returns the name of the package model of the given device
@@ -238,6 +236,9 @@ package et_devices_electrical is
 		device : in pac_devices_electrical.cursor)
 		return pac_package_models.cursor;
 
+
+
+-- BOM:
 
 	-- Returns true if the given device has a
 	-- a real package with a height, means if it is relevant
