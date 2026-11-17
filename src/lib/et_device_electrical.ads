@@ -126,6 +126,62 @@ package et_device_electrical is
 
 
 
+
+-- APPEARANCE:
+
+	function get_appearance (
+		device	: in type_device_electrical)
+		return type_appearance_schematic;
+
+
+	function get_appearance (
+		device	: in type_device_electrical)
+		return string;
+
+
+
+-- UNITS:
+
+	procedure set_units (
+		device	: in out type_device_electrical;
+		units	: in pac_units.map);
+
+
+	function get_units (
+		device	: in type_device_electrical)
+		return pac_units.map;
+
+
+
+
+
+-- POSITION (in board):
+
+	function get_position (
+		device : in type_device_electrical)
+		return et_board_coordinates.type_board_object;
+
+
+
+
+-- VARIANT:
+
+	procedure set_variant (
+		device	: in out type_device_electrical;
+		variant	: in type_package_variant_name);
+
+
+	function get_variant (
+		device	: in type_device_electrical)
+		return type_package_variant_name;
+
+
+	function get_variant (
+		device	: in type_device_electrical)
+		return string;
+
+
+
 -- VALUE:
 
 	procedure set_value (
@@ -210,24 +266,21 @@ package et_device_electrical is
 
 
 
-	function get_position (
-		device : in type_device_electrical)
-		return et_board_coordinates.type_board_object;
 
 
 
 
-
+-- DEVICE MODEL:
 
 
 	function get_device_model_file (
-		device : type_device_electrical)
+		device : in type_device_electrical)
 		return type_device_model_name; -- *.dev
 	-- CS rename to get_device_model_name
 
 
 	function get_device_model_name (
-		device : type_device_electrical)
+		device : in type_device_electrical)
 		return string;
 
 
@@ -235,12 +288,13 @@ package et_device_electrical is
 	-- Maps from schematic device to
 	-- cursor to device model (in library):
 	function get_device_model (
-		device : in type_device_electrical)
+		device	: in type_device_electrical)
 		return pac_device_models.cursor;
 
 
-
-
+	procedure set_device_model (
+		device	: in out type_device_electrical;
+		model	: in pac_device_models.cursor);
 
 
 	-- Returns the name of the package model of the given device

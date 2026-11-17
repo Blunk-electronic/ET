@@ -118,10 +118,29 @@ package et_device_non_electrical is
 		device	: in out type_device_non_electrical);
 
 
+
+-- POSITION:
+
 	function get_position (
 		device : in type_device_non_electrical)
 		return type_board_object;
 
+	-- procedure set_rotation_relative (
+	-- 	device		: in out type_device_non_electrical;
+	-- 	rotation	: in type_rotation_model);
+
+
+
+
+-- PACKAGE MODEL:
+
+	procedure set_package_model (
+		device	: in out type_device_non_electrical;
+		model	: in pac_package_models.cursor);
+
+	function get_package_model (
+		device	: in type_device_non_electrical)
+		return pac_package_models.cursor;
 
 
 	-- Returns the name of the package model file
@@ -138,9 +157,16 @@ package et_device_non_electrical is
 
 
 
-	-- procedure set_rotation_relative (
-	-- 	device		: in out type_device_non_electrical;
-	-- 	rotation	: in type_rotation_model);
+-- PLACEHOLDERS:
+
+	procedure set_placeholders (
+		device			: in out type_device_non_electrical;
+		placeholders	: in type_text_placeholders);
+
+
+	function get_placeholders (
+		device			: in type_device_non_electrical)
+		return type_text_placeholders;
 
 
 

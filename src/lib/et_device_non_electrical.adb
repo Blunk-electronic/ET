@@ -93,6 +93,31 @@ package body et_device_non_electrical is
 	is (type_board_object (device));
 
 
+	-- procedure set_rotation_relative (
+	-- 	device		: in out type_device_non_electrical;
+	-- 	rotation	: in type_rotation_model)
+	-- is begin
+	-- 	set_rotation_relative (device.position, rotation);
+	-- end set_rotation_relative;
+
+
+
+
+-- PACKAGE MODEL:
+
+	procedure set_package_model (
+		device	: in out type_device_non_electrical;
+		model	: in pac_package_models.cursor)
+	is begin
+		device.model_cursor := model;
+	end set_package_model;
+
+
+	function get_package_model (
+		device	: in type_device_non_electrical)
+		return pac_package_models.cursor
+	is (device.model_cursor);
+
 
 	function get_package_model_name (
 		device	: in type_device_non_electrical)
@@ -104,7 +129,6 @@ package body et_device_non_electrical is
 	end get_package_model_name;
 
 
-
 	function get_package_model_name (
 		device : in type_device_non_electrical)
 		return string
@@ -114,15 +138,23 @@ package body et_device_non_electrical is
 
 
 
+-- PLACEHOLDERS:
+
+	procedure set_placeholders (
+		device			: in out type_device_non_electrical;
+		placeholders	: in type_text_placeholders)
+	is begin
+		device.placeholders := placeholders;
+	end set_placeholders;
+
+
+	function get_placeholders (
+		device			: in type_device_non_electrical)
+		return type_text_placeholders
+	is (device.placeholders);
 
 
 
-	-- procedure set_rotation_relative (
-	-- 	device		: in out type_device_non_electrical;
-	-- 	rotation	: in type_rotation_model)
-	-- is begin
-	-- 	set_rotation_relative (device.position, rotation);
-	-- end set_rotation_relative;
 
 
 
@@ -159,6 +191,8 @@ package body et_device_non_electrical is
 			return true;
 		end if;
 	end has_value;
+
+
 
 
 
@@ -251,7 +285,6 @@ package body et_device_non_electrical is
 
 
 -- PLACEHOLDERS:
-
 
 
 	procedure reset_placeholder_positions (

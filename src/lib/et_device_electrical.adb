@@ -54,6 +54,79 @@ package body et_device_electrical is
 
 
 
+
+-- APPEARANCE:
+
+	function get_appearance (
+		device	: in type_device_electrical)
+		return type_appearance_schematic
+	is (device.appearance);
+
+
+	function get_appearance (
+		device	: in type_device_electrical)
+		return string
+	is (to_string (get_appearance (device)));
+
+
+
+
+
+-- UNITS:
+
+	procedure set_units (
+		device	: in out type_device_electrical;
+		units	: in pac_units.map)
+	is begin
+		device.units := units;
+	end set_units;
+
+
+	function get_units (
+		device	: in type_device_electrical)
+		return pac_units.map
+	is (device.units);
+
+
+
+
+
+
+-- POSITION (in board):
+
+	function get_position (
+		device : in type_device_electrical)
+		return et_board_coordinates.type_board_object
+	is (device.position);
+
+
+
+
+
+-- VARIANT:
+
+	procedure set_variant (
+		device	: in out type_device_electrical;
+		variant	: in type_package_variant_name)
+	is begin
+		device.variant := variant;
+	end set_variant;
+
+
+	function get_variant (
+		device	: in type_device_electrical)
+		return type_package_variant_name
+	is (device.variant);
+
+
+	function get_variant (
+		device	: in type_device_electrical)
+		return string
+	is (to_string (get_variant (device)));
+
+
+
+
 -- VALUE:
 
 	procedure set_value (
@@ -193,20 +266,10 @@ package body et_device_electrical is
 
 
 
-	function get_position (
-		device : in type_device_electrical)
-		return et_board_coordinates.type_board_object
-	is (device.position);
-
-
-
-
-
-
-
+-- DEVICE MODEL:
 
 	function get_device_model_file (
-		device : type_device_electrical)
+		device : in type_device_electrical)
 		return type_device_model_name
 	is
 		use pac_device_models;
@@ -218,7 +281,7 @@ package body et_device_electrical is
 
 
 	function get_device_model_name (
-		device : type_device_electrical)
+		device : in type_device_electrical)
 		return string
 	is
 		use pac_device_models;
@@ -227,6 +290,13 @@ package body et_device_electrical is
 	end get_device_model_name;
 
 
+
+	procedure set_device_model (
+		device	: in out type_device_electrical;
+		model	: in pac_device_models.cursor)
+	is begin
+		device.model_cursor := model;
+	end set_device_model;
 
 
 
@@ -245,10 +315,6 @@ package body et_device_electrical is
 		-- Locate the device model in the library:
 		return get_device_model (model_file);
 	end get_device_model;
-
-
-
-
 
 
 
