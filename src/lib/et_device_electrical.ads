@@ -60,8 +60,11 @@ with et_device_partcode;				use et_device_partcode;
 with et_device_properties;				use et_device_properties;
 with et_device_library;					use et_device_library;
 with et_device_placeholders.packages;
+
 with et_package_model_name;				use et_package_model_name;
 with et_package_variant_name;			use et_package_variant_name;
+with et_package_variant;				use et_package_variant;
+
 with et_object_status;					use et_object_status;
 with et_units;							use et_units;
 with et_logging;						use et_logging;
@@ -158,7 +161,7 @@ package et_device_electrical is
 
 
 
--- VARIANT:
+-- PACKAGE VARIANT:
 
 	procedure set_variant (
 		device	: in out type_device_electrical;
@@ -173,6 +176,24 @@ package et_device_electrical is
 	function get_variant (
 		device	: in type_device_electrical)
 		return string;
+
+
+	-- Returns the name of the package variant of the device.
+	-- The device must be a real device.
+	-- Otherwise an exception will be raised:
+	function get_package_variant (
+		device : in type_device_electrical)
+		return type_package_variant_name;
+
+
+	-- Returns a list of available package variants:
+	function get_available_package_variants (
+		device : in type_device_electrical)
+		return pac_package_variants.map;
+
+
+
+
 
 
 
@@ -307,6 +328,7 @@ package et_device_electrical is
 
 	procedure device_name_in_use (
 		name : in type_device_name); -- IC1, R1, ...
+
 
 
 

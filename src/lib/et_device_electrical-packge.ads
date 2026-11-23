@@ -61,9 +61,6 @@ with et_pcb_sides;						use et_pcb_sides;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
-with et_package_variant_name;			use et_package_variant_name;
-with et_package_variant;				use et_package_variant;
-
 
 
 package et_device_electrical.packge is
@@ -75,21 +72,6 @@ package et_device_electrical.packge is
 	use pac_geometry_2;
 
 
-
--- PACKAGE VARIANT:
-
-	-- Returns the name of the package variant of the device.
-	-- The device must be a real device.
-	-- Otherwise an exception will be raised:
-	function get_package_variant (
-		device : in type_device_electrical)
-		return type_package_variant_name;
-
-
-	-- Returns a list of available package variants:
-	function get_available_package_variants (
-		device : in type_device_electrical)
-		return pac_package_variants.map;
 
 
 

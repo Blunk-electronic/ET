@@ -47,33 +47,6 @@ with et_device_library.packages;	use et_device_library.packages;
 package body et_device_electrical.packge is
 
 
--- PACKAGE VARIANT:
-
-	function get_package_variant (
-		device : in type_device_electrical)
-		return type_package_variant_name
-	is (device.variant);
-
-
-
-	function get_available_package_variants (
-		device : in type_device_electrical)
-		return pac_package_variants.map
-	is
-		result : pac_package_variants.map;
-
-		device_cursor_lib : pac_device_models.cursor;
-	begin
-		device_cursor_lib := get_device_model (device);
-
-		result := get_available_variants (device_cursor_lib);
-
-		return result;
-	end get_available_package_variants;
-
-
-
-
 
 -- POSITION:
 

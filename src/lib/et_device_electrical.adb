@@ -40,7 +40,7 @@
 -- with ada.text_io;			use ada.text_io;
 with et_string_processing;			use et_string_processing;
 
-with et_device_library.packages;
+with et_device_library.packages;	use et_device_library.packages;
 
 
 
@@ -95,7 +95,7 @@ package body et_device_electrical is
 
 
 
--- VARIANT:
+-- PACKAGE VARIANT:
 
 	procedure set_variant (
 		device	: in out type_device_electrical;
@@ -115,6 +115,33 @@ package body et_device_electrical is
 		device	: in type_device_electrical)
 		return string
 	is (to_string (get_variant (device)));
+
+
+
+	function get_package_variant (
+		device : in type_device_electrical)
+		return type_package_variant_name
+	is (device.variant);
+
+
+
+	function get_available_package_variants (
+		device : in type_device_electrical)
+		return pac_package_variants.map
+	is
+		result : pac_package_variants.map;
+
+		device_cursor_lib : pac_device_models.cursor;
+	begin
+		device_cursor_lib := get_device_model (device);
+
+		result := get_available_variants (device_cursor_lib);
+
+		return result;
+	end get_available_package_variants;
+
+
+
 
 
 
