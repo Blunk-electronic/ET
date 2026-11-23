@@ -155,12 +155,6 @@ package et_device_electrical is
 
 
 
--- POSITION (in board):
-
-	function get_position (
-		device : in type_device_electrical)
-		return et_board_coordinates.type_board_object;
-
 
 
 
@@ -321,7 +315,7 @@ package et_device_electrical is
 
 
 
--- DEVICE STATUS OPERATIONS:
+-- STATUS:
 
 	-- NOTE: Operations regarding the status
 	-- apply to the package of the device (in the board domain)

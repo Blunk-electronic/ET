@@ -39,49 +39,22 @@
 
 
 -- with ada.text_io;			use ada.text_io;
+with et_board_text;
 with et_terminal_name;					use et_terminal_name;
-with et_package_library;
+
 with et_silkscreen.packages;
 with et_assy_doc.packages;
-with et_board_text;
 with et_stopmask.packages;
-with et_package_model;					use et_package_model;
-with et_logging;
-with et_device_library.packages;	use et_device_library.packages;
 
+with et_device_library.packages;		use et_device_library.packages;
+with et_device_electrical.packge;		use et_device_electrical.packge;
 
 
 package body et_devices_electrical.packages is
 
 
 
--- PACKAGE VARIANTS:
-
-	function get_package_variant (
-		device : in type_device_electrical)
-		return type_package_variant_name
-	is (device.variant);
-
-
-
-	function get_available_package_variants (
-		device : in type_device_electrical)
-		return pac_package_variants.map
-	is
-		result : pac_package_variants.map;
-
-		device_cursor_lib : pac_device_models.cursor;
-	begin
-		device_cursor_lib := get_device_model (device);
-
-		result := get_available_variants (device_cursor_lib);
-
-		return result;
-	end get_available_package_variants;
-
-
-
-
+-- PACKAGE VARIANT:
 
 	function get_package_variant (
 		device : in pac_devices_electrical.cursor)
@@ -108,121 +81,6 @@ package body et_devices_electrical.packages is
 
 
 -- POSITION:
-
-	procedure set_position (
-		device		: in out type_device_electrical;
-		position	: in type_board_object)
-	is begin
-		device.position := position;
-	end set_position;
-
-
-	function get_position (
-		device : in type_device_electrical)
-		return type_board_object
-	is (device.position);
-
-
-
-	function get_position (
-		device	: in type_device_electrical;
-		format	: in type_output_format := FORMAT_1)
-		return string
-	is (get_position (device.position, format));
-
-
-
-	function get_rotation (
-		device	: in type_device_electrical)
-		return type_rotation_model
-	is (get_rotation (device.position));
-
-
-	procedure set_rotation (
-		device		: in out type_device_electrical;
-		rotation	: in type_rotation_model)
-	is begin
-		set_rotation (device.position, rotation);
-	end set_rotation;
-
-
-	procedure set_rotation_relative (
-		device		: in out type_device_electrical;
-		rotation	: in type_rotation_model)
-	is begin
-		set_rotation_relative (device.position, rotation);
-	end set_rotation_relative;
-
-
-
-	procedure set_face (
-		device	: in out type_device_electrical;
-		face	: in type_face)
-	is begin
-		set_face (device.position, face);
-	end set_face;
-
-
-
-	procedure toggle_face (
-		device	: in out type_device_electrical)
-	is begin
-		toggle_face (device.position);
-	end toggle_face;
-
-
-
-
-
-	function get_face (
-		device	: in type_device_electrical)
-		return type_face
-	is (get_face (device.position));
-
-
-
-	function get_face (
-		device	: in type_device_electrical)
-		return string
-	is (to_string (get_face (device.position)));
-
-
-
-	procedure set_place (
-		device	: in out type_device_electrical;
-		place	: in type_vector_model)
-	is begin
-		set_place (device.position, place);
-	end set_place;
-
-
-
-	procedure set_place_relative (
-		device	: in out type_device_electrical;
-		offset	: in type_vector_model)
-	is begin
-		move_by (device.position, offset);
-	end set_place_relative;
-
-
-
-	function get_place (
-		device	: in type_device_electrical)
-		return type_vector_model
-	is (get_place (device.position));
-
-
-
-	function get_place (
-		device	: in type_device_electrical;
-		format	: in type_output_format := FORMAT_1)
-		return string
-	is (et_board_geometry.pac_geometry_2.to_string (
-			get_place (device.position), format));
-
-
-
-
 
 
 
@@ -254,7 +112,7 @@ package body et_devices_electrical.packages is
 	is
 		device : type_device_electrical renames element (device_cursor);
 	begin
-		return packages.get_position (device);
+		return get_position (device);
 	end get_position;
 
 
@@ -284,97 +142,9 @@ package body et_devices_electrical.packages is
 
 
 
-	function in_area (
-		device	: in type_device_electrical;
-		area	: in type_area)
-		return boolean
-	is (in_area (get_place (device), area));
 
 
 
-
-	function on_face_and_in_area (
-		device	: in type_device_electrical;
-		face	: in type_face;
-		area	: in type_area)
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		if is_real (device) and then
-			get_face (device) = face and then
-				in_area (device, area) then
-					result := true;
-		end if;
-
-		return result;
-	end on_face_and_in_area;
-
-
-
-
-
-
-
-
--- PLACEHOLDERS:
-
-
-	procedure reset_placeholder_positions (
-		device		: in out type_device_electrical)
-	is
-		-- cursor_lib : pac_device_models.cursor;
-		default_placeholders : type_text_placeholders;
-	begin
-		-- Locate the device in the device library:
-		-- cursor_lib := get_device_model (device.model_name);
-
-		-- Get the default placeholders as they are specified
-		-- in the package model:
-		default_placeholders := get_default_placeholders (
-			device.model_cursor, get_package_variant (device));
-
-		-- Assign the default placeholders to the given device:
-		device.placeholders := default_placeholders;
-	end reset_placeholder_positions;
-
-
-
-
-
-
-	procedure move_placeholder (
-		device		: in out type_device_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer;
-		face		: in type_face;
-		index		: in type_placeholder_index;
-		coordinates	: in type_coordinates;
-		point		: in type_vector_model)
-	is begin
-		move_placeholder (device.placeholders, meaning, layer,
-			face, index, packages.get_position (device), coordinates, point);
-
-	end move_placeholder;
-
-
-
-
-
-
-	procedure rotate_placeholder (
-		device		: in out type_device_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer;
-		face		: in type_face;
-		index		: in type_placeholder_index;
-		coordinates	: in type_coordinates;
-		rotation	: in type_rotation_model)
-	is begin
-		rotate_placeholder (device.placeholders, meaning, layer,
-			face, index, coordinates, rotation);
-
-	end rotate_placeholder;
 
 
 

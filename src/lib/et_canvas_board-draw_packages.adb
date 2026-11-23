@@ -59,6 +59,7 @@ with et_terminals;
 
 with et_device_electrical;				use et_device_electrical;
 with et_devices_electrical;				use et_devices_electrical;
+with et_device_electrical.packge;		use et_device_electrical.packge;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 
 with et_device_non_electrical;			use et_device_non_electrical;
@@ -911,7 +912,7 @@ procedure draw_packages is
 			-- If the package is being moved or copied then
 			-- the x/y component of the position will be
 			-- overwritten later:
-			package_position := et_devices_electrical.packages.get_position (device);
+			package_position := get_position (device);
 			-- CS get_package_position
 
 			brightness := NORMAL;

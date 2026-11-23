@@ -52,6 +52,7 @@ with et_assembly_variants;
 with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
 
+with et_device_electrical.packge;		use et_device_electrical.packge;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 
 with et_schematic_ops_device;			use et_schematic_ops_device;
@@ -2968,7 +2969,7 @@ package body et_board_ops_devices is
 					log (text => to_string (device_name), level => log_threshold + 2);
 
 					propose_placeholders (device.placeholders,
-						et_device_electrical.get_position (device), catch_zone, count, log_threshold + 3);
+						get_position (device), catch_zone, count, log_threshold + 3);
 				end query_device;
 
 

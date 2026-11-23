@@ -92,14 +92,6 @@ package body et_device_electrical is
 
 
 
--- POSITION (in board):
-
-	function get_position (
-		device : in type_device_electrical)
-		return et_board_coordinates.type_board_object
-	is (device.position);
-
-
 
 
 

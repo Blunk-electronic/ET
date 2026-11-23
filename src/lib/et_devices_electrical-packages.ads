@@ -35,13 +35,17 @@
 --
 --   history of changes:
 --
---   ToDo:
---		1. device accessories
+-- To Do:
+-- 1. device accessories
+--
+--
 --
 -- DESCRIPTION:
 --
--- This package is about the type, basic properties and subprograms related
--- to the packages of real devices.
+-- The subprograms in this package address the package
+-- of a device. So the targeted device must be real.
+-- Otherwise exceptions wlll be raised.
+--
 
 with et_board_geometry;					use et_board_geometry;
 with et_board_coordinates;				use et_board_coordinates;
@@ -51,30 +55,26 @@ with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
-with et_silkscreen;						use et_silkscreen;
-
-with et_assy_doc;						use et_assy_doc;
 
 with et_route_restrict.packages;
 with et_via_restrict.packages;
 
 with et_board_holes;					use et_board_holes;
 
+with et_silkscreen;						use et_silkscreen;
+with et_assy_doc;						use et_assy_doc;
 with et_keepout;						use et_keepout;
 with et_stopmask;						use et_stopmask;
 with et_stencil;						use et_stencil;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_pcb_sides;						use et_pcb_sides;
 
-with et_device_electrical;				use et_device_electrical;
-with et_device_placeholders;			use et_device_placeholders;
 with et_port_names;						use et_port_names;
 with et_unit_name;						use et_unit_name;
 with et_package_variant_name;			use et_package_variant_name;
 with et_package_variant;				use et_package_variant;
 with et_terminals;						use et_terminals;
 with et_conductors_floating_package;	use et_conductors_floating_package;
-with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 with et_logging;						use et_logging;
 
 
@@ -83,23 +83,7 @@ package et_devices_electrical.packages is
 	use pac_geometry_2;
 
 
-
-
--- PACKAGE VARIANTS:
-
-	-- Returns the name of the package variant of the device.
-	-- The device must be a real device.
-	-- Otherwise an exception will be raised:
-	function get_package_variant (
-		device : in type_device_electrical)
-		return type_package_variant_name;
-
-
-	-- Returns a list of available package variants:
-	function get_available_package_variants (
-		device : in type_device_electrical)
-		return pac_package_variants.map;
-
+-- PACKAGE VARIANT:
 
 
 	-- Returns the package variant of the given device.
@@ -118,90 +102,8 @@ package et_devices_electrical.packages is
 
 
 
+
 -- POSITION:
-
-	-- IMPORTANT: For the following subprograms applies:
-	-- These procedures and functions address the package
-	-- of a device.
-	-- The targeted device must be real. Otherwise an exception is raised:
-
-	-- Sets the position of the package in the board drawing.
-	procedure set_position ( -- CS rename to set_package_position
-		device		: in out type_device_electrical;
-		position	: in type_board_object);
-
-
-	-- Returns the position of the package in the board drawing.
-	function get_position ( -- CS rename to get_package_position
-		device : in type_device_electrical)
-		return type_board_object;
-
-
-	-- Returns the position of the package in the board drawing.
-	function get_position ( -- CS rename to get_package_position ?
-		device	: in type_device_electrical;
-		format	: in type_output_format := FORMAT_1)
-		return string;
-
-
-	function get_rotation ( -- CS rename to get_package_rotation ?
-		device	: in type_device_electrical)
-		return type_rotation_model;
-
-
-	procedure set_rotation ( -- CS rename to set_package_rotation
-		device		: in out type_device_electrical;
-		rotation	: in type_rotation_model);
-
-
-	procedure set_rotation_relative (
-		device		: in out type_device_electrical;
-		rotation	: in type_rotation_model);
-
-
-	procedure set_face (
-		device	: in out type_device_electrical;
-		face	: in type_face);
-
-
-	procedure toggle_face (
-		device	: in out type_device_electrical);
-
-
-	function get_face (
-		device	: in type_device_electrical)
-		return type_face;
-
-
-	function get_face (
-		device	: in type_device_electrical)
-		return string;
-
-
-	procedure set_place (
-		device	: in out type_device_electrical;
-		place	: in type_vector_model);
-
-
-	-- Moves the device by the given offset:
-	procedure set_place_relative ( -- CS rename to move_device_by ?
-		device	: in out type_device_electrical;
-		offset	: in type_vector_model);
-
-
-	function get_place (
-		device	: in type_device_electrical)
-		return type_vector_model;
-
-
-	function get_place (
-		device	: in type_device_electrical;
-		format	: in type_output_format := FORMAT_1)
-		return string;
-
-
-
-
 
 	-- Writes the position of the package in the log file.
 	-- If device is virtual, nothing happens:
@@ -211,18 +113,15 @@ package et_devices_electrical.packages is
 
 
 
-
-
-	-- IMPORTANT: The following subprograms address the
-	-- package of a device. The package must be real. Otherwise
-	-- an exception will be raised.
-
 	-- Returns the current position (x/y/rotation/face) of the
 	-- given electrical device:
 	function get_position (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
 		return et_board_coordinates.type_board_object;
 
+
+
+-- FACE:
 
 	-- Returns the current position (x/y) of the
 	-- given electrical device:
@@ -238,85 +137,9 @@ package et_devices_electrical.packages is
 		return type_face; -- top/bottom
 
 
-	-- Returns true if the given device is in the
-	-- given area.
-	-- The device must be real. Otherwise an exception
-	-- will be raised:
-	function in_area (
-		device	: in type_device_electrical;
-		area	: in type_area)
-		return boolean;
-
-
-	-- Returns true if the given device meets the
-	-- following criteria:
-	-- 1. is real (means it has a representation in the board)
-	-- 2. is mounted on the given face
-	-- 3. is in the given area
-	function on_face_and_in_area (
-		device	: in type_device_electrical;
-		face	: in type_face;
-		area	: in type_area)
-		return boolean;
 
 
 
-
--- PLACEHOLDERS:
-
-
-	-- Resets the positions of placeholders back to the
-	-- defaults as specified in the package model:
-	procedure reset_placeholder_positions (
-		device		: in out type_device_electrical);
-
-
-
-	-- Moves the placeholder given by meaning, layer, face and index.
-	-- NOTE: Index identifies the targeted placeholder in connection
-	--       with its meaning. For example, if meaning is "value" and index is 3
-	--       then the 3rd value placeholder is adressed.
-	--
-	-- If no matching placeholder has been found, then nothing happens.
-	-- CS; An error flag output by this procedure could be useful.
-	--
-	-- If coordinates is absolute, then the affected placeholder
-	-- is moved to the given point and its anchor mode set accordingly.
-	-- If coordinates is relative, then the affected placeholder
-	-- is moved by the x/y-distance given by point and its anchor mode
-	-- set accordingly:
-	procedure move_placeholder (
-		device		: in out type_device_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer; -- silkscreen, assy doc
-		face		: in type_face;
-		index		: in type_placeholder_index; -- 1, 2, 3, ...
-		coordinates	: in type_coordinates; -- relative/absolute
-		point		: in type_vector_model); -- x/y
-		-- CS rename to destination_offset rework documentation above
-
-
-
-	-- Rotates the placeholder given by meaning, layer, face and index.
-	-- NOTE: Index identifies the targeted placeholder in connection
-	--       with its meaning. For example, if meaning is "value" and index is 3
-	--       then the 3rd value placeholder is adressed.
-	--
-	-- If no matching placeholder has been found, then nothing happens.
-	-- CS; An error flag output by this procedure could be useful.
-	--
-	-- If coordinates is absolute, then the placeholder
-	-- is rotated to the given rotation.
-	-- If coordinates is relative, then the placeholder
-	-- is rotated by the given rotation:
-	procedure rotate_placeholder (
-		device		: in out type_device_electrical;
-		meaning		: in type_placeholder_meaning;
-		layer		: in type_placeholder_layer; -- silkscreen, assy doc
-		face		: in type_face;
-		index		: in type_placeholder_index; -- 1, 2, 3, ...
-		coordinates	: in type_coordinates;
-		rotation	: in type_rotation_model);
 
 
 
