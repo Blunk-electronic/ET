@@ -333,7 +333,7 @@ package body et_board_ops_devices is
 						set_place (device, point); -- preserve angle and face
 
 					when RELATIVE =>
-						set_place_relative (device, point); -- preserve angle and face
+						move_by (device, point); -- preserve angle and face
 
 				end case;
 			end move_electrical;
@@ -2052,7 +2052,7 @@ package body et_board_ops_devices is
 					log (text => to_string (device_name),
 						level => log_threshold + 2);
 
-					set_place_relative (device, offset);
+					move_by (device, offset);
 				end if;
 			end query_electrical_device;
 

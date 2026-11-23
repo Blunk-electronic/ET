@@ -45,9 +45,15 @@
 -- The subprograms in this package address the package
 -- of a device. So the targeted device must be real.
 -- Otherwise exceptions wlll be raised.
---  Here it is about coordinates, location vectors
--- places, angles and rotation as they are used in
--- the board domain exclusively.
+-- 1. Here it is about coordinates, location vectors
+--    places, angles and rotation as they are used in
+--    the board domain exclusively.
+-- 2. The package of an electrical device is not derived
+--    from the generic type_board_object. However, the subprograms
+--    here are named by the same scheme as for the type_board_object
+--    (see package et_basic_objects).
+-- 3. Some subprograms are prepared and put in comments. For details
+--    see package et_basic_objects.
 
 
 with et_coordinates_formatting;			use et_coordinates_formatting;
@@ -65,7 +71,7 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
 package et_device_electrical.packge is
 	-- NOTE: This child package has been named intentionally
-	-- "packge". It is not a typing error. The name "packge" has
+	-- "packge". This is not a typing error. The name "packge" has
 	-- been choosen in order to avoid clashes with the Ada compiler
 	-- as "package" is a reserved keyword.
 
@@ -83,8 +89,13 @@ package et_device_electrical.packge is
 		place	: in type_vector_model);
 
 
+	-- CS:
+	-- set_x/y ?
+	-- get_x/y ?
+
+
 	-- Moves the device by the given offset:
-	procedure set_place_relative ( -- CS rename to move_device_by ?
+	procedure move_by (
 		device	: in out type_device_electrical;
 		offset	: in type_vector_model);
 
@@ -104,38 +115,86 @@ package et_device_electrical.packge is
 
 
 	-- Sets the position of the package in the board drawing.
-	procedure set_position ( -- CS rename to set_package_position ?
+	procedure set_position (
 		device		: in out type_device_electrical;
 		position	: in type_board_object);
 
 
+	-- CS:
+	-- Reads a line like "position x 44.5 y 53.5"
+	-- and assigns the position to the object:
+	-- procedure set_position (
+	-- 	device	: in out type_device_electrical;
+	-- 	line	: in type_fields_of_line;
+	-- 	from	: in type_field_count_positive);
+
+
+	-- CS: reset_position ?
+
+
 	-- Returns the position of the package in the board drawing.
-	function get_position ( -- CS rename to get_package_position ?
+	function get_position (
 		device : in type_device_electrical)
 		return type_board_object;
 
 
 	-- Returns the position of the package in the board drawing.
-	function get_position ( -- CS rename to get_package_position ?
+	function get_position (
 		device	: in type_device_electrical;
 		format	: in type_output_format := FORMAT_1)
 		return string;
 
 
-	function get_rotation ( -- CS rename to get_package_rotation ?
+	function get_rotation (
 		device	: in type_device_electrical)
 		return type_rotation_model;
 
 
-	procedure set_rotation ( -- CS rename to set_package_rotation
+
+	procedure set_rotation (
 		device		: in out type_device_electrical;
 		rotation	: in type_rotation_model);
+
+
+	procedure rotate_to (
+		device		: in out type_device_electrical;
+		rotation	: in type_rotation_model)
+		renames set_rotation;
+
 
 
 	procedure set_rotation_relative (
 		device		: in out type_device_electrical;
 		rotation	: in type_rotation_model);
 
+
+	procedure rotate_by (
+		device		: in out type_device_electrical;
+		rotation	: in type_rotation_model)
+		renames set_rotation_relative;
+
+
+	-- CS:
+	-- Rotates the device about the origin
+	-- by the given angle:
+	-- procedure rotate_about_origin (
+	-- 	device		: in out type_device_electrical;
+	-- 	rotation	: in type_rotation_model);
+
+
+
+
+-- MIRROR:
+
+	-- CS: mirror_along_axis ?
+
+
+	-- CS
+	-- procedure add (
+	-- 	device		: in out type_device_electrical;
+	-- 	offset		: in type_vector_model;
+	-- 	rotation	: in type_rotation;
+	-- 	mirror		: in type_mirror := MIRROR_NO);
 
 
 

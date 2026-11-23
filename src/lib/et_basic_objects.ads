@@ -333,7 +333,7 @@ package et_basic_objects is
 
 	-- This is more than just adding
 	-- location vectors (place) and rotation.
-	-- This function does the follwing:
+	-- This function does the following:
 	-- If mirror is MIRROR_NO, then
 	--  1. Rotates the place of the object about its
 	--     own origin by given rotation.

@@ -59,12 +59,12 @@ package body et_device_electrical.packge is
 
 
 
-	procedure set_place_relative (
+	procedure move_by (
 		device	: in out type_device_electrical;
 		offset	: in type_vector_model)
 	is begin
 		move_by (device.position, offset);
-	end set_place_relative;
+	end move_by;
 
 
 
