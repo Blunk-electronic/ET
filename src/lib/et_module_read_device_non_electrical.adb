@@ -264,8 +264,8 @@ package body et_module_read_device_non_electrical is
 			validate_prefix;
 
 			-- Assign the cursor to the package model;
-			device.model_cursor :=
-				et_package_library.get_package_model (package_model_name);
+			device.set_package_model (
+				et_package_library.get_package_model (package_model_name));
 
 			-- Assign the package position:
 			device.set_place (get_place (device_position));
@@ -454,7 +454,7 @@ package body et_module_read_device_non_electrical is
 
 	procedure insert_placeholders is begin
 		-- Insert placeholder collection in temporarily device:
-		device.placeholders := text_placeholders;
+		device.set_placeholders (text_placeholders);
 
 		-- clean up for next collection of placeholders
 		text_placeholders := (others => <>);

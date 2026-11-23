@@ -64,6 +64,8 @@ with et_device_property_level;			use et_device_property_level;
 with et_pcb_signal_layers;				use et_pcb_signal_layers;
 with et_mirroring;						use et_mirroring;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
+with et_logging;						use et_logging;
+with et_object_status;					use et_object_status;
 
 
 package et_device_non_electrical is
@@ -95,27 +97,15 @@ package et_device_non_electrical is
 	-- Despite not having a counterpart in the schematic, these devices
 	-- are modeled via package models:
 
-	type type_device_non_electrical is new  -- CS should be private
+	type type_device_non_electrical is new
 		type_board_object
-	with record
-		-- Text placeholders for value, name, purpose, ...
-		placeholders : type_text_placeholders;
-
-		-- The link to the package model like "../lbr/packages/fiducial.pac":
-		model_cursor : pac_package_models.cursor;
-
-		-- IMPORTANT: When reading the module file, the
-		-- package libraries must have been read beforehand.
-		-- Otherwise a valid cursor can not be assigned
-		-- to the device !
-
-		properties	: type_device_properties;
-	end record;
-
+	with private;
 
 
 	procedure reset_device (
 		device	: in out type_device_non_electrical);
+
+
 
 
 
@@ -157,16 +147,6 @@ package et_device_non_electrical is
 
 
 
--- PLACEHOLDERS:
-
-	procedure set_placeholders (
-		device			: in out type_device_non_electrical;
-		placeholders	: in type_text_placeholders);
-
-
-	function get_placeholders (
-		device			: in type_device_non_electrical)
-		return type_text_placeholders;
 
 
 
@@ -260,6 +240,18 @@ package et_device_non_electrical is
 
 -- PLACEHOLDERS:
 
+
+	procedure set_placeholders (
+		device			: in out type_device_non_electrical;
+		placeholders	: in type_text_placeholders);
+
+
+	function get_placeholders (
+		device			: in type_device_non_electrical)
+		return type_text_placeholders;
+
+
+
 	-- Resets the positions of placeholders back to the
 	-- defaults as specified in the package model:
 	procedure reset_placeholder_positions (
@@ -315,6 +307,36 @@ package et_device_non_electrical is
 
 
 
+	-- Sets the proposed-flag of all placeholders which are in the
+	-- given zone around the given place.
+	-- Since the placeholders have a position that is relative to
+	-- the parent package, the absolute package position must also
+	-- be provided.
+	-- Adds to count the number of placeholders that have been found:
+	procedure propose_placeholders (
+		device				: in out type_device_non_electrical;
+		package_position	: in type_board_object; -- CS: no need. already provided in device
+		catch_zone			: in type_catch_zone;
+		count				: in out natural;
+		log_threshold		: in type_log_level);
+
+
+	-- Modifies the status of a placeholder among a given
+	-- list of placeholders. The placeholder is identified by
+	-- the layer, face and the cursor to the placeholder:
+	procedure modify_status (
+		device				: in out type_device_non_electrical;
+		layer				: in type_placeholder_layer;
+		face				: in type_face;
+		placeholder_cursor	: in pac_text_placeholders.cursor;
+		operation			: in type_status_operation);
+
+
+	-- Resets the status of all placeholders:
+	procedure reset_placeholder_status (
+		device : in out type_device_non_electrical);
+
+
 
 
 -- PROPERTIES QUERIES:
@@ -330,6 +352,28 @@ package et_device_non_electrical is
 		level		: in type_properties_level;
 		linebreaks	: in boolean := false)
 		return string;
+
+
+
+
+private
+
+	type type_device_non_electrical is new
+		type_board_object
+	with record
+		-- Text placeholders for value, name, purpose, ...
+		placeholders : type_text_placeholders;
+
+		-- The link to the package model like "../lbr/packages/fiducial.pac":
+		model_cursor : pac_package_models.cursor;
+
+		-- IMPORTANT: When reading the module file, the
+		-- package libraries must have been read beforehand.
+		-- Otherwise a valid cursor can not be assigned
+		-- to the device !
+
+		properties	: type_device_properties;
+	end record;
 
 
 

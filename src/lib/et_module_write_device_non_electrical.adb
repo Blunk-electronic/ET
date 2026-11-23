@@ -152,17 +152,17 @@ package body et_module_write_device_non_electrical is
 
 				layer := SILKSCREEN;
 				face := TOP;
-				device.placeholders.silkscreen.top.iterate (write_placeholder'access);
+				get_placeholders (device).silkscreen.top.iterate (write_placeholder'access);
 
 				face := BOTTOM;
-				device.placeholders.silkscreen.bottom.iterate (write_placeholder'access);
+				get_placeholders (device).silkscreen.bottom.iterate (write_placeholder'access);
 
 				layer := ASSY_DOC;
 				face := TOP;
-				device.placeholders.assy_doc.top.iterate (write_placeholder'access);
+				get_placeholders (device).assy_doc.top.iterate (write_placeholder'access);
 
 				face := BOTTOM;
-				device.placeholders.assy_doc.bottom.iterate (write_placeholder'access);
+				get_placeholders (device).assy_doc.bottom.iterate (write_placeholder'access);
 
 				section_mark (section_placeholders, FOOTER);
 			end query_placeholders;

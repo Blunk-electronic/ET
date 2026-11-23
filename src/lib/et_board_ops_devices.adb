@@ -1277,6 +1277,9 @@ package body et_board_ops_devices is
 			inserted : boolean;
 
 			next_name : type_device_name;
+
+			-- The device to be added:
+			device : type_device_non_electrical;
 		begin
 			-- Build the next available device name:
 			next_name := get_next_available_device_name (
@@ -1287,26 +1290,26 @@ package body et_board_ops_devices is
 
 			log_indentation_up;
 
+			device.set_position (position);
+			device.set_package_model (package_cursor_lib);
+
+			-- Text placeholders in the board drawing:
+			--
+			-- Initially, the text placeholders are copies of
+			-- the placeholders as they are defined in the package model.
+			-- This approach has the following implication:
+			-- If the position of a placeholder in the package model
+			-- is changed AFTER the device has been added to the drawing,
+			-- then it DOES NOT get updated.
+			device.set_placeholders (get_default_placeholders (package_cursor_lib));
+
 			-- Add the non-electrical device to the module:
 			pac_devices_non_electrical.insert (
 				container	=> module.devices_non_electric,
 				inserted	=> inserted,
 				position	=> device_cursor,
 				key			=> next_name,
-				new_item	=> (position with
-					model_cursor	=> package_cursor_lib,
-
-					-- Text placeholders in the board drawing:
-					--
-					-- Initially, the text placeholders are copies of
-					-- the placeholders as they are defined in the package model.
-					-- This approach has the following implication:
-					-- If the position of a placeholder in the package model
-					-- is changed AFTER the device has been added to the drawing,
-					-- then it DOES NOT get updated.
-					placeholders	=> get_default_placeholders (package_cursor_lib),
-
-					others			=> <>)); -- value, purpose, partcode
+				new_item	=> device);
 
 			-- check inserted flag
 			if not inserted then
@@ -3004,7 +3007,7 @@ package body et_board_ops_devices is
 				is begin
 					log (text => to_string (device_name), level => log_threshold + 2);
 
-					propose_placeholders (device.placeholders,
+					propose_placeholders (device,
 						get_position (device), catch_zone, count, log_threshold + 3);
 				end query_device;
 
@@ -3090,7 +3093,7 @@ package body et_board_ops_devices is
 				pragma unreferenced (device_name);
 			begin
 				modify_status (
-					placeholders		=> device.placeholders,
+					device				=> device,
 					layer				=> placeholder.layer,
 					face				=> placeholder.face,
 					placeholder_cursor	=> placeholder.placeholder,
@@ -3233,7 +3236,7 @@ package body et_board_ops_devices is
 					log_indentation_up;
 
 					get_first_placeholder (
-						placeholders		=> device.placeholders,
+						placeholders		=> device.get_placeholders,
 						flag				=> flag,
 						placeholder_cursor	=> result.placeholder,
 						layer				=> result.layer,
@@ -3337,7 +3340,7 @@ package body et_board_ops_devices is
 			is
 				pragma unreferenced (device_name);
 			begin
-				reset_status (device.placeholders);
+				device.reset_placeholder_status;
 			end query_non_electrical_device;
 
 
@@ -3767,7 +3770,7 @@ package body et_board_ops_devices is
 						-- to the given flag. Then iterate through them and append
 						-- them to the result:
 						placeholders := get_placeholder_cursors (
-							device.placeholders, flag, log_threshold + 3);
+							device.get_placeholders, flag, log_threshold + 3);
 
 						log_indentation_up;
 

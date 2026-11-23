@@ -963,7 +963,7 @@ procedure draw_packages is
 		device_name := name;
 		device_value := get_value (device);
 		device_purpose := get_purpose (device);
-		device_placeholders := device.placeholders;
+		device_placeholders := device.get_placeholders;
 
 		-- Fetch the complete position of the device
 		-- (incl. x/y/rotaton/face) from the database:
@@ -989,7 +989,7 @@ procedure draw_packages is
 				-- CS set_place_relative (package_position, get_group_offset);
 
 				-- Draw the package:
-				draw_package (element (device.model_cursor));
+				draw_package (element (device.get_package_model));
 
 				-- Restore the position of the original device
 				-- because the original will be drawn later:
@@ -1011,7 +1011,7 @@ procedure draw_packages is
 		end if;
 
 		-- Draw the package:
-		draw_package (element (device.model_cursor));
+		draw_package (element (device.get_package_model));
 
 	end query_non_electrical_device;
 
@@ -1112,7 +1112,7 @@ procedure draw_packages is
 			device_name := name;
 			device_value := get_value (device);
 			device_purpose := get_purpose (device);
-			device_placeholders := device.placeholders;
+			device_placeholders := device.get_placeholders;
 
 			-- Fetch the complete position of the device
 			-- (incl. x/y/rotaton/face) from the database:
@@ -1124,7 +1124,7 @@ procedure draw_packages is
 			-- CS set_place_relative (package_position, offset);
 
 			-- Draw the package:
-			draw_package (element (device.model_cursor));
+			draw_package (element (device.get_package_model));
 		end query_device;
 
 

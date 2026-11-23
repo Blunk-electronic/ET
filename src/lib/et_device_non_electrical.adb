@@ -138,20 +138,6 @@ package body et_device_non_electrical is
 
 
 
--- PLACEHOLDERS:
-
-	procedure set_placeholders (
-		device			: in out type_device_non_electrical;
-		placeholders	: in type_text_placeholders)
-	is begin
-		device.placeholders := placeholders;
-	end set_placeholders;
-
-
-	function get_placeholders (
-		device			: in type_device_non_electrical)
-		return type_text_placeholders
-	is (device.placeholders);
 
 
 
@@ -284,7 +270,22 @@ package body et_device_non_electrical is
 
 
 
+
 -- PLACEHOLDERS:
+
+	procedure set_placeholders (
+		device			: in out type_device_non_electrical;
+		placeholders	: in type_text_placeholders)
+	is begin
+		device.placeholders := placeholders;
+	end set_placeholders;
+
+
+	function get_placeholders (
+		device			: in type_device_non_electrical)
+		return type_text_placeholders
+	is (device.placeholders);
+
 
 
 	procedure reset_placeholder_positions (
@@ -345,8 +346,44 @@ package body et_device_non_electrical is
 
 
 
+	procedure propose_placeholders (
+		device				: in out type_device_non_electrical;
+		package_position	: in type_board_object;
+		catch_zone			: in type_catch_zone;
+		count				: in out natural;
+		log_threshold		: in type_log_level)
+	is begin
+		propose_placeholders (device.placeholders,
+			get_position (device), catch_zone, count, log_threshold);
+	end propose_placeholders;
 
 
+
+
+	procedure modify_status (
+		device				: in out type_device_non_electrical;
+		layer				: in type_placeholder_layer;
+		face				: in type_face;
+		placeholder_cursor	: in pac_text_placeholders.cursor;
+		operation			: in type_status_operation)
+	is begin
+		modify_status (
+			placeholders		=> device.placeholders,
+			layer				=> layer,
+			face				=> face,
+			placeholder_cursor	=> placeholder_cursor,
+			operation			=> operation);
+
+	end modify_status;
+
+
+
+
+	procedure reset_placeholder_status (
+		device : in out type_device_non_electrical)
+	is begin
+		reset_status (device.placeholders);
+	end reset_placeholder_status;
 
 
 

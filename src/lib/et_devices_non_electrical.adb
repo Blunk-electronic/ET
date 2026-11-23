@@ -210,9 +210,10 @@ package body et_devices_non_electrical is
 		device_cursor	: in pac_devices_non_electrical.cursor)
 		return pac_package_models.cursor
 	is
+		device : type_device_non_electrical renames element (device_cursor);
 		result : pac_package_models.cursor;
 	begin
-		result := element (device_cursor).model_cursor;
+		result := get_package_model (device);
 		return result;
 	end get_package_model;
 
@@ -435,7 +436,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		offset : constant type_vector_model := device.get_place;
 	begin
@@ -472,7 +473,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		offset : constant type_vector_model := device.get_place;
 
@@ -542,7 +543,7 @@ package body et_devices_non_electrical is
 		restrict : type_one_side; -- to be returned
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		unused_rotation : type_rotation_model renames device.get_rotation;
 	begin
@@ -577,7 +578,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		use et_route_restrict.packages;
 		restrict : type_one_side;
@@ -617,7 +618,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		unused_rotation : type_rotation_model renames device.get_rotation;
 	begin
@@ -652,7 +653,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		rotation : type_rotation_model renames device.get_rotation;
 	begin
@@ -701,7 +702,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		rotation : type_rotation_model renames device.get_rotation;
 	begin
@@ -749,7 +750,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		rotation : type_rotation_model renames device.get_rotation;
 
@@ -823,7 +824,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		rotation : type_rotation_model renames device.get_rotation;
 
@@ -862,7 +863,7 @@ package body et_devices_non_electrical is
 						silkscreen := get_silkscreen_objects (packge, TOP);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.placeholders.silkscreen.top;
+						silkscreen.placeholders := device.get_placeholders.silkscreen.top;
 						convert_placeholders_to_texts;
 						rotate_silkscreen_objects (silkscreen, +rotation);
 
@@ -870,7 +871,7 @@ package body et_devices_non_electrical is
 						silkscreen := get_silkscreen_objects (packge, BOTTOM);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.placeholders.silkscreen.bottom;
+						silkscreen.placeholders := device.get_placeholders.silkscreen.bottom;
 						convert_placeholders_to_texts;
 						mirror_silkscreen_objects (silkscreen);
 						rotate_silkscreen_objects (silkscreen, -rotation);
@@ -883,7 +884,7 @@ package body et_devices_non_electrical is
 						silkscreen := get_silkscreen_objects (packge, BOTTOM);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.placeholders.silkscreen.bottom;
+						silkscreen.placeholders := device.get_placeholders.silkscreen.bottom;
 						convert_placeholders_to_texts;
 						rotate_silkscreen_objects (silkscreen, +rotation);
 
@@ -891,7 +892,7 @@ package body et_devices_non_electrical is
 						silkscreen := get_silkscreen_objects (packge, TOP);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.placeholders.silkscreen.top;
+						silkscreen.placeholders := device.get_placeholders.silkscreen.top;
 						convert_placeholders_to_texts;
 						mirror_silkscreen_objects (silkscreen);
 						rotate_silkscreen_objects (silkscreen, -rotation);
@@ -919,7 +920,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		rotation : type_rotation_model renames device.get_rotation;
 
@@ -970,7 +971,7 @@ package body et_devices_non_electrical is
 						assy_doc := get_assy_doc_objects (packge, TOP);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.placeholders.assy_doc.top;
+						assy_doc.placeholders := device.get_placeholders.assy_doc.top;
 						convert_placeholders_to_texts;
 						rotate_assy_doc_objects (assy_doc, +rotation);
 
@@ -978,7 +979,7 @@ package body et_devices_non_electrical is
 						assy_doc := get_assy_doc_objects (packge, BOTTOM);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.placeholders.assy_doc.bottom;
+						assy_doc.placeholders := device.get_placeholders.assy_doc.bottom;
 						convert_placeholders_to_texts;
 						mirror_assy_doc_objects (assy_doc);
 						rotate_assy_doc_objects (assy_doc, -rotation);
@@ -990,7 +991,7 @@ package body et_devices_non_electrical is
 						assy_doc := get_assy_doc_objects (packge, BOTTOM);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.placeholders.assy_doc.bottom;
+						assy_doc.placeholders := device.get_placeholders.assy_doc.bottom;
 						convert_placeholders_to_texts;
 						rotate_assy_doc_objects (assy_doc, +rotation);
 
@@ -998,7 +999,7 @@ package body et_devices_non_electrical is
 						assy_doc := get_assy_doc_objects (packge, TOP);
 
 						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.placeholders.assy_doc.top;
+						assy_doc.placeholders := device.get_placeholders.assy_doc.top;
 						convert_placeholders_to_texts;
 						mirror_assy_doc_objects (assy_doc);
 						rotate_assy_doc_objects (assy_doc, -rotation);
@@ -1024,7 +1025,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		rotation : type_rotation_model renames device.get_rotation;
 	begin
@@ -1057,7 +1058,7 @@ package body et_devices_non_electrical is
 
 		device : type_device_non_electrical renames element (device_cursor);
 
-		packge : constant pac_package_models.cursor := device.model_cursor;
+		packge : constant pac_package_models.cursor := device.get_package_model;
 
 		rotation : type_rotation_model renames device.get_rotation;
 	begin
