@@ -117,7 +117,7 @@ package et_devices_electrical.packages is
 	-- given electrical device:
 	function get_position (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
-		return et_board_coordinates.type_board_object;
+		return type_board_object;
 
 
 
@@ -127,7 +127,7 @@ package et_devices_electrical.packages is
 	-- given electrical device:
 	function get_place (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
-		return et_board_geometry.pac_geometry_2.type_vector_model;
+		return type_vector_model;
 
 
 

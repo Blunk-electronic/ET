@@ -108,7 +108,7 @@ package body et_devices_electrical.packages is
 
 	function get_position (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
-		return et_board_coordinates.type_board_object
+		return type_board_object
 	is
 		device : type_device_electrical renames element (device_cursor);
 	begin
@@ -119,7 +119,7 @@ package body et_devices_electrical.packages is
 
 	function get_place (
 		device_cursor	: in pac_devices_electrical.cursor) -- IC45
-		return et_board_geometry.pac_geometry_2.type_vector_model
+		return type_vector_model
 	is
 		device : type_device_electrical renames element (device_cursor);
 	begin
