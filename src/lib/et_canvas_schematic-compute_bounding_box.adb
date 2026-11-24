@@ -247,11 +247,11 @@ is
 				use pac_units;
 
 
-				procedure query_unit (c : in pac_units.cursor) is
-					unused_unit : type_unit renames element (c);
-				begin
-					null;
-				end query_unit;
+				-- procedure query_unit (c : in pac_units.cursor) is
+				-- 	unused_unit : type_unit renames element (c);
+				-- begin
+				-- 	null; CS
+				-- end query_unit;
 
 
 				procedure query_device (c : in pac_devices_electrical.cursor) is
@@ -261,7 +261,7 @@ is
 						put_line (get_device_name (c));
 					end if;
 
-					iterate (device.units, query_unit'access);
+					-- CS iterate (device.units, query_unit'access);
 				end query_device;
 
 

@@ -42,6 +42,8 @@
 -- with ada.text_io;			use ada.text_io;
 with et_module;							use et_module;
 with et_net_labels;						use et_net_labels;
+
+with et_device_electrical;				use et_device_electrical;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_symbol_ports;					use et_symbol_ports;
 with et_port_names;						use et_port_names;
@@ -167,8 +169,13 @@ package body et_schematic_ops_nets is
 			is
 				use et_units;
 				use et_unit_name;
+				use et_device_electrical;
+				device : type_device_electrical renames element (device_cursor);
 
-				procedure query_units (unit_cursor : in pac_units.cursor) is
+
+				procedure query_unit (
+					unit_cursor : in pac_units.cursor)
+				is
 					use pac_units;
 					unit_position : type_schematic_object;
 					ports : pac_symbol_ports.map;
@@ -202,7 +209,7 @@ package body et_schematic_ops_nets is
 					end query_port;
 
 
-				begin -- query_units
+				begin
 					unit_position := get_position (unit_cursor);
 
 					-- Look at units on the given sheet of place:
@@ -225,16 +232,14 @@ package body et_schematic_ops_nets is
 
 						log_indentation_down;
 					end if;
-				end query_units;
+				end query_unit;
 
 
 			begin -- query_devices
 				--log (text => "device " & to_string (key (device_cursor)), level => log_threshold + 1);
 				--log_indentation_up;
 
-				pac_units.iterate (
-					container	=> element (device_cursor).units,
-					process		=> query_units'access);
+				iterate_units (device, query_unit'access);
 
 				--log_indentation_down;
 			end query_devices;

@@ -2971,7 +2971,7 @@ package body et_board_ops_devices is
 				is begin
 					log (text => to_string (device_name), level => log_threshold + 2);
 
-					propose_placeholders (device.placeholders,
+					propose_placeholders (device,
 						get_position (device), catch_zone, count, log_threshold + 3);
 				end query_device;
 
@@ -3071,6 +3071,7 @@ package body et_board_ops_devices is
 		is
 			pragma unreferenced (module_name);
 
+
 			procedure query_electrical_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
@@ -3078,7 +3079,7 @@ package body et_board_ops_devices is
 				pragma unreferenced (device_name);
 			begin
 				modify_status (
-					placeholders		=> device.placeholders,
+					device				=> device,
 					layer				=> placeholder.layer,
 					face				=> placeholder.face,
 					placeholder_cursor	=> placeholder.placeholder,
@@ -3178,7 +3179,7 @@ package body et_board_ops_devices is
 						log_indentation_up;
 
 						get_first_placeholder (
-							placeholders		=> device.placeholders,
+							placeholders		=> get_placeholders (device),
 							flag				=> flag,
 							placeholder_cursor	=> result.placeholder,
 							layer				=> result.layer,
@@ -3329,7 +3330,7 @@ package body et_board_ops_devices is
 				pragma unreferenced (device_name);
 			begin
 				if is_real (device) then
-					reset_status (device.placeholders);
+					reset_placeholder_status (device);
 				end if;
 			end query_electrical_device;
 
@@ -3687,7 +3688,7 @@ package body et_board_ops_devices is
 							log_indentation_up;
 
 							placeholders := get_placeholder_cursors (
-								device.placeholders, flag, log_threshold + 3);
+								get_placeholders (device), flag, log_threshold + 3);
 
 							log_indentation_up;
 
@@ -4590,6 +4591,11 @@ package body et_board_ops_devices is
 		return type_terminal_position_fine
 	is
 		pragma unreferenced (module_cursor);
+
+		use pac_devices_electrical;
+		device : type_device_electrical renames element (device_cursor);
+		-- CS: use device whenever possible instead of device_cursor.
+
 		-- This is the position of the package as it is in the layout:
 		package_position : type_board_object; -- incl. angle and face
 
@@ -4612,7 +4618,7 @@ package body et_board_ops_devices is
 		model := get_package_model_name (device_cursor);
 
 		-- Get the position of the package as it is in the layout:
-		package_position := pac_devices_electrical.element (device_cursor).position;
+		package_position := get_position (device);
 
 		-- Set the cursor to package model:
 		package_model_cursor := get_package_model (model);

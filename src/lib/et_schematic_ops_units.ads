@@ -58,6 +58,7 @@ with et_object_status;					use et_object_status;
 with et_rotation_docu;					use et_rotation_docu;
 
 with et_device_electrical;				use et_device_electrical;
+with et_device_electrical.units;		use et_device_electrical.units;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_device_partcode;				use et_device_partcode;

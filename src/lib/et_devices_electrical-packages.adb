@@ -90,12 +90,12 @@ package body et_devices_electrical.packages is
 	is
 		use et_pcb_sides;
 		use pac_devices_electrical;
+		d : type_device_electrical renames element (device_cursor);
 	begin
-		if is_real (device_cursor) then
-			log (text => "location in board:" &
-				to_string (element (device_cursor).position.place) &
-				" face" &
-				to_string (get_face (element (device_cursor).position)),
+		if is_real (d) then
+			log (text => "location in board:"
+				& to_string (get_place (d))
+				& " face" & to_string (get_face (d)),
 				level => log_threshold);
 		end if;
 	end log_package_position;
@@ -182,7 +182,7 @@ package body et_devices_electrical.packages is
 						rotate_conductor_objects (conductors, -get_rotation (device));
 				end case;
 
-				move_conductor_objects (conductors, device.position.place);
+				move_conductor_objects (conductors, get_place (device));
 			end if;
 		end if;
 
@@ -223,7 +223,7 @@ package body et_devices_electrical.packages is
 						rotate_conductor_objects (conductors, -get_rotation (device));
 				end case;
 
-				move_conductor_objects (conductors, device.position.place);
+				move_conductor_objects (conductors, get_place (device));
 
 				-- convert conductor objects to polygons:
 				result := to_polygons (conductors, fill_tolerance);
@@ -267,7 +267,7 @@ package body et_devices_electrical.packages is
 						rotate_route_restrict_objects (restrict, -get_rotation (device));
 				end case;
 
-				move_route_restrict_objects (restrict, device.position.place);
+				move_route_restrict_objects (restrict, get_place (device));
 			end if;
 		end if;
 
@@ -308,7 +308,7 @@ package body et_devices_electrical.packages is
 						rotate_route_restrict_objects (restrict, -get_rotation (device));
 				end case;
 
-				move_route_restrict_objects (restrict, device.position.place);
+				move_route_restrict_objects (restrict, get_place (device));
 
 				-- convert restrict objects to polygons:
 				result := to_polygons (restrict, fill_tolerance);
@@ -353,7 +353,7 @@ package body et_devices_electrical.packages is
 						rotate_via_restrict_objects (restrict, -get_rotation (device));
 				end case;
 
-				move_via_restrict_objects (restrict, device.position.place);
+				move_via_restrict_objects (restrict, get_place (device));
 			end if;
 		end if;
 
@@ -410,7 +410,7 @@ package body et_devices_electrical.packages is
 			end case;
 		end if;
 
-		move_keepout_objects (result, device.position.place);
+		move_keepout_objects (result, get_place (device));
 		return result;
 	end get_keepout_objects;
 
@@ -463,7 +463,7 @@ package body et_devices_electrical.packages is
 			end case;
 		end if;
 
-		move_stencil_objects (result, device.position.place);
+		move_stencil_objects (result, get_place (device));
 		return result;
 	end get_stencil_objects;
 
@@ -519,7 +519,7 @@ package body et_devices_electrical.packages is
 					end case;
 			end case;
 
-			move_stopmask_objects (result, device.position.place);
+			move_stopmask_objects (result, get_place (device));
 		end if;
 
 		return result;
@@ -583,7 +583,9 @@ package body et_devices_electrical.packages is
 							silkscreen := get_silkscreen_objects (packge, TOP);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.placeholders.silkscreen.top;
+							silkscreen.placeholders :=
+								get_placeholders_silkscreen (device, TOP);
+
 							convert_placeholders_to_texts;
 							rotate_silkscreen_objects (silkscreen, +rotation);
 
@@ -591,7 +593,9 @@ package body et_devices_electrical.packages is
 							silkscreen := get_silkscreen_objects (packge, BOTTOM);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
+							silkscreen.placeholders :=
+								get_placeholders_silkscreen (device, BOTTOM);
+
 							convert_placeholders_to_texts;
 							mirror_silkscreen_objects (silkscreen);
 							rotate_silkscreen_objects (silkscreen, -rotation);
@@ -604,7 +608,9 @@ package body et_devices_electrical.packages is
 						   silkscreen := get_silkscreen_objects (packge, BOTTOM);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.placeholders.silkscreen.bottom;
+							silkscreen.placeholders :=
+								get_placeholders_silkscreen (device, BOTTOM);
+
 							convert_placeholders_to_texts;
 							rotate_silkscreen_objects (silkscreen, +rotation);
 
@@ -612,14 +618,16 @@ package body et_devices_electrical.packages is
 							silkscreen := get_silkscreen_objects (packge, TOP);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							silkscreen.placeholders := device.placeholders.silkscreen.top;
+							silkscreen.placeholders :=
+								get_placeholders_silkscreen (device, TOP);
+
 							convert_placeholders_to_texts;
 							mirror_silkscreen_objects (silkscreen);
 							rotate_silkscreen_objects (silkscreen, -rotation);
 					end case;
 			end case;
 
-			move_silkscreen_objects (silkscreen, device.position.place);
+			move_silkscreen_objects (silkscreen, get_place (device));
 		end if;
 
 		result := type_silkscreen (silkscreen);
@@ -685,7 +693,9 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, TOP);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.placeholders.assy_doc.top;
+							assy_doc.placeholders :=
+								get_placeholders_assy_doc (device, TOP);
+
 							convert_placeholders_to_texts;
 							rotate_assy_doc_objects (assy_doc, +rotation);
 
@@ -693,7 +703,9 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, BOTTOM);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.placeholders.assy_doc.bottom;
+							assy_doc.placeholders :=
+								get_placeholders_assy_doc (device, BOTTOM);
+
 							convert_placeholders_to_texts;
 							mirror_assy_doc_objects (assy_doc);
 							rotate_assy_doc_objects (assy_doc, -rotation);
@@ -705,7 +717,9 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, BOTTOM);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.placeholders.assy_doc.bottom;
+							assy_doc.placeholders :=
+								get_placeholders_assy_doc (device, BOTTOM);
+
 							convert_placeholders_to_texts;
 							rotate_assy_doc_objects (assy_doc, +rotation);
 
@@ -713,14 +727,16 @@ package body et_devices_electrical.packages is
 							assy_doc := get_assy_doc_objects (packge, TOP);
 
 							-- overwrite the default placeholders: -- CS see spec of this function
-							assy_doc.placeholders := device.placeholders.assy_doc.top;
+							assy_doc.placeholders :=
+								get_placeholders_assy_doc (device, TOP);
+
 							convert_placeholders_to_texts;
 							mirror_assy_doc_objects (assy_doc);
 							rotate_assy_doc_objects (assy_doc, -rotation);
 					end case;
 			end case;
 
-			move_assy_doc_objects (assy_doc, device.position.place);
+			move_assy_doc_objects (assy_doc, get_place (device));
 		end if;
 
 		result := type_assy_doc (assy_doc);
@@ -759,7 +775,7 @@ package body et_devices_electrical.packages is
 					rotate_holes (holes, +rotation);
 			end case;
 
-			move_holes (holes, device.position.place);
+			move_holes (holes, get_place (device));
 		end if;
 
 		return holes;
@@ -799,7 +815,7 @@ package body et_devices_electrical.packages is
 					rotate_holes (holes, +rotation);
 			end case;
 
-			move_holes (holes, device.position.place);
+			move_holes (holes, get_place (device));
 
 			result := to_polygons (holes, fill_tolerance);
 		end if;

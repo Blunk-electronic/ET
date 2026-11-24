@@ -101,9 +101,7 @@ package body et_module_clipboard.devices_electrical is
 
 				-- CS: reset status flags of unit ?
 
-				device.units.insert (
-					key			=> unit_name,
-					new_item	=> unit);
+				add_unit (device, unit_name, unit);
 
 				-- The unit should not exist already.
 				-- Otherwise an exception will be raised here.
@@ -186,7 +184,7 @@ package body et_module_clipboard.devices_electrical is
 			is
 				use et_unit_name;
 				use pac_units;
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -273,7 +271,7 @@ package body et_module_clipboard.devices_electrical is
 			is
 				use et_unit_name;
 				use pac_units;
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 				-- On copying a unit, a new device is created
 				-- indirectly. Here we store the name of the
@@ -305,8 +303,8 @@ package body et_module_clipboard.devices_electrical is
 							unit_cursor		=> unit_cursor,
 							sheet			=> get_sheet (offset),
 							offset			=> get_place (offset),
-							target_device	=> device_created,
-							device_created	=> device_created,
+							target_device	=> device_created, -- CS overlap
+							device_created	=> device_created, -- CS overlap
 							log_threshold	=> log_threshold + 4);
 
 					end copy_in_same_device;

@@ -64,8 +64,11 @@ with et_device_partcode;				use et_device_partcode;
 with et_device_model_names;				use et_device_model_names;
 with et_device_name;					use et_device_name;
 with et_device_library;					use et_device_library;
+
 with et_package_model_name;				use et_package_model_name;
 with et_package_library;				use et_package_library;
+with et_package_variant_name;			use et_package_variant_name;
+
 with et_commit;
 with et_object_status;					use et_object_status;
 
@@ -214,6 +217,14 @@ package et_devices_electrical is
 		process	: not null access procedure (position : in pac_devices_electrical.cursor);
 		proceed	: not null access boolean);
 
+
+
+
+-- PACKAGE VARIANT:
+
+	function get_variant (
+		device : in pac_devices_electrical.cursor)
+		return type_package_variant_name;
 
 
 

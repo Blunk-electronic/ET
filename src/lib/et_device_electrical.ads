@@ -59,6 +59,7 @@ with et_device_name;					use et_device_name;
 with et_device_partcode;				use et_device_partcode;
 with et_device_properties;				use et_device_properties;
 with et_device_library;					use et_device_library;
+with et_device_library.units;			use et_device_library.units;
 with et_device_placeholders.packages;
 
 with et_package_model_name;				use et_package_model_name;
@@ -66,59 +67,19 @@ with et_package_variant_name;			use et_package_variant_name;
 with et_package_variant;				use et_package_variant;
 
 with et_object_status;					use et_object_status;
+with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 with et_logging;						use et_logging;
 
 
 package et_device_electrical is
 
-
-	-- This is a device as it appears in the schematic.
-	type type_device_electrical (  -- CS should be private
+	type type_device_electrical (
 		appearance : type_appearance_schematic)
-	is record
-		-- The link to the device model like
-		-- "../libraries/devices/transistor/pnp.dev"
-		-- is a cursor to the device library:
-		model_cursor : pac_device_models.cursor;
-
-		-- IMPORTANT: When reading the module file, the
-		-- device model must have been read beforehand.
-		-- Otherwise a valid cursor can not be assigned
-		-- to the device !
-
-		-- The deployed units like PWR, A, B, ...
-		-- Virtual devices have only one unit (like the GND symbol).
-		-- Real devices like a single resistor have one unit.
-		-- Real devices like FPGAs have many units (like PWR1, PWR2, GPIO1, GPIO2, ...):
-		units	: pac_units.map;
-
-		case appearance is
-			-- If a device appears in both schematic and layout it has got:
-			when APPEARANCE_PCB =>
-				-- The package variant:
-				variant		: type_package_variant_name; -- D, N
-
-				-- This is layout related. In the layout, the package has a position
-				-- and placeholders for name, value and purpose.
-				-- The assembly side of a package is by default TOP.
-				-- As a result of a flip operation, position.face changes from top to bottom
-				-- or vice versa.
-				-- Flipping a device to top or bottom means it will be drawn
-				-- mirrored along its Y-axis.
-				position	: et_board_coordinates.type_board_object;
-				-- incl. place, rotation, face and status
-
-				-- Text placeholders in the board drawing
-				-- for value, name, purpose, ...
-				placeholders	: et_device_placeholders.packages.type_text_placeholders;
-
-				properties	: type_device_properties;
+	is private;
 
 
-			when APPEARANCE_VIRTUAL => null;
-		end case;
-	end record;
+
 
 
 	-- Returns true if the given device has a physical
@@ -144,6 +105,46 @@ package et_device_electrical is
 
 
 -- UNITS:
+	-- CS: move unit related stuff to child package "units" ?
+
+
+	-- Returns the names of all deployed units:
+	function get_unit_names_deployed (
+		device : in type_device_electrical)
+		return pac_unit_names.list;
+
+
+	-- Returns the total number of units that
+	-- the device provides according to its model:
+	function get_unit_count (
+		device : in type_device_electrical)
+		return natural;
+
+
+	-- Returns the number of units that are deployed:
+	function get_unit_count_deployed (
+		device : in type_device_electrical)
+		return natural;
+
+
+
+	-- Locates the given unit in the given device.
+	-- If the unit can not be located (because it is not
+	-- deployed yet or does not exist at all), then
+	-- the result is no_element:
+	function locate_unit (
+		device	: in type_device_electrical;
+		unit	: in type_unit_name)
+		return pac_units.cursor;
+
+
+	-- Returns true if the specified unit
+	-- is deployed:
+	function is_unit_deployed (
+		device	: in type_device_electrical;
+		unit	: in type_unit_name)
+		return boolean;
+
 
 	procedure set_units (
 		device	: in out type_device_electrical;
@@ -155,7 +156,29 @@ package et_device_electrical is
 		return pac_units.map;
 
 
+	procedure add_unit (
+		device	: in out type_device_electrical;
+		name	: in type_unit_name; -- A, B, C, GPIO1
+		unit	: in type_unit);
 
+
+	procedure delete_unit (
+		device	: in out type_device_electrical;
+		unit	: in type_unit_name);
+
+
+	-- Returns the cursor to the first deployed unit
+	-- of the given device:
+	function get_first_unit (
+		device	: in type_device_electrical)
+		return pac_units.cursor;
+
+
+	-- Iterates the units of the given device
+	-- and calls for each unit the specified procedure:
+	procedure iterate_units (
+		device	: in type_device_electrical;
+		process	: not null access procedure (position : in pac_units.cursor));
 
 
 
@@ -402,6 +425,56 @@ package et_device_electrical is
 	procedure reset_status (
 		device : in out type_device_electrical);
 
+
+
+private
+
+	-- This is a device as it appears in the schematic.
+	type type_device_electrical (
+		appearance : type_appearance_schematic)
+	is record
+		-- The link to the device model like
+		-- "../libraries/devices/transistor/pnp.dev"
+		-- is a cursor to the device library:
+		model_cursor : pac_device_models.cursor;
+
+		-- IMPORTANT: When reading the module file, the
+		-- device model must have been read beforehand.
+		-- Otherwise a valid cursor can not be assigned
+		-- to the device !
+
+		-- The deployed units like PWR, A, B, ...
+		-- Virtual devices have only one unit (like the GND symbol).
+		-- Real devices like a single resistor have one unit.
+		-- Real devices like FPGAs have many units (like PWR1, PWR2, GPIO1, GPIO2, ...):
+		units	: pac_units.map;
+
+		case appearance is
+			-- If a device appears in both schematic and layout it has got:
+			when APPEARANCE_PCB =>
+				-- The package variant:
+				variant		: type_package_variant_name; -- D, N
+
+				-- This is layout related. In the layout, the package has a position
+				-- and placeholders for name, value and purpose.
+				-- The assembly side of a package is by default TOP.
+				-- As a result of a flip operation, position.face changes from top to bottom
+				-- or vice versa.
+				-- Flipping a device to top or bottom means it will be drawn
+				-- mirrored along its Y-axis.
+				position	: et_board_coordinates.type_board_object;
+				-- incl. place, rotation, face and status
+
+				-- Text placeholders in the board drawing
+				-- for value, name, purpose, ...
+				placeholders	: et_device_placeholders.packages.type_text_placeholders;
+
+				properties	: type_device_properties;
+
+
+			when APPEARANCE_VIRTUAL => null;
+		end case;
+	end record;
 
 
 

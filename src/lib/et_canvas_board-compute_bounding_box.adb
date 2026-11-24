@@ -50,6 +50,7 @@ with et_drawing_frame;
 with et_drawing_frame.board;
 
 with et_device_electrical;
+with et_device_electrical.packge;
 with et_devices_electrical;
 with et_devices_electrical.packages;
 
@@ -1645,12 +1646,13 @@ is
 					procedure query_device (
 						device_cursor : in pac_devices_electrical.cursor)
 					is
+						use et_device_electrical.packge;
 						device : type_device_electrical renames element (device_cursor);
 						mirror : type_mirror;
 					begin
 						if is_real (device_cursor) then
 
-							case get_face (device.position) is
+							case get_face (device) is
 								when TOP	=> mirror := MIRROR_NO;
 								when BOTTOM => mirror := MIRROR_ALONG_Y_AXIS;
 							end case;

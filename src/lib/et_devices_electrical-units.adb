@@ -47,6 +47,8 @@ with et_mirroring;
 
 with et_package_variant_name;				use et_package_variant_name;
 
+with et_device_electrical.units;			use et_device_electrical.units;
+
 with et_devices_electrical.packages;
 
 with et_symbol_library;
@@ -60,80 +62,6 @@ with et_package_variant_terminal_port_map;	use et_package_variant_terminal_port_
 
 
 package body et_devices_electrical.units is
-
-
-
-
-	function get_unit_names_deployed (
-		device : in type_device_electrical)
-		return pac_unit_names.list
-	is
-		result : pac_unit_names.list;
-
-		procedure query_unit (c : in pac_units.cursor) is begin
-			result.append (key (c));
-		end query_unit;
-
-	begin
-		device.units.iterate (query_unit'access);
-		return result;
-	end get_unit_names_deployed;
-
-
-
-
-
-
-	function get_unit_count (
-		device : in type_device_electrical)
-		return natural
-	is
-		result : natural;
-		cursor : pac_device_models.cursor;
-	begin
-		-- Get a cursor to the device in the library.
-		-- Map from schematic cursor to library cursor:
-		cursor := get_device_model (device);
-
-		-- Get the number of units from the device model:
-		result := get_unit_count (cursor);
-
-		return result;
-	end get_unit_count;
-
-
-
-
-	function get_unit_count_deployed (
-		device : in type_device_electrical)
-		return natural
-	is (natural (device.units.length));
-
-
-
-
-
-
-
-	function get_first_unit (
-		device : in type_device_electrical)
-		return pac_units.cursor
-	is (device.units.first);
-
-
-
-
-
-
-
-	function locate_unit (
-		device	: in type_device_electrical;
-		unit	: in type_unit_name)
-		return pac_units.cursor
-	is (find (device.units, unit));
-
-
-
 
 
 	function to_string (
@@ -271,7 +199,7 @@ package body et_devices_electrical.units is
 	is
 		-- Locate the given unit in the device:
 		unit_cursor : constant pac_units.cursor :=
-			device.units.find (unit);
+			locate_unit (device, unit);
 
 		result : type_schematic_object;
 
@@ -363,7 +291,7 @@ package body et_devices_electrical.units is
 			-- Locate the given unit in the device.
 			-- If the unit does not exist, then
 			-- unit_cursor will be pointing to it:
-			unit_cursor := device.units.find (unit_name);
+			unit_cursor := locate_unit (device, unit_name);
 
 			-- Get the coordinates of the unit.
 			if has_element (unit_cursor) then
@@ -401,7 +329,7 @@ package body et_devices_electrical.units is
 		is
 			pragma unreferenced (device_name);
 		begin
-			positions := get_unit_positions (device.units);
+			positions := get_unit_positions (device);
 		end get_positions;
 
 	begin
@@ -1074,7 +1002,7 @@ package body et_devices_electrical.units is
 				device		: in type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 			begin
 				-- Iterate through the units and collect properties:
 				while has_element (unit_cursor) loop
@@ -1135,11 +1063,11 @@ package body et_devices_electrical.units is
 
 		-- Get the cursor to the full device model in the library:
 		device_model : constant pac_device_models.cursor :=
-			d.model_cursor;
+			get_device_model (d);
 
 		-- This is the package variant used by the given device:
 		variant_sch : constant type_package_variant_name :=
-			pac_devices_electrical.element (device).variant; -- N, D
+			get_variant (device); -- N, D
 
 
 		use et_device_model;
@@ -1205,36 +1133,6 @@ package body et_devices_electrical.units is
 
 
 
-	procedure copy_unit_to_device (
-		source_unit_cursor	: in pac_units.cursor;
-		sheet				: in type_sheet_relative;
-		offset				: in type_vector_model;
-		target_device		: in out type_device_electrical)
-	is
-		-- Make a copy of the given unit.
-		-- This includes placeholders, position,
-		-- rotation and mirror status:
-		unit : type_unit := get_unit (source_unit_cursor);
-
-		c : pac_units.cursor;
-		inserted : boolean;
-	begin
-		-- Move the unit by the given offset
-		-- and the number of given sheets:
-		move_by (unit, offset);
-		move_by_sheets (unit, sheet);
-
-		-- Insert the unit in the given target device:
-		target_device.units.insert (
-			key			=> key (source_unit_cursor),
-			new_item	=> unit,
-			position	=> c,
-			inserted	=> inserted);
-
-		if not inserted then
-			raise constraint_error; -- CS text message ?
-		end if;
-	end copy_unit_to_device;
 
 
 
@@ -1252,39 +1150,6 @@ package body et_devices_electrical.units is
 
 
 
-	procedure select_unit (
-		device		: in out type_device_electrical;
-		all_units	: in boolean;
-		unit_name	: in type_unit_name)
-	is
-		unit_cursor : pac_units.cursor := device.units.first;
-
-
-		procedure query_unit (
-			unit_name	: in type_unit_name;
-			unit		: in out type_unit)
-		is
-			pragma unreferenced (unit_name);
-		begin
-			set_selected (unit);
-		end query_unit;
-
-
-	begin
-		if all_units then
-			-- Iterate though all units and set each of them
-			-- as selected:
-			while has_element (unit_cursor) loop
-				device.units.update_element (unit_cursor, query_unit'access);
-				next (unit_cursor);
-			end loop;
-
-		else
-			-- Set only the given unit as selected:
-			unit_cursor := locate_unit (device, unit_name);
-			device.units.update_element (unit_cursor, query_unit'access);
-		end if;
-	end select_unit;
 
 
 

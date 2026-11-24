@@ -2352,6 +2352,7 @@ package body et_canvas_schematic_units is
 
 
 			procedure query_name (c : in pac_unit_names.cursor) is
+				unit_name : type_unit_name renames element (c);
 				in_use : boolean := false;
 
 
@@ -2363,7 +2364,7 @@ package body et_canvas_schematic_units is
 					pragma unreferenced (device_name);
 					use pac_units;
 				begin
-					if contains (device.units, element (c)) then
+					if is_unit_deployed (device, unit_name) then
 						in_use := true;
 					end if;
 				end query_in_use;
@@ -2377,7 +2378,7 @@ package body et_canvas_schematic_units is
 
 				-- If the unit is available then put its name on the menu:
 				if not in_use then -- unit is available
-					-- put_line ("unit " & to_string (element (c)) & " available");
+					-- put_line ("unit " & to_string (unit_name) & " available");
 
 					units_available := units_available + 1;
 
@@ -2385,7 +2386,7 @@ package body et_canvas_schematic_units is
 					-- the 2nd string of the entry. Procedure cb_fetch_menu_unit_select expects
 					-- it at this place:
 					item := gtk_menu_item_new_with_label (
-						"unit " & to_string (element (c)));
+						"unit " & to_string (unit_name));
 
 					-- Connect the item with the "activate" signal which
 					-- in turn calls procedure cb_fetch_menu_unit_select:

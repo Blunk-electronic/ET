@@ -202,6 +202,53 @@ package body et_device_electrical.packge is
 
 -- PLACEHOLDERS:
 
+	procedure set_placeholders (
+		device			: in out type_device_electrical;
+		placeholders	: in type_text_placeholders)
+	is begin
+		device.placeholders := placeholders;
+	end set_placeholders;
+
+
+
+	function get_placeholders_silkscreen (
+		device	: in type_device_electrical;
+		face	: in type_face)
+		return pac_text_placeholders.vector
+	is begin
+		case face is
+			when TOP =>
+				return device.placeholders.silkscreen.top;
+
+			when BOTTOM =>
+				return device.placeholders.silkscreen.bottom;
+		end case;
+	end get_placeholders_silkscreen;
+
+
+
+	function get_placeholders_assy_doc (
+		device	: in type_device_electrical;
+		face	: in type_face)
+		return pac_text_placeholders.vector
+	is begin
+		case face is
+			when TOP =>
+				return device.placeholders.assy_doc.top;
+
+			when BOTTOM =>
+				return device.placeholders.assy_doc.bottom;
+		end case;
+	end get_placeholders_assy_doc;
+
+
+
+	function get_placeholders (
+		device			: in type_device_electrical)
+		return type_text_placeholders
+	is (device.placeholders);
+
+
 
 	procedure reset_placeholder_positions (
 		device		: in out type_device_electrical)
@@ -222,6 +269,54 @@ package body et_device_electrical.packge is
 	end reset_placeholder_positions;
 
 
+
+
+	procedure iterate_placeholders_silkscreen (
+		device	: in type_device_electrical;
+		face	: in type_face;
+		process	: not null access procedure (position : in pac_text_placeholders.cursor))
+	is
+		use pac_text_placeholders;
+		c : pac_text_placeholders.cursor;
+	begin
+		case face is
+			when TOP =>
+				c := device.placeholders.silkscreen.top.first;
+
+			when BOTTOM =>
+				c := device.placeholders.silkscreen.bottom.first;
+		end case;
+
+		while has_element (c) loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate_placeholders_silkscreen;
+
+
+
+
+	procedure iterate_placeholders_assy_doc (
+		device	: in type_device_electrical;
+		face	: in type_face;
+		process	: not null access procedure (position : in pac_text_placeholders.cursor))
+	is
+		use pac_text_placeholders;
+		c : pac_text_placeholders.cursor;
+	begin
+		case face is
+			when TOP =>
+				c := device.placeholders.assy_doc.top.first;
+
+			when BOTTOM =>
+				c := device.placeholders.assy_doc.bottom.first;
+		end case;
+
+		while has_element (c) loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate_placeholders_assy_doc;
 
 
 
@@ -258,6 +353,49 @@ package body et_device_electrical.packge is
 			face, index, coordinates, rotation);
 
 	end rotate_placeholder;
+
+
+
+
+	procedure propose_placeholders (
+		device				: in out type_device_electrical;
+		package_position	: in type_board_object; -- CS: no need. already provided in device
+		catch_zone			: in type_catch_zone;
+		count				: in out natural;
+		log_threshold		: in type_log_level)
+	is begin
+		propose_placeholders (device.placeholders,
+			package_position, catch_zone, count, log_threshold);
+
+	end propose_placeholders;
+
+
+
+
+	procedure modify_status (
+		device				: in out type_device_electrical;
+		layer				: in type_placeholder_layer;
+		face				: in type_face;
+		placeholder_cursor	: in pac_text_placeholders.cursor;
+		operation			: in type_status_operation)
+	is begin
+		modify_status (
+			placeholders		=> device.placeholders,
+			layer				=> layer,
+			face				=> face,
+			placeholder_cursor	=> placeholder_cursor,
+			operation			=> operation);
+
+	end modify_status;
+
+
+
+	procedure reset_placeholder_status (
+		device : in out type_device_electrical)
+	is begin
+		reset_status (device.placeholders);
+	end reset_placeholder_status;
+
 
 
 end et_device_electrical.packge;

@@ -899,12 +899,12 @@ procedure draw_packages is
 			device_name := name;
 			device_value := get_value (device);
 			device_purpose := get_purpose (device);
-			device_placeholders := device.placeholders;
+			device_placeholders := get_placeholders (device);
 
 			-- Get the name of the package model
 			-- according to the package variant:
 			package_model_name := get_package_model (
-				device.model_cursor, device.variant);
+				get_device_model (device), get_variant (device));
 
 			-- Get the original package position from the database.
 			-- This is the place where the original package

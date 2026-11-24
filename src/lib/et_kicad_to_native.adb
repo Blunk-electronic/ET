@@ -128,6 +128,7 @@ with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
 with et_object_status;
 with et_device_electrical;
+with et_device_electrical.packge;
 with et_devices_electrical;
 
 
@@ -2679,7 +2680,6 @@ package body et_kicad_to_native is
 		is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
-
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : constant character_mapping := to_mapping ("./", "_-");
 
@@ -2768,13 +2768,17 @@ package body et_kicad_to_native is
 
 							set_mirror_status (unit_native_virtual, element (unit_cursor_kicad).mirror);
 
-							et_units.pac_units.insert (
-								container	=> component.units,
-								key			=> key (unit_cursor_kicad),
-								position	=> unit_cursor_native,
-								inserted	=> unit_inserted,
-								new_item	=> unit_native_virtual);
+							-- et_units.pac_units.insert (
+							-- 	container	=> component.units,
+							-- 	key			=> key (unit_cursor_kicad),
+							-- 	position	=> unit_cursor_native,
+							-- 	inserted	=> unit_inserted,
+							-- 	new_item	=> unit_native_virtual);
 
+							add_unit (
+								device	=> component,
+								name	=> key (unit_cursor_kicad), -- A, C
+								unit	=> unit_native_virtual);
 
 						when APPEARANCE_PCB => -- real device
 							-- unit_native_real := (
@@ -2815,12 +2819,17 @@ package body et_kicad_to_native is
 									-- does not know such a thing:
 									purpose		=> (meaning => PURPOSE, others => <>)));
 
-							et_units.pac_units.insert (
-								container	=> component.units,
-								key			=> key (unit_cursor_kicad),
-								position	=> unit_cursor_native,
-								inserted	=> unit_inserted,
-								new_item	=> unit_native_real);
+							-- et_units.pac_units.insert (
+							-- 	container	=> component.units,
+							-- 	key			=> key (unit_cursor_kicad),
+							-- 	position	=> unit_cursor_native,
+							-- 	inserted	=> unit_inserted,
+							-- 	new_item	=> unit_native_real);
+
+							add_unit (
+								device	=> component,
+								name	=> key (unit_cursor_kicad), -- A, C
+								unit	=> unit_native_real);
 
 					end case;
 
@@ -2835,6 +2844,7 @@ package body et_kicad_to_native is
 
 			procedure copy_real is
 				device : type_device_electrical (APPEARANCE_PCB);
+				use et_device_electrical.packge;
 			begin
 --						log (text => "placeholders silk top" & count_type'image (et_package_library.pac_text_placeholders.length (
 --							element (component_cursor_kicad).text_placeholders.silkscreen.top)));
@@ -2855,12 +2865,12 @@ package body et_kicad_to_native is
 					library	=> element (component_cursor_kicad).library_name,
 					device	=> element (component_cursor_kicad).generic_name);
 
-				device.model_cursor	:= get_device_model (model_name);
+				set_device_model (device, get_device_model (model_name));
 				set_value (device, element (component_cursor_kicad).value);
-				device.variant := element (component_cursor_kicad).variant;
+				set_variant (device, element (component_cursor_kicad).variant);
 
-				device.position := element (component_cursor_kicad).position;
-				device.placeholders	:= element (component_cursor_kicad).text_placeholders;
+				set_position (device, element (component_cursor_kicad).position);
+				set_placeholders (device, element (component_cursor_kicad).text_placeholders);
 
 				pac_devices_electrical.insert (
 					container	=> module.devices,
@@ -2870,6 +2880,32 @@ package body et_kicad_to_native is
 					inserted	=> component_inserted); -- should always be true
 
 			end copy_real;
+
+
+			procedure copy_virtual is
+				device : type_device_electrical (APPEARANCE_VIRTUAL);
+			begin
+				-- The link to the device model is a composition
+				-- of path,file and generic name:
+				model_name := concatenate_lib_name_and_generic_name (
+					library	=> element (component_cursor_kicad).library_name,
+					device	=> element (component_cursor_kicad).generic_name);
+
+				set_device_model (device, get_device_model (model_name));
+
+				-- NOTE: The value of virtual components (like power symbols)
+				-- is discarded here.
+
+				-- No units at this time.
+
+				pac_devices_electrical.insert (
+					container	=> module.devices,
+					key			=> key (component_cursor_kicad), -- PWR04, FLG01
+					position	=> component_cursor_native,
+					new_item	=> device,
+					inserted	=> component_inserted); -- should always be true
+
+			end copy_virtual;
 
 
 		begin -- copy_components
@@ -2890,30 +2926,7 @@ package body et_kicad_to_native is
 				-- Kicad stuff like the boolean power_flag is ignored.
 				case element (component_cursor_kicad).appearance is
 					when APPEARANCE_VIRTUAL =>
-						-- CS: procedure copy_virtual
-
-						-- The link to the device model is a composition
-						-- of path,file and generic name:
-						model_name := concatenate_lib_name_and_generic_name (
-							library	=> element (component_cursor_kicad).library_name,
-							device	=> element (component_cursor_kicad).generic_name);
-
-
-						pac_devices_electrical.insert (
-							container	=> module.devices,
-							key			=> key (component_cursor_kicad), -- PWR04, FLG01
-							position	=> component_cursor_native,
-							new_item	=> (
-								appearance		=> APPEARANCE_VIRTUAL,
-								model_cursor	=> get_device_model (model_name),
-
-								-- NOTE: The value of virtual components (like power symbols)
-								-- is discarded here.
-
-								others		=> <>), -- unit list is empty at this time
-
-							inserted	=> component_inserted); -- should always be true
-
+						copy_virtual;
 
 					when APPEARANCE_PCB =>
 						copy_real;

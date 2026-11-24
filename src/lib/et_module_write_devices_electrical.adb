@@ -132,7 +132,7 @@ package body et_module_write_devices_electrical is
 			use et_units;
 			use pac_units;
 
-			unit_cursor : pac_units.cursor := device.units.first;
+			unit_cursor : pac_units.cursor := get_first_unit (device);
 			-- CS: use renames instead of element (unit_cursor)
 			-- in the code below.
 
@@ -258,17 +258,17 @@ package body et_module_write_devices_electrical is
 
 			layer := SILKSCREEN;
 			face := TOP;
-			device.placeholders.silkscreen.top.iterate (write_placeholder'access);
+			iterate_placeholders_silkscreen (device, TOP, write_placeholder'access);
 
 			face := BOTTOM;
-			device.placeholders.silkscreen.bottom.iterate (write_placeholder'access);
+			iterate_placeholders_silkscreen (device, BOTTOM, write_placeholder'access);
 
 			layer := ASSY_DOC;
 			face := TOP;
-			device.placeholders.assy_doc.top.iterate (write_placeholder'access);
+			iterate_placeholders_assy_doc (device, TOP, write_placeholder'access);
 
 			face := BOTTOM;
-			device.placeholders.assy_doc.bottom.iterate (write_placeholder'access);
+			iterate_placeholders_assy_doc (device, BOTTOM, write_placeholder'access);
 
 			section_mark (section_placeholders, FOOTER);
 		end query_placeholders;
@@ -309,7 +309,7 @@ package body et_module_write_devices_electrical is
 					end if;
 
 					write (keyword => keyword_variant,
-						parameters => to_string (device.variant));
+						parameters => to_string (get_variant (device)));
 
 					-- write the partcode if a partcode exists for the device;
 					if has_partcode (device) then

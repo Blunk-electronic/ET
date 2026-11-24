@@ -979,7 +979,7 @@ procedure draw_units is
 			device		: in type_device_electrical)
 		is
 			use pac_units;
-			unit_cursor : pac_units.cursor := device.units.first;
+			unit_cursor : pac_units.cursor := get_first_unit (device);
 
 			-- Get the device model of the candidate device:
 			device_cursor_lib : constant pac_device_models.cursor := get_device_model (device);
@@ -1356,7 +1356,7 @@ procedure draw_units is
 			device		: in type_device_electrical)
 		is
 			use pac_units;
-			unit_cursor : pac_units.cursor := device.units.first;
+			unit_cursor : pac_units.cursor := get_first_unit (device);
 
 			-- Get the device model of the candidate device:
 			device_cursor_lib : constant pac_device_models.cursor :=

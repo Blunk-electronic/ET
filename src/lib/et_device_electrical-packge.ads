@@ -253,10 +253,44 @@ package et_device_electrical.packge is
 -- PLACEHOLDERS:
 
 
+	procedure set_placeholders (
+		device			: in out type_device_electrical;
+		placeholders	: in type_text_placeholders);
+
+
+	function get_placeholders_silkscreen (
+		device	: in type_device_electrical;
+		face	: in type_face)
+		return pac_text_placeholders.vector;
+
+
+	function get_placeholders_assy_doc (
+		device	: in type_device_electrical;
+		face	: in type_face)
+		return pac_text_placeholders.vector;
+
+
+	function get_placeholders (
+		device			: in type_device_electrical)
+		return type_text_placeholders;
+
+
 	-- Resets the positions of placeholders back to the
 	-- defaults as specified in the package model:
 	procedure reset_placeholder_positions (
 		device : in out type_device_electrical);
+
+
+	procedure iterate_placeholders_silkscreen (
+		device	: in type_device_electrical;
+		face	: in type_face;
+		process	: not null access procedure (position : in pac_text_placeholders.cursor));
+
+
+	procedure iterate_placeholders_assy_doc (
+		device	: in type_device_electrical;
+		face	: in type_face;
+		process	: not null access procedure (position : in pac_text_placeholders.cursor));
 
 
 
@@ -305,6 +339,40 @@ package et_device_electrical.packge is
 		index		: in type_placeholder_index; -- 1, 2, 3, ...
 		coordinates	: in type_coordinates;
 		rotation	: in type_rotation_model);
+
+
+
+	-- Sets the proposed-flag of all placeholders which are in the
+	-- given zone around the given place.
+	-- Since the placeholders have a position that is relative to
+	-- the parent package, the absolute package position must also
+	-- be provided.
+	-- Adds to count the number of placeholders that have been found:
+	procedure propose_placeholders (
+		device				: in out type_device_electrical;
+		package_position	: in type_board_object; -- CS: no need. already provided in device
+		catch_zone			: in type_catch_zone;
+		count				: in out natural;
+		log_threshold		: in type_log_level);
+
+
+
+	-- Modifies the status of a placeholder among a given
+	-- list of placeholders. The placeholder is identified by
+	-- the layer, face and the cursor to the placeholder:
+	procedure modify_status (
+		device				: in out type_device_electrical;
+		layer				: in type_placeholder_layer;
+		face				: in type_face;
+		placeholder_cursor	: in pac_text_placeholders.cursor;
+		operation			: in type_status_operation);
+
+
+
+	-- Resets the status of all placeholders:
+	procedure reset_placeholder_status (
+		device : in out type_device_electrical);
+
 
 end et_device_electrical.packge;
 

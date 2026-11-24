@@ -78,50 +78,6 @@ package et_devices_electrical.units is
 
 
 
-	-- Returns the names of all deployed units:
-	function get_unit_names_deployed (
-		device : in type_device_electrical)
-		return pac_unit_names.list;
-
-
-	-- Returns the total number of units that
-	-- the device provides according to its model:
-	function get_unit_count (
-		device : in type_device_electrical)
-		return natural;
-
-
-	-- Returns the number of units that are deployed:
-	function get_unit_count_deployed (
-		device : in type_device_electrical)
-		return natural;
-
-
-
-
-
-
-	-- Returns the cursor to the first deployed unit
-	-- of the given device:
-	function get_first_unit (
-		device : in type_device_electrical)
-		return pac_units.cursor;
-
-
-
-
-
-
-	-- Locates the given unit in the given device.
-	-- If the unit can not be located (because it is not
-	-- deployed yet or does not exist at all), then
-	-- the result is no_element:
-	function locate_unit (
-		device	: in type_device_electrical;
-		unit	: in type_unit_name)
-		return pac_units.cursor;
-
-
 
 	-- The result of a unit query is of this type:
 	type type_unit_query (exists : boolean := false) is record
@@ -436,21 +392,6 @@ package et_devices_electrical.units is
 
 
 
-	-- Copies a unit into the given device. The copy
-	-- will be placed by the given number of sheets and
-	-- the given offset (x/y) away from the original unit.
-	-- CS:
-	-- 1. Currently the caller must ensure that the unit
-	--    can become a part of the given device as specified.
-	--    The source device and the target device must have the
-	--    same device model.
-	-- 2. If the unit already exists in the given device,
-	--    then an exception is raised.
-	procedure copy_unit_to_device (
-		source_unit_cursor	: in pac_units.cursor;
-		sheet				: in type_sheet_relative;
-		offset				: in type_vector_model;
-		target_device		: in out type_device_electrical);
 
 
 
@@ -467,17 +408,6 @@ package et_devices_electrical.units is
 	function to_string (
 		mode : in type_device_search_mode)
 		return string;
-
-
-
-	-- Sets all units or an explicitly given unit as selected.
-	-- If all_units is true, then the parameter "unit" is ignored:
-	procedure select_unit (
-		device		: in out type_device_electrical;
-		all_units	: in boolean;
-		unit_name	: in type_unit_name);
-
-
 
 
 end et_devices_electrical.units;

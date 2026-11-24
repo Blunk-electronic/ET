@@ -55,6 +55,7 @@ with et_device_partcode;
 with et_device_purpose;
 with et_device_name;
 with et_device_electrical;				use et_device_electrical;
+with et_device_electrical.packge;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_unit;					use et_device_unit;
 with et_units;							use et_units;
@@ -1197,8 +1198,8 @@ package body et_kicad_v6_to_native is
 				element	: in out type_device_electrical)
 			is
 				pragma unreferenced (key);
-				unit_inserted	: boolean;
-				unit_cursor		: pac_units.cursor;
+				-- unit_inserted	: boolean;
+				-- unit_cursor		: pac_units.cursor;
 
 				-- unit_position : constant type_object_position := to_position (
 				-- 	point		=> flip_sheet_y (sym.position, containing.data.paper_height),
@@ -1254,12 +1255,14 @@ package body et_kicad_v6_to_native is
 						end;
 				end case;
 
-				pac_units.insert (
-					container	=> element.units,
-					key			=> unit_name,
-					position	=> unit_cursor,
-					inserted	=> unit_inserted,
-					new_item	=> new_unit);
+				-- pac_units.insert (
+				-- 	container	=> element.units,
+				-- 	key			=> unit_name,
+				-- 	position	=> unit_cursor,
+				-- 	inserted	=> unit_inserted,
+				-- 	new_item	=> new_unit);
+
+				add_unit (element, unit_name, new_unit);
 			end add_unit;
 
 		begin
@@ -1317,7 +1320,7 @@ package body et_kicad_v6_to_native is
 					declare
 						device : type_device_electrical (APPEARANCE_VIRTUAL);
 					begin
-						device.model_cursor := model_cursor;
+						set_device_model (device, model_cursor);
 
 						pac_devices_electrical.insert (
 							container	=> module.devices,
@@ -1330,15 +1333,16 @@ package body et_kicad_v6_to_native is
 				when APPEARANCE_PCB =>
 					declare
 						device : type_device_electrical (APPEARANCE_PCB);
+						use et_device_electrical.packge;
 					begin
 						set_value (device, sanitize_device_value (to_string (inst.value)));
 						set_partcode (device, et_device_partcode.to_partcode (et_device_partcode.partcode_default));
 						set_purpose	(device, extract_purpose (sym.properties));
 
-						device.position := et_board_coordinates.package_position_default;
-						device.model_cursor	:= model_cursor;
+						set_position (device, et_board_coordinates.package_position_default);
+						set_device_model (device, model_cursor);
 
-						device.variant := et_package_variant_name.to_variant_name (placeholder_not_assigned);
+						set_variant (device, et_package_variant_name.to_variant_name (placeholder_not_assigned));
 						-- No footprint/package data in this KiCad
 						-- schematic-only project (out of scope --
 						-- see the package spec) -- et_module_write

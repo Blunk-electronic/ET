@@ -104,7 +104,7 @@ package body et_devices_electrical is
 	is
 		d : type_device_electrical renames element (device);
 	begin
-		return d.model_cursor;
+		return get_device_model (d);
 	end get_device_model;
 
 
@@ -153,7 +153,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			set_selected (device.position.status);
+			set_selected (device);
 		end if;
 	end set_selected;
 
@@ -164,7 +164,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			clear_selected (device.position.status);
+			clear_selected (device);
 		end if;
 	end clear_selected;
 
@@ -175,7 +175,7 @@ package body et_devices_electrical is
 		return boolean
 	is begin
 		if is_real (device) then
-			if is_selected (device.position.status) then
+			if is_selected (device) then
 				return true;
 			else
 				return false;
@@ -192,7 +192,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			set_proposed (device.position.status);
+			set_proposed (device);
 		end if;
 	end set_proposed;
 
@@ -202,7 +202,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			clear_proposed (device.position.status);
+			clear_proposed (device);
 		end if;
 	end clear_proposed;
 
@@ -213,7 +213,7 @@ package body et_devices_electrical is
 		return boolean
 	is begin
 		if is_real (device) then
-			if is_proposed (device.position.status) then
+			if is_proposed (device) then
 				return true;
 			else
 				return false;
@@ -229,7 +229,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			set_moving (device.position.status);
+			set_moving (device);
 		end if;
 	end set_moving;
 
@@ -238,7 +238,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			clear_moving (device.position.status);
+			clear_moving (device);
 		end if;
 	end clear_moving;
 
@@ -249,7 +249,7 @@ package body et_devices_electrical is
 		return boolean
 	is begin
 		if is_real (device) then
-			if is_moving (device.position.status) then
+			if is_moving (device) then
 				return true;
 			else
 				return false;
@@ -270,7 +270,7 @@ package body et_devices_electrical is
 		operation	: in type_status_operation)
 	is begin
 		if is_real (device) then
-			modify_status (device.position.status, operation);
+			modify_status (device, operation);
 		end if;
 	end modify_status;
 
@@ -281,7 +281,7 @@ package body et_devices_electrical is
 		device : in out type_device_electrical)
 	is begin
 		if is_real (device) then
-			reset_status (device.position.status);
+			reset_status (device);
 		end if;
 	end reset_status;
 
@@ -432,9 +432,24 @@ package body et_devices_electrical is
 
 
 
+-- PACKAGE VARIANT:
+
+	function get_variant (
+		device : in pac_devices_electrical.cursor)
+		return type_package_variant_name
+	is
+		d : type_device_electrical renames element (device);
+	begin
+		return get_variant (d);
+	end get_variant;
 
 
 
+
+
+
+
+-- PACKAGE MODEL:
 
 	function get_package_model_name (
 		device : in pac_devices_electrical.cursor)
@@ -443,11 +458,10 @@ package body et_devices_electrical is
 		use et_device_library.packages;
 		d : type_device_electrical renames element (device);
 	begin
-		return get_package_model (d.model_cursor, d.variant);
+		return get_package_model (
+			get_device_model (d),
+			get_variant (d));
 	end get_package_model_name;
-
-
-
 
 
 

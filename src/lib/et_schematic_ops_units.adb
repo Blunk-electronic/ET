@@ -139,14 +139,16 @@ package body et_schematic_ops_units is
 		device_cursor : pac_devices_electrical.cursor;
 		unit_cursor : pac_units.cursor; -- to be returned
 
+
 		procedure query_units (
 			device_name	: in type_device_name; -- R2
 			device		: in type_device_electrical)
 		is
 			pragma unreferenced (device_name);
 		begin
-			unit_cursor := find (device.units, unit);
+			unit_cursor := locate_unit (device, unit);
 		end query_units;
+
 
 	begin -- locate_unit
 		device_cursor := get_electrical_device (module_cursor, device);
@@ -207,7 +209,7 @@ package body et_schematic_ops_units is
 				device		: in type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 				use pac_symbol_ports;
 				ports : pac_symbol_ports.map;
 				use et_port_names;
@@ -289,7 +291,7 @@ package body et_schematic_ops_units is
 				ports : pac_symbol_ports.map;
 				use et_port_names;
 			begin
-				if contains (device.units, unit_name) then
+				if is_unit_deployed (device, unit_name) then
 					if length (port_name) > 0 then -- search for port in unit
 
 						-- Get the unit ports from the symbol model:
@@ -366,9 +368,9 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is
-			pragma unreferenced (device_name);
+				pragma unreferenced (device_name);
 			begin
-				if contains (device.units, element (c)) then
+				if is_unit_deployed (device, element (c)) then
 					in_use := true;
 				end if;
 			end query_in_use;
@@ -468,9 +470,9 @@ package body et_schematic_ops_units is
 			device_name	: in type_device_name;
 			device		: in type_device_electrical)
 		is
-		pragma unreferenced (device_name);
+			pragma unreferenced (device_name);
 		begin
-			if contains (device.units, unit_name) then
+			if is_unit_deployed (device, unit_name) then
 				available := false;
 			end if;
 		end query_in_use;
@@ -543,7 +545,7 @@ package body et_schematic_ops_units is
 
 
 		begin
-			device.units.iterate (query_unit'access);
+			iterate_units (device, query_unit'access);
 		end query_units;
 
 
@@ -597,7 +599,7 @@ package body et_schematic_ops_units is
 			unit_cursor : pac_units.cursor;
 		begin
 			-- Locate the given unit in the given device:
-			unit_cursor := find (device.units, unit);
+			unit_cursor := locate_unit (device, unit);
 
 			-- Get the position of the unit:
 			unit_position := get_position (element (unit_cursor));
@@ -1062,7 +1064,7 @@ package body et_schematic_ops_units is
 
 --			if device_cursor_sch /= pac_devices_electrical.no_element then
 
-				variant := element (device_cursor_sch).variant;
+				variant := get_variant (element (device_cursor_sch));
 
 				-- get the name of the device model (or the generic name)
 				device_cursor_lib := get_device_model (device_cursor_sch);
@@ -1155,7 +1157,7 @@ package body et_schematic_ops_units is
 					device_cursor_sch, unit_cursor);
 
 				-- Delete the unit:
-				device.units.delete (unit_cursor);
+				delete_unit (device, unit_name);
 			end query_device;
 
 
@@ -1715,30 +1717,11 @@ package body et_schematic_ops_units is
 			is
 				pragma unreferenced (device_name);
 
-				-- Does the actual move of the unit:
-				procedure move_unit (
-					unit_name	: in type_unit_name;
-					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
-					case coordinates is
-						when ABSOLUTE =>
-							-- build the new position while preserving rotation:
-							set_place (unit, destination);
-							set_sheet (unit, type_sheet (sheet));
-
-						when RELATIVE =>
-							move_by_sheets (unit, sheet);
-							move_by (unit, destination);
-							-- rotation remains as it is
-					end case;
-				end move_unit;
-
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
-				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
+				unit_cursor : constant pac_units.cursor :=
+					locate_unit (device, unit_name);
 
 			begin
 				-- Get the sheet where the unit is BEFORE the move operation:
@@ -1749,11 +1732,7 @@ package body et_schematic_ops_units is
 				ports_old := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 
-				update_element (
-					container	=> device.units,
-					position	=> unit_cursor,
-					process		=> move_unit'access);
-
+				move_unit (device, unit_name, coordinates, destination, sheet);
 
 				-- Get the sheet where the unit is AFTER the move operation:
 				sheet_new := get_sheet (device_cursor_sch, unit_cursor);
@@ -1875,30 +1854,8 @@ package body et_schematic_ops_units is
 				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-				unit_cursor : pac_units.cursor := device.units.first;
-
-
-				-- Moves the unit candidate by the given offset
-				-- if it is on the given sheet_old:
-				procedure query_unit (
-					unit_name	: in type_unit_name;
-					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
-					if get_sheet (unit) = sheet_old then
-						move_by_sheets (unit, offset);
-					end if;
-				end query_unit;
-
-
 			begin
-				-- Iterate trough the units of the device candidate:
-				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
-
-					next (unit_cursor);
-				end loop;
+				move_units_by_sheets (device, sheet_old, offset);
 			end query_device;
 
 
@@ -2136,7 +2093,7 @@ package body et_schematic_ops_units is
 				-- by its name. If unit_name is empty, locate the first unit.
 				if get_length (unit_name) > 0 then -- locate by name
 
-					unit_cursor := pac_units.find (device.units, unit_name);
+					unit_cursor := locate_unit (device, unit_name);
 
 					if unit_cursor /= pac_units.no_element then -- unit exists
 						exists := true;
@@ -2146,7 +2103,7 @@ package body et_schematic_ops_units is
 					end if;
 
 				else -- locate the first unit:
-					unit_cursor := pac_units.first (device.units);
+					unit_cursor := get_first_unit (device);
 					-- There should be at least one unit. Otherwise raise constraint_error.
 
 					if unit_cursor /= pac_units.no_element then -- unit exists
@@ -2487,33 +2444,10 @@ package body et_schematic_ops_units is
 			is
 				pragma unreferenced (device_name);
 
-				-- Moves the the unit:
-				procedure move_unit (
-					unit_name	: in type_unit_name;
-					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
-					case coordinates is
-						when ABSOLUTE =>
-							-- build the new position. rotation not changed:
-							move_to (unit, destination);
-							set_sheet (unit, sheet);
-
-						when RELATIVE =>
-							move_by (unit, destination);
-							-- The relative sheet change is 0 because
-							-- we only drag the unit across the current sheet.
-							-- The rotation remains as it is.
-					end case;
-				end move_unit;
-
-
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
 				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
-
 			begin
 				-- Get the sheet where the unit is:
 				sheet := get_sheet (device_cursor_sch, unit_cursor);
@@ -2526,10 +2460,7 @@ package body et_schematic_ops_units is
 				ports_old := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 
-				update_element (
-					container	=> device.units,
-					position	=> unit_cursor,
-					process		=> move_unit'access);
+				drag_unit (device, unit_name, coordinates, destination, sheet);
 
 				-- Get the ports of the unit as they are
 				-- AFTER the drag operation:
@@ -2662,31 +2593,6 @@ package body et_schematic_ops_units is
 			is
 				pragma unreferenced (device_name);
 
-				-- Does the actual rotation of the unit:
-				procedure rotate_unit (
-					unit_name	: in type_unit_name;
-					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-
-					use et_device_placeholders.symbols;
-				begin
-					case coordinates is
-						when ABSOLUTE =>
-							set_rotation (unit, rotation);
-
-						when RELATIVE =>
-							rotate_by (unit, rotation);
-					end case;
-
-					-- According to the new rotation of the unit,
-					-- the placeholders must be rotated also. This is
-					-- about the rotation of the about their own origin
-					-- and the rotation about the origin of the unit:
-					rotate_placeholders (unit.placeholders, rotation);
-				end rotate_unit;
-
-
 				-- Locate the targeted unit.
 				-- The unit must exist. Otherwise an exception
 				-- will be raised here:
@@ -2701,11 +2607,7 @@ package body et_schematic_ops_units is
 				ports_old := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 
-				update_element (
-					container	=> device.units,
-					position	=> unit_cursor,
-					process		=> rotate_unit'access);
-
+				rotate_unit (device, unit_name, coordinates, rotation);
 
 				-- Get the sheet where the unit is AFTER the rotate operation:
 				sheet_new := get_sheet (device_cursor_sch, unit_cursor);
@@ -2839,26 +2741,9 @@ package body et_schematic_ops_units is
 			is
 				pragma unreferenced (device_name);
 
-				-- Does the actual mirroring of the unit:
-				procedure mirror_unit (
-					unit_name	: in type_unit_name;
-					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
-					toggle_mirror_status (unit);
-
-					-- The placeholders are left as they are.
-					-- CS: in case this is required indeed, then use
-					-- rotate_placeholders (unit.placeholders, rotation);
-				end mirror_unit;
-
-
 				-- Locate the targeted unit. It must exist.
 				-- Otherwise an exception will be raised here:
 				unit_cursor : constant pac_units.cursor := locate_unit (device, unit_name);
-
-
 			begin
 				-- Get the sheet where the unit is:
 				sheet := get_sheet (device_cursor_sch, unit_cursor);
@@ -2868,11 +2753,7 @@ package body et_schematic_ops_units is
 				ports_old := get_ports_from_schematic (
 					device_cursor_sch, unit_cursor);
 
-				update_element (
-					container	=> device.units,
-					position	=> unit_cursor,
-					process		=> mirror_unit'access);
-
+				mirror_unit (device, unit_name);
 
 				-- Get the ports of the unit as they are
 				-- AFTER the mirror operation:
@@ -3087,7 +2968,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3188,7 +3069,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3428,7 +3309,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3509,7 +3390,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3613,7 +3494,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3719,7 +3600,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3807,7 +3688,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3886,7 +3767,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -3965,7 +3846,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -4067,7 +3948,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -4591,7 +4472,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -4691,7 +4572,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -4778,7 +4659,7 @@ package body et_schematic_ops_units is
 				device_name	: in type_device_name;
 				device		: in type_device_electrical)
 			is
-				unit_cursor : pac_units.cursor := device.units.first;
+				unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 				procedure query_unit (
@@ -5093,7 +4974,7 @@ package body et_schematic_ops_units is
 					name	: in type_device_name;
 					device	: in type_device_electrical)
 				is
-					unit_cursor : pac_units.cursor := device.units.first;
+					unit_cursor : pac_units.cursor := get_first_unit (device);
 
 
 					procedure query_unit (
