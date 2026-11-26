@@ -69,6 +69,7 @@ with et_device_properties;			use et_device_properties;
 with et_device_read;
 
 with et_device_electrical;			use et_device_electrical;
+with et_device_electrical.packge;	use et_device_electrical.packge;
 with et_devices_electrical;
 
 with et_device_non_electrical;
@@ -116,7 +117,7 @@ package body et_module_read_device_electrical is
 	device_purpose	: et_device_purpose.type_device_purpose;
 	device_variant	: et_package_variant_name.type_package_variant_name; -- D, N
 	-- CS: use device_properties instead (see below)
-	device_properties : type_device_properties;
+	device_properties : type_device_properties; -- CS: no need, remove ?
 
 	-- temporarily collection of units:
 	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
@@ -366,22 +367,27 @@ package body et_module_read_device_electrical is
 			procedure add_device_to_schematic is
 				device_cursor : pac_devices_electrical.cursor;
 				device : type_device_electrical (device_appearance);
+
+				use et_board_coordinates;
 			begin
 				log (text => "add device to schematic", level => log_threshold + 2);
 				log_indentation_up;
 
-				device.model_cursor := device_model_cursor;
-				device.units := device_units;
+				set_device_model (device, device_model_cursor);
+				set_units (device, device_units);
 
 				if device_appearance = APPEARANCE_PCB then
-					device.variant := device_variant;
-					device.position := device_position;
-					device.placeholders := device_text_placeholders;
+					set_variant (device, device_variant);
 
-					set_value (device_properties, device_value);
-					set_partcode (device_properties, device_partcode);
-					set_purpose (device_properties, device_purpose);
-					device.properties := device_properties;
+					set_place (device, get_place (device_position));
+					set_rotation (device, get_rotation (device_position));
+					set_face (device, get_face (device_position));
+
+					set_placeholders (device, device_text_placeholders);
+
+					set_value (device, device_value);
+					set_partcode (device, device_partcode);
+					set_purpose (device, device_purpose);
 				end if;
 
 				pac_devices_electrical.insert (

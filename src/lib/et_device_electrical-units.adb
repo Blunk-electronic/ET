@@ -360,6 +360,44 @@ package body et_device_electrical.units is
 
 
 
+
+	procedure modify_status (
+		device		: in out type_device_electrical;
+		unit_cursor	: in pac_units.cursor;
+		operation	: in type_status_operation)
+	is
+
+		procedure query_unit (
+			unit_name	: in type_unit_name;
+			unit		: in out type_unit)
+		is
+			pragma unreferenced (unit_name);
+		begin
+			modify_status (unit, operation);
+		end query_unit;
+
+
+	begin
+		device.units.update_element (unit_cursor, query_unit'access);
+	end modify_status;
+
+
+
+
+	procedure modify_unit (
+		device		: in out type_device_electrical;
+		unit_cursor	: in pac_units.cursor;
+		process		: not null access procedure (
+				name	: in type_unit_name;
+				unit	: in out type_unit))
+	is begin
+		-- CS: not sure if this is correct:
+		device.units.update_element (unit_cursor, process);
+	end modify_unit;
+
+
+
+
 end et_device_electrical.units;
 
 -- Soli Deo Gloria

@@ -84,14 +84,21 @@ package et_units is
 
 
 
+	function get_place (
+		unit_cursor	: in pac_units.cursor)
+		return type_vector_model;
+
+	
+	function get_rotation (
+		unit	: in pac_units.cursor)
+		return type_rotation_model;
+
+
 	function get_position (
 		unit	: in pac_units.cursor)
 		return type_schematic_object;
 
 
-	function get_rotation (
-		unit	: in pac_units.cursor)
-		return type_rotation_model;
 
 
 

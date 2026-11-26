@@ -47,6 +47,8 @@ with ada.exceptions;
 with et_string_processing;					use et_string_processing;
 
 with et_pick_and_place;
+with et_device_electrical;					use et_device_electrical;
+with et_device_electrical.packge;			use et_device_electrical.packge;
 with et_devices_electrical;					use et_devices_electrical;
 -- CS export non electrical devices missing ?
 
@@ -145,7 +147,11 @@ package body et_board_ops_material_pnp is
 					end test_inserted;
 
 
-					procedure query_properties_default (cursor_schematic : in pac_devices_electrical.cursor) is
+					procedure query_properties_default (
+						cursor_schematic : in pac_devices_electrical.cursor)
+					is
+						device : type_device_electrical renames element (cursor_schematic);
+
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						use et_device_appearance;
@@ -153,7 +159,7 @@ package body et_board_ops_material_pnp is
 					begin -- query_properties_default
 
 						-- the device must be real (appearance PCB)
-						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
+						if get_appearance (device) = APPEARANCE_PCB then -- skip virtual devices
 
 							-- the package of the device must be real
 							if is_bom_relevant (cursor_schematic) then
@@ -167,7 +173,7 @@ package body et_board_ops_material_pnp is
 									container	=> pnp,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
-										position	=> apply_position_in_board (element (cursor_schematic).position)),
+										position	=> apply_position_in_board (get_position (device))),
 		--								value		=> element (cursor_schematic).value,
 		--								partcode	=> element (cursor_schematic).partcode,
 		--								purpose		=> element (cursor_schematic).purpose,
@@ -186,6 +192,8 @@ package body et_board_ops_material_pnp is
 					procedure query_properties_variants (
 						cursor_schematic : in pac_devices_electrical.cursor)
 					is
+						device : type_device_electrical renames element (cursor_schematic);
+
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
@@ -195,7 +203,7 @@ package body et_board_ops_material_pnp is
 					begin -- query_properties_variants
 
 						-- the device must be real (appearance PCB)
-						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
+						if get_appearance (device) = APPEARANCE_PCB then -- skip virtual devices
 
 							-- the package of the device must be real
 							if is_bom_relevant (cursor_schematic) then
@@ -214,7 +222,7 @@ package body et_board_ops_material_pnp is
 										container	=> pnp,
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
-											position	=> apply_position_in_board (element (cursor_schematic).position)),
+											position	=> apply_position_in_board (get_position (device))),
 	--										value		=> element (cursor_schematic).value,
 	--										partcode	=> element (cursor_schematic).partcode,
 	--										purpose		=> element (cursor_schematic).purpose,
@@ -242,7 +250,7 @@ package body et_board_ops_material_pnp is
 												container	=> pnp,
 												key			=> device_name, -- IC4, R3
 												new_item	=> (
-													position	=> apply_position_in_board (element (cursor_schematic).position)),
+													position	=> apply_position_in_board (get_position (device))),
 	--												value		=> element (alt_dev_cursor).value,
 	--												partcode	=> element (alt_dev_cursor).partcode,
 	--												purpose		=> element (alt_dev_cursor).purpose,

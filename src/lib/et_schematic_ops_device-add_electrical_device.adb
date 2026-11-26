@@ -110,11 +110,7 @@ is
 			log (text => "add_virtual_device", level => log_threshold + 2);
 			log_indentation_up;
 
-			-- Compose the virtual device:
-			device := (
-				appearance		=> APPEARANCE_VIRTUAL,
-				model_cursor	=> device_cursor_lib,
-				units			=> pac_units.empty_map); -- no units yet
+			set_device_model (device, device_cursor_lib);
 
 			-- Insert the device in the schematic:
 			pac_devices_electrical.insert (
@@ -151,8 +147,8 @@ is
 				set_value (device, get_default_value (device_cursor_lib));
 				-- if predefined in dev. model
 
-				device.model_cursor	:= device_cursor_lib;
-				device.variant := selected_variant;
+				set_device_model (device, device_cursor_lib);
+				set_variant (device, selected_variant);
 
 				-- Text placeholders in the board drawing:
 				--
@@ -162,8 +158,8 @@ is
 				-- If the position of a placeholder in the package model
 				-- is changed AFTER the device has been added to the drawing,
 				-- then it DOES NOT get updated.
-				device.placeholders	:= get_default_placeholders (
-					device_cursor_lib, selected_variant);
+				set_placeholders (device, get_default_placeholders (
+					device_cursor_lib, selected_variant));
 
 				-- Use default position of the device in the layout.
 				-- CS: do not place the package on top of others
@@ -275,11 +271,7 @@ is
 				log (text => "add_virtual", level => log_threshold + 3);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_internal (first_available_unit), -- the unit name like A, B
-					new_item	=> unit);
-
+				add_unit (device, get_name_internal (first_available_unit), unit);
 			end add_virtual;
 
 
@@ -309,11 +301,7 @@ is
 				set_placeholders (unit, placeholders);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_internal (first_available_unit), -- the unit name like A, B, VCC_IO_BANK_1
-					new_item	=> unit);
-
+				add_unit (device, get_name_internal (first_available_unit), unit);
 			end add_real;
 
 
@@ -356,11 +344,7 @@ is
 				log (text => "add_virtual", level => log_threshold + 3);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_external (first_available_unit), -- the unit name like A, B
-					new_item	=> unit);
-
+				add_unit (device, get_name_external (first_available_unit), unit);
 			end add_virtual;
 
 
@@ -395,11 +379,7 @@ is
 				set_placeholders (unit, placeholders);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_external (first_available_unit), -- the unit name like A, B, VCC_IO_BANK_1
-					new_item	=> unit);
-
+				add_unit (device, get_name_external (first_available_unit), unit);
 			end add_real;
 
 

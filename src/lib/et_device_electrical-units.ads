@@ -141,6 +141,22 @@ package et_device_electrical.units is
 		unit_name	: in type_unit_name);
 
 
+	-- Modifies the status of a unit:
+	procedure modify_status (
+		device		: in out type_device_electrical;
+		unit_cursor	: in pac_units.cursor;
+		operation	: in type_status_operation);
+
+
+	-- Calls a procedure that modifies the given
+	-- unit:
+	procedure modify_unit (
+		device		: in out type_device_electrical;
+		unit_cursor	: in pac_units.cursor;
+		process		: not null access procedure (
+				name	: in type_unit_name;
+				unit	: in out type_unit));
+
 
 end et_device_electrical.units;
 

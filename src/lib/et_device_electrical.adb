@@ -215,6 +215,22 @@ package body et_device_electrical is
 
 
 
+	procedure iterate_units (
+		device	: in type_device_electrical;
+		process	: not null access procedure (position : in pac_units.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_units;
+		c : pac_units.cursor := device.units.first;
+	begin
+		while has_element (c) and proceed.all loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate_units;
+
+
+
 
 
 

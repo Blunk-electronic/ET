@@ -1146,7 +1146,7 @@ package body et_schematic_ops_units is
 			is
 				pragma unreferenced (device_name);
 				-- Locate the targeted unit:
-				unit_cursor : pac_units.cursor :=
+				unit_cursor : constant pac_units.cursor :=
 					locate_unit (device, unit_name);
 			begin
 				-- Get the sheet where the unit is:
@@ -2886,34 +2886,23 @@ package body et_schematic_ops_units is
 		is
 			pragma unreferenced (module_name);
 
+
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_electrical)
 			is
 				pragma unreferenced (device_name);
-
-				procedure query_unit (
-					unit_name	: in type_unit_name;
-					unit		: in out type_unit)
-				is
-					pragma unreferenced (unit_name);
-				begin
-					modify_status (unit, operation);
-					-- log (text => "done", level => log_threshold + 1);
-
-					-- If the unit is set as moving, then
-					-- backup the original position:
-					if get_action (operation) = SET and
-					   get_flag (operation) = MOVING then
-
-					   object_original_position := get_place (get_position (unit));
-					end if;
-
-				end query_unit;
-
-
 			begin
-				device.units.update_element (unit.unit_cursor, query_unit'access);
+				modify_status (device, unit.unit_cursor, operation);
+
+				-- If the unit is set as moving, then
+				-- backup the original position:
+				if get_action (operation) = SET and
+					get_flag (operation) = MOVING then
+
+					object_original_position := get_place (unit.unit_cursor);
+				end if;
+
 			end query_device;
 
 
@@ -2992,7 +2981,7 @@ package body et_schematic_ops_units is
 
 					-- Iterate through the units:
 					while has_element (unit_cursor) loop
-						device.units.update_element (unit_cursor, query_unit'access);
+						modify_unit (device, unit_cursor, query_unit'access);
 						next (unit_cursor);
 					end loop;
 					log_indentation_down;
@@ -3092,7 +3081,7 @@ package body et_schematic_ops_units is
 
 				-- Iterate through the units and reset each of them:
 				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
+					modify_unit (device, unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 
@@ -3246,8 +3235,7 @@ package body et_schematic_ops_units is
 				log_indentation_up;
 
 				-- Iterate through the units:
-				iterate (device.units, query_unit'access, proceed'access);
-
+				iterate_units (device, query_unit'access, proceed'access);
 				log_indentation_down;
 			end query_device;
 
@@ -3329,7 +3317,7 @@ package body et_schematic_ops_units is
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
+					modify_unit (device, unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 			end query_device;
@@ -3632,7 +3620,7 @@ package body et_schematic_ops_units is
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
+					modify_unit (device, unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 			end query_device;
@@ -3709,7 +3697,7 @@ package body et_schematic_ops_units is
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
+					modify_unit (device, unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 			end query_device;
@@ -3788,7 +3776,7 @@ package body et_schematic_ops_units is
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
+					modify_unit (device, unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 			end query_device;
@@ -3864,7 +3852,7 @@ package body et_schematic_ops_units is
 			begin
 				-- Iterate through the units:
 				while has_element (unit_cursor) loop
-					device.units.update_element (unit_cursor, query_unit'access);
+					modify_unit (device, unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 			end query_device;
@@ -3985,7 +3973,7 @@ package body et_schematic_ops_units is
 				-- as soon as a selected unit has been found:
 				while has_element (unit_cursor)
 				and not unit_found loop
-					device.units.update_element (unit_cursor, query_unit'access);
+					modify_unit (device, unit_cursor, query_unit'access);
 					next (unit_cursor);
 				end loop;
 			end query_device;
@@ -4017,8 +4005,8 @@ package body et_schematic_ops_units is
 				unit_cursor		=> unit_cursor_old,
 				sheet			=> sheet,
 				offset			=> offset,
-				target_device	=> device_created,
-				device_created	=> device_created,
+				target_device	=> device_created, -- CS overlap
+				device_created	=> device_created, -- CS overlap
 				log_threshold	=> log_threshold + 1);
 
 
@@ -4163,7 +4151,7 @@ package body et_schematic_ops_units is
 
 
 			begin
-				device.units.update_element (unit_cursor, move_placeholder'access);
+				modify_unit (device, unit_cursor, move_placeholder'access);
 			end query_device;
 
 
@@ -4275,7 +4263,7 @@ package body et_schematic_ops_units is
 
 
 			begin
-				device.units.update_element (unit_cursor, rotate_placeholder'access);
+				modify_unit (device, unit_cursor, rotate_placeholder'access);
 			end query_device;
 
 
@@ -4421,7 +4409,7 @@ package body et_schematic_ops_units is
 
 
 			begin
-				device.units.update_element (placeholder.unit_cursor, query_unit'access);
+				modify_unit (device, placeholder.unit_cursor, query_unit'access);
 			end query_device;
 
 
@@ -4517,7 +4505,7 @@ package body et_schematic_ops_units is
 
 					-- Iterate through the units:
 					while has_element (unit_cursor) loop
-						device.units.update_element (unit_cursor, query_unit'access);
+						modify_unit (device, unit_cursor, query_unit'access);
 						next (unit_cursor);
 					end loop;
 					log_indentation_down;
@@ -4593,7 +4581,7 @@ package body et_schematic_ops_units is
 
 					-- Iterate through the units:
 					while has_element (unit_cursor) loop
-						device.units.update_element (unit_cursor, query_unit'access);
+						modify_unit (device, unit_cursor, query_unit'access);
 						next (unit_cursor);
 					end loop;
 
@@ -4942,7 +4930,7 @@ package body et_schematic_ops_units is
 
 					log (text => "units", level => log_threshold + 3);
 					log_indentation_up;
-					device.units.iterate (query_unit'access);
+					iterate_units (device, query_unit'access);
 					log_indentation_down;
 
 					log_indentation_down;
@@ -5393,7 +5381,7 @@ package body et_schematic_ops_units is
 				log_indentation_up;
 
 				-- Iterate through the units:
-				device.units.iterate (query_unit'access);
+				iterate_units (device, query_unit'access);
 
 				log_indentation_down;
 			end query_device;

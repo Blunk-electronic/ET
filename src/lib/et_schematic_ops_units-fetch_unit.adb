@@ -104,9 +104,48 @@ is
 			is
 				pragma unreferenced (device_name);
 
-				use et_device_placeholders.symbols;
 
-				placeholders : type_text_placeholders;
+				procedure add_virtual is
+					unit : type_unit (APPEARANCE_VIRTUAL);
+				begin
+					unit.set_place (get_place (destination));
+					unit.set_rotation (get_rotation (destination));
+					unit.set_sheet (get_sheet (destination));
+
+					add_unit (device, key (unit_cursors.int), unit);
+				end add_virtual;
+
+
+				procedure add_real is
+					unit : type_unit (APPEARANCE_PCB);
+
+					use et_device_placeholders.symbols;
+					placeholders : type_text_placeholders;
+				begin
+					unit.set_place (get_place (destination));
+					unit.set_rotation (get_rotation (destination));
+					unit.set_sheet (get_sheet (destination));
+
+					-- Text placeholders in the schematic drawing:
+					--
+					-- Initially, the text placeholders are copies of
+					-- the placeholders as they are defined in the symbol model.
+					-- This approach has the following implication:
+					-- If the position of a placeholder in the symbol model
+					-- is changed AFTER the unit has been added to the drawing,
+					-- then it DOES NOT get updated.
+
+					-- Get the default positions and rotations of placeholders
+					-- according to the rotation of the unit in the schematic:
+					placeholders := get_default_placeholders (
+						unit_cursors.int, destination);
+
+					unit.placeholders := placeholders;
+
+					add_unit (device, key (unit_cursors.int), unit);
+				end add_real;
+
+
 			begin
 				log (text => "fetch internal unit "
 					 & to_string (key (unit_cursors.int)),
@@ -115,36 +154,10 @@ is
 				-- Instantiate a symbol so that a unit comes into life:
 				case element (device_cursor_lib).appearance is
 					when APPEARANCE_VIRTUAL =>
-						pac_units.insert (
-							container	=> device.units,
-							key			=> key (unit_cursors.int), -- the unit name like A, B
-							new_item	=> to_unit (
-								appearance	=> APPEARANCE_VIRTUAL,
-								object		=> destination));
+						add_virtual;
 
 					when APPEARANCE_PCB =>
-
-						-- Text placeholders in the schematic drawing:
-						--
-						-- Initially, the text placeholders are copies of
-						-- the placeholders as they are defined in the symbol model.
-						-- This approach has the following implication:
-						-- If the position of a placeholder in the symbol model
-						-- is changed AFTER the unit has been added to the drawing,
-						-- then it DOES NOT get updated.
-
-						-- Get the default positions and rotations of placeholders
-						-- according to the rotation of the unit in the schematic:
-						placeholders := get_default_placeholders (
-							unit_cursors.int, destination);
-
-						pac_units.insert (
-							container	=> device.units,
-							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
-							new_item	=> to_unit (
-								appearance		=> APPEARANCE_PCB,
-								object			=> destination,
-								placeholders	=> placeholders));
+						add_real;
 
 				end case;
 			end do_it;
@@ -186,10 +199,57 @@ is
 
 				use et_symbol_library;
 				use pac_symbol_models;
-				use et_device_placeholders.symbols;
 
-				placeholders : type_text_placeholders;
-				symbol_cursor : pac_symbol_models.cursor;
+
+				procedure add_virtual is
+					unit : type_unit (APPEARANCE_VIRTUAL);
+				begin
+					unit.set_place (get_place (destination));
+					unit.set_rotation (get_rotation (destination));
+					unit.set_sheet (get_sheet (destination));
+
+					add_unit (device, key (unit_cursors.ext), unit);
+				end add_virtual;
+
+
+				procedure add_real is
+					unit : type_unit (APPEARANCE_PCB);
+
+					use et_device_placeholders.symbols;
+					symbol_cursor : pac_symbol_models.cursor;
+
+					placeholders : type_text_placeholders;
+				begin
+					unit.set_place (get_place (destination));
+					unit.set_rotation (get_rotation (destination));
+					unit.set_sheet (get_sheet (destination));
+
+					-- Get the cursor to the symbol model:
+					symbol_cursor := element (unit_cursors.ext).model_cursor;
+
+					-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
+					-- and constraint_error would arise here:
+
+					-- Text placeholders in the schematic drawing:
+					--
+					-- Initially, the text placeholders are copies of
+					-- the placeholders as they are defined in the symbol model.
+					-- This approach has the following implication:
+					-- If the position of a placeholder in the symbol model
+					-- is changed AFTER the unit has been added to the drawing,
+					-- then it DOES NOT get updated.
+
+					-- Get the default positions and rotations of placeholders
+					-- according to the rotation of the unit in the schematic:
+					placeholders := get_default_placeholders (
+						symbol_cursor, destination);
+
+					unit.placeholders := placeholders;
+
+					add_unit (device, key (unit_cursors.ext), unit);
+				end add_real;
+
+
 			begin
 				log (text => "fetch external unit "
 					 & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
@@ -197,42 +257,10 @@ is
 				-- Instanciate a symbol so that a unit comes into life:
 				case element (device_cursor_lib).appearance is
 					when APPEARANCE_VIRTUAL =>
-						pac_units.insert (
-							container	=> device.units,
-							key			=> key (unit_cursors.ext), -- the unit name like A, B
-							new_item	=> to_unit (
-								appearance	=> APPEARANCE_VIRTUAL,
-								object		=> destination));
-
+						add_virtual;
 
 					when APPEARANCE_PCB =>
-						-- Get the cursor to the symbol model:
-						symbol_cursor := element (unit_cursors.ext).model_cursor;
-
-						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
-						-- and constraint_error would arise here:
-
-						-- Text placeholders in the schematic drawing:
-						--
-						-- Initially, the text placeholders are copies of
-						-- the placeholders as they are defined in the symbol model.
-						-- This approach has the following implication:
-						-- If the position of a placeholder in the symbol model
-						-- is changed AFTER the unit has been added to the drawing,
-						-- then it DOES NOT get updated.
-
-						-- Get the default positions and rotations of placeholders
-						-- according to the rotation of the unit in the schematic:
-						placeholders := get_default_placeholders (
-							symbol_cursor, destination);
-
-						pac_units.insert (
-							container	=> device.units,
-							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
-							new_item	=> to_unit (
-								appearance		=> APPEARANCE_PCB,
-								object			=> destination,
-								placeholders	=> placeholders));
+						add_real;
 				end case;
 			end do_it;
 

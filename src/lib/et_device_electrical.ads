@@ -181,6 +181,10 @@ package et_device_electrical is
 		process	: not null access procedure (position : in pac_units.cursor));
 
 
+	procedure iterate_units (
+		device	: in type_device_electrical;
+		process	: not null access procedure (position : in pac_units.cursor);
+		proceed	: not null access boolean);
 
 
 

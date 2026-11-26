@@ -114,12 +114,12 @@ is
 			procedure copy_real is
 				device : type_device_electrical (APPEARANCE_PCB);
 			begin
-				device.model_cursor := device_cursor_lib;
+				set_device_model (device, device_cursor_lib);
 				set_value (device, get_value (original));
 				set_partcode (device, get_partcode (original));
 				set_purpose (device, get_purpose (original));
-				device.variant := original.variant;
-				device.placeholders	:= original.placeholders; -- layout related
+				set_variant (device, get_variant (original));
+				set_placeholders (device, get_placeholders (original)); -- layout related
 
 				-- CS: The position in layout assumes default. Should be
 				-- so that it is not placed on top of another device.
@@ -133,6 +133,19 @@ is
 			end copy_real;
 
 
+			procedure copy_virtual is
+				device : type_device_electrical (APPEARANCE_VIRTUAL);
+			begin
+				set_device_model (device, device_cursor_lib);
+
+				module.devices.insert (
+					key			=> next_name,
+					inserted	=> inserted,
+					position	=> device_cursor_sch,
+					new_item	=> device);
+
+			end copy_virtual;
+
 		begin
 			log (text => "copy_bare_device", level => log_threshold + 1);
 			log_indentation_up;
@@ -144,14 +157,8 @@ is
 
 
 			else
-				module.devices.insert (
-					key			=> next_name,
-					inserted	=> inserted,
-					position	=> device_cursor_sch,
-					new_item	=> (
-						appearance		=> APPEARANCE_VIRTUAL,
-						model_cursor	=> device_cursor_lib,
-						units			=> pac_units.empty_map));
+				copy_virtual;
+
 
 			end if;
 
@@ -193,11 +200,7 @@ is
 				log (text => "add_virtual", level => log_threshold + 3);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_internal (selected_unit), -- the unit name like A, B
-					new_item	=> unit);
-
+				add_unit (device, get_name_internal (selected_unit), unit);
 			end add_virtual;
 
 
@@ -221,10 +224,7 @@ is
 				set_placeholders (unit, placeholders);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_internal (selected_unit), -- the unit name like A, B, VCC_IO_BANK_1
-					new_item	=> unit);
+				add_unit (device, get_name_internal (selected_unit), unit);
 
 			end add_real;
 
@@ -269,11 +269,7 @@ is
 				log (text => "add_virtual", level => log_threshold + 3);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_external (selected_unit), -- the unit name like A, B
-					new_item	=> unit);
-
+				add_unit (device, get_name_external (selected_unit), unit);
 			end add_virtual;
 
 
@@ -302,11 +298,7 @@ is
 				set_placeholders (unit, placeholders);
 
 				-- Add the unit to the schematic:
-				pac_units.insert (
-					container	=> device.units,
-					key			=> get_name_external (selected_unit), -- the unit name like A, B, VCC_IO_BANK_1
-					new_item	=> unit);
-
+				add_unit (device, get_name_external (selected_unit), unit);
 			end add_real;
 
 

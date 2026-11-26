@@ -57,8 +57,11 @@ with et_schematic_ops_groups;
 with et_units;					use et_units;
 
 with et_device_category;
+with et_device_electrical.packge;	use et_device_electrical.packge;
 with et_devices_electrical.packages;	use et_devices_electrical.packages;
 with et_device_library.packages;
+
+with et_device_electrical.units;	use et_device_electrical.units;
 with et_devices_electrical.units;	use et_devices_electrical.units;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 
@@ -128,6 +131,7 @@ package body et_schematic_ops_device is
 			procedure query_units (
 				device_cursor : in pac_devices_electrical.cursor)
 			is
+				device : type_device_electrical renames element (device_cursor);
 				use pac_units;
 
 				device_name : constant type_device_name :=
@@ -178,9 +182,7 @@ package body et_schematic_ops_device is
 
 				log_indentation_up;
 
-				pac_units.iterate (
-					container	=> pac_devices_electrical.element (device_cursor).units,
-					process		=> sort'access);
+				iterate_units (device, sort'access);
 
 				log_indentation_down;
 			end query_units;
@@ -917,7 +919,7 @@ package body et_schematic_ops_device is
 					-- If the requested package variant is available
 					-- then assign it here. Otherwise issue a warning:
 					if is_variant_available (cursor_lib, variant) then
-						device.variant := variant;
+						set_variant (device, variant);
 					else
 						log (SEVERITY_WARNING, "Package variant " & to_string (variant)
 							& " is not defined in device model !");

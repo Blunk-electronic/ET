@@ -50,13 +50,14 @@ package body et_units is
 
 
 
-
-
-	function get_position (
-		unit	: in pac_units.cursor)
-		return type_schematic_object
-	is (get_position (element (unit)));
-
+	function get_place (
+		unit_cursor	: in pac_units.cursor)
+		return type_vector_model
+	is
+		u : type_unit renames element (unit_cursor);
+	begin
+		return get_place (u);
+	end get_place;
 
 
 	function get_rotation (
@@ -64,6 +65,11 @@ package body et_units is
 		return type_rotation_model
 	is (get_rotation (element (unit)));
 
+
+	function get_position (
+		unit	: in pac_units.cursor)
+		return type_schematic_object
+	is (get_position (element (unit)));
 
 
 	function get_mirror_status (
