@@ -69,6 +69,7 @@ with et_device_properties;			use et_device_properties;
 with et_device_read;
 
 with et_device_electrical;			use et_device_electrical;
+with et_device_electrical.units;	use et_device_electrical.units;
 with et_device_electrical.packge;	use et_device_electrical.packge;
 with et_devices_electrical;
 

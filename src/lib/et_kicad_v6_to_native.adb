@@ -55,6 +55,7 @@ with et_device_partcode;
 with et_device_purpose;
 with et_device_name;
 with et_device_electrical;				use et_device_electrical;
+with et_device_electrical.units;		use et_device_electrical.units;
 with et_device_electrical.packge;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_unit;					use et_device_unit;

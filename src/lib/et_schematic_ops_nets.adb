@@ -44,6 +44,7 @@ with et_module;							use et_module;
 with et_net_labels;						use et_net_labels;
 
 with et_device_electrical;				use et_device_electrical;
+with et_device_electrical.units;		use et_device_electrical.units;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_symbol_ports;					use et_symbol_ports;
 with et_port_names;						use et_port_names;

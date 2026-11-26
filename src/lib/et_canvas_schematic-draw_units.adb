@@ -66,6 +66,7 @@ with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 
 with et_device_electrical;				use et_device_electrical;
+with et_device_electrical.units;		use et_device_electrical.units;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 

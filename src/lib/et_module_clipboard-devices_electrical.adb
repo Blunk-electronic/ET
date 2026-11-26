@@ -48,6 +48,7 @@ with et_module_names;
 with et_device_unit;					use et_device_unit;
 with et_device_name;
 with et_unit_name;
+with et_device_electrical.units;		use et_device_electrical.units;
 with et_devices_electrical.units;
 with et_schematic_ops_units;
 

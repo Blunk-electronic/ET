@@ -67,9 +67,92 @@ package et_device_electrical.units is
 	use pac_geometry_2;
 
 
+
+
+	-- Returns the names of all deployed units:
+	function get_unit_names_deployed (
+		device : in type_device_electrical)
+		return pac_unit_names.list;
+
+
+	-- Returns the total number of units that
+	-- the device provides according to its model:
+	function get_unit_count (
+		device : in type_device_electrical)
+		return natural;
+
+
+	-- Returns the number of units that are deployed:
+	function get_unit_count_deployed (
+		device : in type_device_electrical)
+		return natural;
+
+
+
+
+	-- Locates the given unit in the given device.
+	-- If the unit can not be located (because it is not
+	-- deployed yet or does not exist at all), then
+	-- the result is no_element:
+	function locate_unit (
+		device	: in type_device_electrical;
+		unit	: in type_unit_name)
+		return pac_units.cursor;
+
+
+	-- Returns true if the specified unit
+	-- is deployed:
+	function is_unit_deployed (
+		device	: in type_device_electrical;
+		unit	: in type_unit_name)
+		return boolean;
+
+
+	procedure set_units (
+		device	: in out type_device_electrical;
+		units	: in pac_units.map);
+
+
+	function get_units (
+		device	: in type_device_electrical)
+		return pac_units.map;
+
+
+	procedure add_unit (
+		device	: in out type_device_electrical;
+		name	: in type_unit_name; -- A, B, C, GPIO1
+		unit	: in type_unit);
+
+
+	procedure delete_unit (
+		device	: in out type_device_electrical;
+		unit	: in type_unit_name);
+
+
+	-- Returns the cursor to the first deployed unit
+	-- of the given device:
+	function get_first_unit (
+		device	: in type_device_electrical)
+		return pac_units.cursor;
+
+
+	-- Iterates the units of the given device
+	-- and calls for each unit the specified procedure:
+	procedure iterate_units (
+		device	: in type_device_electrical;
+		process	: not null access procedure (position : in pac_units.cursor));
+
+
+	procedure iterate_units (
+		device	: in type_device_electrical;
+		process	: not null access procedure (position : in pac_units.cursor);
+		proceed	: not null access boolean);
+
+
+
+
+
 -- POSITION:
-
-
 
 	function get_unit_positions (
 		device	: in type_device_electrical)

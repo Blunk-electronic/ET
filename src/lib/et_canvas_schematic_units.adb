@@ -55,8 +55,11 @@ with et_device_read;
 with et_generic_modules;				use et_generic_modules;
 with et_package_variant;				use et_package_variant;
 with et_units;							use et_units;
+
 with et_device_electrical;				use et_device_electrical;
+with et_device_electrical.units;		use et_device_electrical.units;
 with et_devices_electrical;				use et_devices_electrical;
+
 with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
 with et_device_library.units;			use et_device_library.units;
