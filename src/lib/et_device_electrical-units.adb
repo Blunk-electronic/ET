@@ -52,6 +52,66 @@ package body et_device_electrical.units is
 
 
 
+	function to_string (
+		device		: in type_device_name;
+		unit		: in type_unit_name)
+		return string
+	is begin
+		return "device " & to_string (device)
+			& " unit " & to_string (unit);
+	end to_string;
+
+
+
+	function get_full_name (
+		device		: in type_device_name;
+		unit		: in type_unit_name;
+		unit_count	: in type_unit_count)
+		return string
+	is begin
+		if unit_count > 1 then
+			return to_string (device)
+				& device_unit_separator
+				& to_string (unit);
+		else
+			return to_string (device);
+		end if;
+	end get_full_name;
+
+
+
+
+
+	function to_string (
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name; -- C
+		query_result	: in type_unit_query)
+		return string
+	is
+	begin
+		if query_result.exists then
+			if get_length (unit_name) > 0 then
+				return "Location of device " & to_string (device_name)
+					& " unit " & to_string (unit_name)
+					& " :" & get_position (query_result.position);
+			else
+				return "Location of device " & to_string (device_name)
+					& " :" & get_position (query_result.position);
+			end if;
+		else
+			return "device " & to_string (device_name)
+				& " unit " & to_string (unit_name)
+				& " does not exist !";
+		end if;
+	end to_string;
+
+
+
+
+
+
+
+
 	function get_unit_names_deployed (
 		device : in type_device_electrical)
 		return pac_unit_names.list
@@ -211,7 +271,41 @@ package body et_device_electrical.units is
 
 
 
+
+
+
 -- POSITION:
+
+
+
+	function get_position (
+		device	: in type_device_electrical;
+		unit	: in type_unit_name)
+		return type_schematic_object
+	is
+		-- Locate the given unit in the device:
+		unit_cursor : constant pac_units.cursor :=
+			locate_unit (device, unit);
+
+		result : type_schematic_object;
+
+
+		procedure query_unit (
+			unit_name	: in type_unit_name;
+			unit		: in type_unit)
+		is
+			pragma unreferenced (unit_name);
+		begin
+			result := get_position (unit);
+		end query_unit;
+
+	begin
+		query_element (unit_cursor, query_unit'access);
+		return result;
+	end get_position;
+
+
+
 
 
 	function get_unit_positions (
@@ -223,6 +317,34 @@ package body et_device_electrical.units is
 		result := get_unit_positions (device.units);
 		return result;
 	end get_unit_positions;
+
+
+
+
+	procedure log_unit_positions (
+		positions		: in pac_unit_positions.map;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure write (
+			cursor : in pac_unit_positions.cursor)
+		is begin
+			log (text => "unit "
+				& to_string (pac_unit_positions.key (cursor)) -- unit name
+				& get_position (pac_unit_positions.element (cursor)), -- sheet x y
+				level => log_threshold);
+		end write;
+
+	begin
+		log (text => "location(s) in schematic:", level => log_threshold);
+		log_indentation_up;
+		pac_unit_positions.iterate (positions, write'access);
+		log_indentation_down;
+	end log_unit_positions;
+
+
+
+
 
 
 

@@ -51,6 +51,7 @@ with et_schematic_geometry;				use et_schematic_geometry;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_device_name;					use et_device_name;
+with et_device_electrical.units;		use et_device_electrical.units;
 with et_devices_electrical;				use et_devices_electrical;
 with et_devices_electrical.units;		use et_devices_electrical.units;
 with et_schematic_ops_units;			use et_schematic_ops_units;

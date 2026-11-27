@@ -55,6 +55,8 @@ with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 with et_sheets;							use et_sheets;
 with et_schematic_geometry;				use et_schematic_geometry;
+with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_device_model;					use et_device_model;
 -- with et_device_appearance;				use et_device_appearance;
 
 -- with et_device_placeholders;			use et_device_placeholders;
@@ -65,6 +67,62 @@ with et_units;							use et_units;
 package et_device_electrical.units is
 
 	use pac_geometry_2;
+
+
+	device_unit_separator : constant character := '.';
+
+
+	-- This function returns a string like
+	-- "device IC1 unit C". The output is straigth
+	-- forward, independed of how many units the device
+	-- has. So the output can also be"device R1 unit 1".
+	-- Use this function for log messages and debugging:
+	function to_string (
+		device		: in type_device_name; -- IC34
+		unit		: in type_unit_name) -- PWR
+		return string;
+
+
+
+	-- This function concatenates the device name and unit name, separated
+	-- by the device_unit_separator. If the given unit_count is 1 then just
+	-- the device name will be returned as string.
+	function get_full_name (
+		device		: in type_device_name; -- IC34
+		unit		: in type_unit_name; -- PWR
+		unit_count	: in type_unit_count) -- the total number of units
+		return string; -- IC34.PWR
+
+
+
+
+
+	-- The result of a unit query is of this type:
+	type type_unit_query (exists : boolean := false) is record
+		case exists is
+			when true =>
+				position : type_schematic_object;
+				-- x/y, rotation, sheet
+
+			when false =>
+				null;
+		end case;
+	end record;
+
+
+
+	-- Returns the result of a unit query in human readable form.
+	-- If the unit_name is empty (""), then the result does not contain
+	-- any reference to a unit. This is useful when a device has only one unit.
+	function to_string (
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name; -- C
+		query_result	: in type_unit_query)
+		return string;
+
+
+
+
 
 
 
@@ -154,9 +212,24 @@ package et_device_electrical.units is
 
 -- POSITION:
 
+	-- Returns the position (x/y/sheet) of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_position (
+		device	: in type_device_electrical; -- R2
+		unit	: in type_unit_name) -- A, B, C
+		return type_schematic_object;
+
+
 	function get_unit_positions (
 		device	: in type_device_electrical)
 		return pac_unit_positions.map;
+
+
+	-- Writes the positions of the device units in the log file.
+	procedure log_unit_positions (
+		positions		: in pac_unit_positions.map;
+		log_threshold	: in type_log_level);
+
 
 
 	procedure move_unit (

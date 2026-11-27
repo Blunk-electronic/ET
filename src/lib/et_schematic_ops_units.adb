@@ -70,7 +70,7 @@ with et_nets;								use et_nets;
 
 with et_port_direction;
 with et_device_model;						use et_device_model;
-
+with et_device_electrical.units;			use et_device_electrical.units;
 
 with et_device_placeholders.symbols;		-- use et_device_placeholders.symbols;
 
