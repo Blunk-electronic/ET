@@ -248,7 +248,7 @@ package body et_board_ops_devices is
 
 
 
-	function get_first_device (
+	function get_first_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
@@ -292,7 +292,7 @@ package body et_board_ops_devices is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " look up the first device /" & to_string (flag),
+			& " look up the first electrical device /" & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -309,7 +309,7 @@ package body et_board_ops_devices is
 		end if;
 
 		return result;
-	end get_first_device;
+	end get_first_electrical_device;
 
 
 
@@ -889,6 +889,20 @@ package body et_board_ops_devices is
 
 
 
+	function is_empty (
+		object	: in type_object_non_electrical)
+		return boolean
+	is
+		use pac_devices_non_electrical;
+	begin
+		if not has_element (object.cursor) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_empty;
+
+
 
 
 	function get_device_name (
@@ -1107,7 +1121,10 @@ package body et_board_ops_devices is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_non_electrical.cursor := module.devices_non_electric.first;
 		begin
-			while device_cursor /= pac_devices_non_electrical.no_element loop
+			while has_element (device_cursor) loop
+				log (text => "device " & get_device_name (device_cursor),
+					 level => log_threshold + 1);
+
 				case flag is
 					when PROPOSED =>
 						if is_proposed (device_cursor) then
@@ -1142,6 +1159,11 @@ package body et_board_ops_devices is
 			process		=> query_module'access);
 
 		log_indentation_down;
+
+		-- Output a warning in case nothing has been found:
+		if not has_element (result) then
+			log (SEVERITY_WARNING, "Nothing found !");
+		end if;
 
 		return result;
 	end get_first_non_electrical_device;
@@ -3470,7 +3492,8 @@ package body et_board_ops_devices is
 		-- SEARCH FOR AN ELECTRICAL DEVICE:
 
 		-- If a device has been found, then go to the end of this procedure:
-		result_electrical := get_first_device (module_cursor, flag, log_threshold + 1);
+		result_electrical := get_first_electrical_device (
+			module_cursor, flag, log_threshold + 1);
 
 		if result_electrical.cursor /= pac_devices_electrical.no_element then
 			-- A device has been found.
@@ -3490,8 +3513,8 @@ package body et_board_ops_devices is
 		-- SEARCH FOR A NON-ELECTRICAL DEVICE:
 
 		-- If a device has been found, then go to the end of this procedure:
-		result_non_electrical :=
-			get_first_non_electrical_device (module_cursor, flag, log_threshold + 1);
+		result_non_electrical := get_first_non_electrical_device (
+			module_cursor, flag, log_threshold + 1);
 
 		if result_non_electrical.cursor /= pac_devices_non_electrical.no_element then
 			-- A device has been found.

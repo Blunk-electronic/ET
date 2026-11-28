@@ -132,10 +132,11 @@ package et_board_ops_devices is
 
 
 
-	-- Returns the first device according to the given flag.
-	-- If no device has been found,
-	-- then the return is no_element:
-	function get_first_device (
+	-- Returns the first electrical device according
+	-- to the given flag.
+	-- If no device has been found, then a warning is output,
+	-- and the return is no_element:
+	function get_first_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
@@ -262,6 +263,13 @@ package et_board_ops_devices is
 	end record;
 
 
+	-- Returns true if the given object is empty:
+	function is_empty (
+		object	: in type_object_non_electrical)
+		return boolean;
+
+
+
 	-- Returns the device name of the given object
 	-- as string in the form like "FD1":
 	function get_device_name (
@@ -301,13 +309,15 @@ package et_board_ops_devices is
 
 
 	-- Returns the first non-electrical device according to the given flag.
-	-- If no device has been found,
-	-- then the return is no_element:
+	-- If no device has been found, then a warning is output,
+	-- and the return is no_element:
 	function get_first_non_electrical_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electrical.cursor;
+	-- CS: return a type_object_non_electrical similar as
+	-- with procedure get_first_electrical_device ?
 
 
 	-- Returns the first device according to the given flag.
