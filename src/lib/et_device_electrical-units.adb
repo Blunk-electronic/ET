@@ -46,10 +46,6 @@ with ada.characters.latin_1;
 with ada.strings.unbounded;
 
 
-with et_device_placeholders.symbols;
-
-
-
 package body et_device_electrical.units is
 
 	use pac_units;
@@ -789,6 +785,19 @@ package body et_device_electrical.units is
 	-- begin
 	--	return "";
 	-- end;
+
+
+
+
+
+
+-- SEARCH AND FIND:
+
+
+	function to_string (
+		mode : in type_device_search_mode)
+		return string
+	is (type_device_search_mode'image (mode));
 
 
 end et_device_electrical.units;

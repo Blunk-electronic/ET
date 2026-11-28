@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                     DEVICES ELECTRICAL / UNITS                           --
+--                  DEVICES ELECTRICAL / LISTS / UNITS                      --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -44,10 +44,6 @@ with ada.strings.unbounded;
 with ada.exceptions;
 
 with et_mirroring;
-
-with et_package_variant_name;				use et_package_variant_name;
-
-with et_devices_electrical.packages;
 
 with et_symbol_library;
 with et_symbol_text;
@@ -856,18 +852,6 @@ package body et_devices_electrical.units is
 
 		return result;
 	end get_port;
-
-
-
-
-
-
-
-	function to_string (
-		mode : in type_device_search_mode)
-		return string
-	is (type_device_search_mode'image (mode));
-
 
 
 

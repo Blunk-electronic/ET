@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      DEVICES ELECTRICAL / UNITS                          --
+--                  DEVICES ELECTRICAL / LISTS / UNITS                      --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -40,8 +40,8 @@
 --
 -- DESCRIPTION:
 --
--- This package is about the type, basic properties and subprograms related
--- to so units of electrical devices as they appear in the schematic drawing.
+-- This package is about the operations with lists of
+-- electrical devices and units thereof.
 
 
 with et_schematic_geometry;				use et_schematic_geometry;
@@ -52,7 +52,7 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_symbol_model;					use et_symbol_model;
-with et_terminal_name;					use et_terminal_name;
+with et_symbol_ports;					use et_symbol_ports;
 
 with et_package_variant;				use et_package_variant;
 
@@ -64,9 +64,12 @@ with et_device_name;
 with et_device_library;
 with et_device_library.units;			use et_device_library.units;
 with et_device_property_level;			use et_device_property_level;
+
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
-with et_symbol_ports;					use et_symbol_ports;
+
+with et_terminal_name;					use et_terminal_name;
+
 with et_logging;						use et_logging;
 
 
@@ -268,25 +271,6 @@ package et_devices_electrical.units is
 		return type_get_port_result;
 
 
-
-
-
-
-
-
-
--- SEARCH AND FIND:
-
-	-- For showing and finding devices and units:
-	type type_device_search_mode is (
-		SEARCH_MODE_FIRST_UNIT,
-		SEARCH_MODE_BY_UNIT_NAME,
-		SEARCH_MODE_FIRST_UNIT_ON_CURRENT_SHEET);
-
-
-	function to_string (
-		mode : in type_device_search_mode)
-		return string;
 
 
 end et_devices_electrical.units;
