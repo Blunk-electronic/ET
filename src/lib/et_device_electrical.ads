@@ -68,7 +68,7 @@ with et_package_variant;				use et_package_variant;
 
 with et_object_status;					use et_object_status;
 with et_unit_name;						use et_unit_name;
-with et_units;							use et_units;
+with et_device_units;					use et_device_units;
 with et_logging;						use et_logging;
 
 
@@ -289,7 +289,7 @@ package et_device_electrical is
 	-- apply to the package of the device (in the board domain)
 	-- which implies that the targeted device is real.
 	-- Status opertions for individual units (in the schematic)
-	-- are specified in the package et_units.
+	-- are specified in the package et_device_units.
 	-- Regarding set and clear operations: If the device
 	-- is not real then the operation has no effect.
 	-- Regarding query operations like is_selected or is_moving: If

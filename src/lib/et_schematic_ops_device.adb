@@ -54,7 +54,7 @@ with et_sheets;					use et_sheets;
 with et_schematic_ops_units;	use et_schematic_ops_units;
 with et_schematic_ops_groups;
 
-with et_units;					use et_units;
+with et_device_units;				use et_device_units;
 
 with et_device_category;
 with et_device_electrical.packge;	use et_device_electrical.packge;

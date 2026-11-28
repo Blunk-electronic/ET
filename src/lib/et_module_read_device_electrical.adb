@@ -96,7 +96,7 @@ with et_pcb_stack;
 
 with et_unit_name;
 with et_device_unit;
-with et_units;
+with et_device_units;
 
 with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
@@ -121,7 +121,7 @@ package body et_module_read_device_electrical is
 	device_properties : type_device_properties; -- CS: no need, remove ?
 
 	-- temporarily collection of units:
-	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
+	device_units	: et_device_units.pac_units.map; -- PWR, A, B, ...
 
 	device_position	: et_board_coordinates.type_board_object; -- in the layout ! incl. angle and face
 
@@ -664,7 +664,7 @@ package body et_module_read_device_electrical is
 		procedure insert_unit is
 			use et_schematic_coordinates;
 			use et_device_unit;
-			use et_units;
+			use et_device_units;
 			use et_unit_name;
 			use et_device_appearance;
 			use et_object_status;
@@ -746,7 +746,7 @@ package body et_module_read_device_electrical is
 		null;
 
 		-- clear temporarily collection of units for next device
-		-- et_units.pac_units.clear (device_units);
+		-- et_device_units.pac_units.clear (device_units);
 	end insert_units;
 
 

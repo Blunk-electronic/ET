@@ -51,7 +51,7 @@ with et_device_library;					use et_device_library;
 with et_device_library.units;			use et_device_library.units;
 with et_sheets;							use et_sheets;
 with et_device_unit;					use et_device_unit;
-with et_units;							use et_units;
+with et_device_units;					use et_device_units;
 with et_unit_name;						use et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_object_status;					use et_object_status;

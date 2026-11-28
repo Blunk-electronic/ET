@@ -56,7 +56,7 @@ with et_assembly_variants;
 with et_schematic_ops_groups;
 with et_schematic_ops_sheets;
 
-with et_units;
+with et_device_units;
 with et_unit_name;
 
 with et_module_instance;				use et_module_instance;
@@ -168,7 +168,7 @@ package body et_schematic_ops_nets is
 			procedure query_devices (
 				device_cursor : in pac_devices_electrical.cursor)
 			is
-				use et_units;
+				use et_device_units;
 				use et_unit_name;
 				use et_device_electrical;
 				device : type_device_electrical renames element (device_cursor);

@@ -48,7 +48,7 @@ with ada.directories;
 
 with et_drawing_frame;
 with et_device_unit;				use et_device_unit;
-with et_units;						use et_units;
+with et_device_units;				use et_device_units;
 
 with et_device_electrical;			use et_device_electrical;
 with et_devices_electrical;			use et_devices_electrical;

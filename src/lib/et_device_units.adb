@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          DEVICE UNITS IN SCHEMATIC                       --
+--                          DEVICE UNIT / LISTS                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -45,7 +45,7 @@ with et_coordinates_formatting;
 
 
 
-package body et_units is
+package body et_device_units is
 
 
 	function get_unit (
@@ -54,6 +54,10 @@ package body et_units is
 	is (element (unit_cursor));
 
 
+
+
+
+-- POSITION:
 
 	function get_place (
 		unit_cursor	: in pac_units.cursor)
@@ -81,6 +85,8 @@ package body et_units is
 		unit	: in pac_units.cursor)
 		return type_mirror
 	is (element (unit).mirror_status);
+
+
 
 
 
@@ -136,6 +142,9 @@ package body et_units is
 
 
 
+
+-- STATUS:
+
 	function is_proposed (
 		unit : in pac_units.cursor)
 		return boolean
@@ -149,8 +158,6 @@ package body et_units is
 
 
 
-
-
 	function is_moving (
 		unit : in pac_units.cursor)
 		return boolean
@@ -159,6 +166,8 @@ package body et_units is
 
 
 
+
+-- UNIT POSITIONS:
 
 	function extract_sheets (
 		positions	: in pac_unit_positions.map)
@@ -373,7 +382,7 @@ package body et_units is
 
 
 
-end et_units;
+end et_device_units;
 
 -- Soli Deo Gloria
 

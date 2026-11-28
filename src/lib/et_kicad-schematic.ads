@@ -84,7 +84,7 @@ with et_drawing_frame;
 with et_kicad_libraries;		-- use et_kicad_libraries;
 
 with et_device_unit;			use et_device_unit;
-with et_units;					use et_units;
+with et_device_units;			use et_device_units;
 with et_mirroring;				use et_mirroring;
 
 

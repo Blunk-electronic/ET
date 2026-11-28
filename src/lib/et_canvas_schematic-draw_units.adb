@@ -55,7 +55,7 @@ with et_symbol_library;					use et_symbol_library;
 with et_symbol_ports;
 with et_unit_name;						use et_unit_name;
 with et_device_unit;					use et_device_unit;
-with et_units;							use et_units;
+with et_device_units;					use et_device_units;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_unit_internal;		use et_device_model_unit_internal;
 with et_device_model_unit_external;		use et_device_model_unit_external;

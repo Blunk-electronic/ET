@@ -53,7 +53,7 @@ with et_net_ports_devices;
 with et_net_segment;
 with et_net_class_name;
 with et_device_unit;
-with et_units;
+with et_device_units;
 with et_schematic_text;
 
 with et_mirroring;					use et_mirroring;
@@ -2730,7 +2730,7 @@ package body et_kicad_to_native is
 				units_kicad			: constant et_kicad.schematic.pac_units_schematic.map := element (component_cursor_kicad).units;
 				unit_cursor_kicad	: et_kicad.schematic.pac_units_schematic.cursor := units_kicad.first; -- point to first unit
 
-				unit_cursor_native	: et_units.pac_units.cursor;
+				unit_cursor_native	: et_device_units.pac_units.cursor;
 				unit_inserted		: boolean;
 
 				unit_native_virtual	: et_device_unit.type_unit (APPEARANCE_VIRTUAL);
@@ -2770,7 +2770,7 @@ package body et_kicad_to_native is
 
 							set_mirror_status (unit_native_virtual, element (unit_cursor_kicad).mirror);
 
-							-- et_units.pac_units.insert (
+							-- et_device_units.pac_units.insert (
 							-- 	container	=> component.units,
 							-- 	key			=> key (unit_cursor_kicad),
 							-- 	position	=> unit_cursor_native,
@@ -2821,7 +2821,7 @@ package body et_kicad_to_native is
 									-- does not know such a thing:
 									purpose		=> (meaning => PURPOSE, others => <>)));
 
-							-- et_units.pac_units.insert (
+							-- et_device_units.pac_units.insert (
 							-- 	container	=> component.units,
 							-- 	key			=> key (unit_cursor_kicad),
 							-- 	position	=> unit_cursor_native,

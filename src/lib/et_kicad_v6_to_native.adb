@@ -26,7 +26,7 @@ with ada.strings;						use ada.strings;
 with ada.strings.fixed;					use ada.strings.fixed;
 with ada.strings.unbounded;
 with ada.characters.handling;
-with ada.containers;						use ada.containers;
+with ada.containers;					use ada.containers;
 with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
 
@@ -40,7 +40,7 @@ with et_meta;
 with et_module_names;					use et_module_names;
 with et_module_write;
 with et_schematic_text;					use et_schematic_text;
-with et_generic_modules;					use et_generic_modules;
+with et_generic_modules;				use et_generic_modules;
 with et_alignment;						use et_alignment;
 
 with et_device_appearance;				use et_device_appearance;
@@ -59,7 +59,7 @@ with et_device_electrical.units;		use et_device_electrical.units;
 with et_device_electrical.packge;
 with et_devices_electrical;				use et_devices_electrical;
 with et_device_unit;					use et_device_unit;
-with et_units;							use et_units;
+with et_device_units;					use et_device_units;
 with et_unit_name;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;

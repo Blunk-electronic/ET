@@ -65,7 +65,7 @@ with et_device_model;					use et_device_model;
 with et_device_property_level;			use et_device_property_level;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
-with et_units;							use et_units;
+with et_device_units;					use et_device_units;
 
 
 

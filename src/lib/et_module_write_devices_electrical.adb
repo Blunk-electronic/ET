@@ -79,7 +79,7 @@ with et_device_placeholders.symbols;
 
 with et_unit_name;
 with et_device_unit;
-with et_units;
+with et_device_units;
 with et_mirroring;						use et_mirroring;
 with et_alignment;						use et_alignment;
 
@@ -130,7 +130,7 @@ package body et_module_write_devices_electrical is
 			pragma unreferenced (device_name);
 			use et_schematic_coordinates;
 			use et_device_unit;
-			use et_units;
+			use et_device_units;
 			use pac_units;
 
 			unit_cursor : pac_units.cursor := get_first_unit (device);

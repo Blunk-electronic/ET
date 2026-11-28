@@ -66,7 +66,7 @@ with et_device_library.units;			use et_device_library.units;
 with et_device_property_level;			use et_device_property_level;
 
 with et_unit_name;						use et_unit_name;
-with et_units;							use et_units;
+with et_device_units;					use et_device_units;
 
 with et_terminal_name;					use et_terminal_name;
 

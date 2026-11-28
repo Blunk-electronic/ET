@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          DEVICE UNITS IN SCHEMATIC                       --
+--                          DEVICE UNIT / LISTS                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -60,7 +60,7 @@ with et_object_status;					use et_object_status;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
 
-package et_units is
+package et_device_units is
 
 	use pac_unit_name;
 
@@ -85,6 +85,10 @@ package et_units is
 
 
 
+
+
+-- POSITION:
+
 	function get_place (
 		unit_cursor	: in pac_units.cursor)
 		return type_vector_model;
@@ -102,6 +106,8 @@ package et_units is
 
 
 
+
+-- MIRROR:
 
 	function get_mirror_status (
 		unit	: in pac_units.cursor)
@@ -140,6 +146,10 @@ package et_units is
 
 
 
+
+
+-- STATUS:
+
 	function is_proposed (
 		unit : in pac_units.cursor)
 		return boolean;
@@ -155,6 +165,11 @@ package et_units is
 		return boolean;
 
 
+
+
+
+
+-- UNIT POSITIONS:
 
 	package pac_unit_positions is new ordered_maps (
 		key_type		=> type_unit_name, -- A, B, IO_BANK_1
@@ -240,7 +255,7 @@ package et_units is
 	end record;
 
 
-end et_units;
+end et_device_units;
 
 -- Soli Deo Gloria
 
