@@ -50,6 +50,9 @@
 --    the schematic domain exclusively.
 
 
+with ada.containers;			use ada.containers;
+with ada.containers.doubly_linked_lists;
+
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_coordinates_abs_rel;			use et_coordinates_abs_rel;
 
@@ -57,9 +60,10 @@ with et_sheets;							use et_sheets;
 with et_schematic_geometry;				use et_schematic_geometry;
 with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_device_model;					use et_device_model;
+with et_device_property_level;			use et_device_property_level;
 -- with et_device_appearance;				use et_device_appearance;
-
 -- with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_units;							use et_units;
 
 
@@ -312,6 +316,70 @@ package et_device_electrical.units is
 		process		: not null access procedure (
 				name	: in type_unit_name;
 				unit	: in out type_unit));
+
+
+
+
+-- PLACEHOLDERS:
+
+
+	-- In the schematic, when a unit is rotated to a
+	-- certain absolute rotation,
+	-- or if the placeholders are to be restored (kind of un-smash),
+	-- the default positions of texts and placeholders are required.
+	-- For this reason we define here the type type_default_text_positions:
+	package pac_text_positions is new doubly_linked_lists (type_vector_model);
+
+
+
+	type type_default_text_positions (
+		appearance : type_appearance)
+	is record
+
+		-- For texts, we need only their positions (x/y):
+		texts : pac_text_positions.list; -- same order as the texts in type_symbol_base
+
+		-- The placeholders are copies of those in the symbol (see type_symbol_model):
+		case appearance is
+			when APPEARANCE_PCB =>
+				placeholders : type_text_placeholders;
+
+			when APPEARANCE_VIRTUAL => null;
+		end case;
+	end record;
+
+
+
+	-- CS:
+	-- Returns the default positions of placeholders
+	-- and texts of a unit
+	-- as they are defined in the symbol model.
+	-- function get_default_text_positions (
+	-- 	device		: in type_device_electrical;
+	-- 	unit_name	: in type_unit_name)
+	-- 	return type_default_text_positions
+
+
+
+-- PROPERTIES QUERIES:
+
+
+	-- Returns properties of the given device and its units.
+	-- See comments of function get_unit_properties regarding linebreaks:
+	function get_device_properties (
+		device		: in type_device_electrical;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
+		return string;
+
+
+	-- function get_properties (
+	-- 	device		: in type_device_electrical;
+	-- 	level		: in type_properties_level;
+	-- 	all_units	: in boolean := true;
+	-- 	unit		: in type_unit_name := unit_name_default)
+	-- 	-- CS format ?
+	-- 	return string;
 
 
 end et_device_electrical.units;

@@ -42,6 +42,10 @@
 --
 --
 
+with ada.characters.latin_1;
+with ada.strings.unbounded;
+
+
 with et_device_placeholders.symbols;
 
 
@@ -678,6 +682,113 @@ package body et_device_electrical.units is
 	end modify_unit;
 
 
+
+
+
+
+
+-- PROPERTIES QUERIES:
+
+	function get_device_properties (
+		device		: in type_device_electrical;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
+		return string
+	is
+		use ada.strings.unbounded;
+		result : unbounded_string;
+
+
+		-- If linebreaks are requested by the caller, then
+		-- this function returns a linefeed character on each call.
+		-- If no linefeeds are requested, then the return is an empty string:
+		function ins_LF return string is
+			use ada.characters.latin_1;
+		begin
+			if linebreaks then
+				return "" & LF;
+			else
+				return "";
+			end if;
+		end ins_LF;
+
+
+		-- CS: Refinement required about what
+		-- should be output on which level.
+
+
+		procedure get_info_1 is begin
+			if is_real (device) then
+				if has_value (device) then
+					result := to_unbounded_string (" value: "
+						& get_value (device) & ins_LF);
+				end if;
+
+				if has_purpose (device) then
+					result := result & " purpose: "
+						& get_purpose (device) & ins_LF;
+				end if;
+			end if;
+		end get_info_1;
+
+
+		procedure get_info_2 is begin
+			if is_real (device) then
+				if has_partcode (device) then
+					result := result & " partcode: "
+						& get_partcode (device) & ins_LF;
+				end if;
+
+				-- CS write interactive status true/false
+				-- CS package variant
+			end if;
+		end get_info_2;
+
+
+		procedure get_info_3 is begin
+			result := result & " device model: "
+				& to_string (get_device_model_file (device)) & ins_LF;
+
+			if is_real (device) then
+				result := result & " package model: "
+					& to_string (get_package_model_name (device)) & ins_LF;
+			end if;
+		end get_info_3;
+
+
+
+	begin
+		case level is
+			when DEVICE_PROPERTIES_LEVEL_1 =>
+				get_info_1;
+
+			when DEVICE_PROPERTIES_LEVEL_2 =>
+				get_info_1;
+				get_info_2;
+
+			when DEVICE_PROPERTIES_LEVEL_3 =>
+				get_info_1;
+				get_info_2;
+				get_info_3;
+		end case;
+
+		return to_string (result);
+	end get_device_properties;
+
+
+
+
+
+	-- function get_unit_properties (
+	-- 	device		: in type_device_electrical;
+	-- 	level		: in type_properties_level;
+	-- 	all_units	: in boolean := true;
+	-- 	unit		: in type_unit_name := unit_name_default)
+	-- 	return string
+	-- is
+	-- begin
+	--	return "";
+	-- end;
 
 
 end et_device_electrical.units;

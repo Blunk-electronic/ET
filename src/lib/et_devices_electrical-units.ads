@@ -221,41 +221,11 @@ package et_devices_electrical.units is
 
 
 
-
-
-
-
-
 -- PLACEHOLDERS:
 
 
-
-
-	-- In the schematic, when a unit is rotated to a certain absolute rotation,
-	-- or if the placeholders are to be restored (kind of un-smash),
-	-- the default positions of texts and placeholders are required. For this
-	-- reason we define here the type type_default_text_positions:
-	package pac_text_positions is new doubly_linked_lists (type_vector_model);
-
-
-
-	type type_default_text_positions (appearance : type_appearance) is record
-
-		-- For texts, we need only their positions (x/y):
-		texts : pac_text_positions.list; -- same order as the texts in type_symbol_base
-
-		-- The placeholders are copies of those in the symbol (see type_symbol_model):
-		case appearance is
-			when APPEARANCE_PCB =>
-				placeholders : type_text_placeholders;
-
-			when APPEARANCE_VIRTUAL => null;
-		end case;
-	end record;
-
-
-
-	-- Returns the default positions of placeholders and texts of a unit
+	-- Returns the default positions of placeholders
+	-- and texts of a unit
 	-- as they are defined in the symbol model.
 	function get_default_text_positions (
 		device_cursor	: in pac_devices_electrical.cursor;
@@ -267,42 +237,6 @@ package et_devices_electrical.units is
 
 
 -- PROPERTIES QUERIES:
-
-
-
-	-- Returns properties of the given unit.
-	-- 1. By default no linebreaks are inserted in the output,
-	--    so that the result is a single line.
-	-- 2. If linebreaks is true, then linebreaks are inserted.
-	--    This is useful when the output is to be displayed
-	--    in a window or if it is to be written in a file:
-	function get_unit_properties (
-		unit_cursor	: in pac_units.cursor;
-		level		: in type_properties_level;
-		linebreaks	: in boolean := false)
-		return string;
-
-
-
-	-- Returns properties of the given device and its units.
-	-- See comments of function get_unit_properties regarding linebreaks:
-	function get_device_properties (
-		device		: in type_device_electrical;
-		level		: in type_properties_level;
-		linebreaks	: in boolean := false)
-		return string;
-
-
-
-
-	-- function get_properties (
-	-- 	device		: in type_device_electrical;
-	-- 	level		: in type_properties_level;
-	-- 	all_units	: in boolean := true;
-	-- 	unit		: in type_unit_name := unit_name_default)
-	-- 	-- CS format ?
-	-- 	return string;
-
 
 
 	-- Returns properties of the given device.

@@ -51,6 +51,7 @@ with et_sheets;							use et_sheets;
 with et_port_names;						use et_port_names;
 with et_symbol_ports;					use et_symbol_ports;
 
+with et_device_property_level;			use et_device_property_level;
 with et_device_unit;					use et_device_unit;
 with et_unit_name;						use et_unit_name;
 with et_mirroring;						use et_mirroring;
@@ -88,7 +89,7 @@ package et_units is
 		unit_cursor	: in pac_units.cursor)
 		return type_vector_model;
 
-	
+
 	function get_rotation (
 		unit	: in pac_units.cursor)
 		return type_rotation_model;
@@ -183,6 +184,23 @@ package et_units is
 	function get_unit_positions (
 		units : in pac_units.map)
 		return pac_unit_positions.map;
+
+
+
+
+	-- Returns properties of the given unit.
+	-- 1. By default no linebreaks are inserted in the output,
+	--    so that the result is a single line.
+	-- 2. If linebreaks is true, then linebreaks are inserted.
+	--    This is useful when the output is to be displayed
+	--    in a window or if it is to be written in a file:
+	function get_unit_properties (
+		unit_cursor	: in pac_units.cursor;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
+		return string;
+
+
 
 
 

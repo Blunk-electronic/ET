@@ -36,8 +36,13 @@
 --   history of changes:
 --
 
+with ada.characters.latin_1;
+with ada.strings.unbounded;
 -- with ada.text_io;			use ada.text_io;
+
 with et_exceptions;						use et_exceptions;
+with et_coordinates_formatting;
+
 
 
 package body et_units is
@@ -254,6 +259,64 @@ package body et_units is
 		iterate (units, query_unit'access);
 		return list;
 	end get_unit_positions;
+
+
+
+
+
+
+
+
+-- PROPERTIES QUERIES:
+
+
+	function get_unit_properties (
+		unit_cursor	: in pac_units.cursor;
+		level		: in type_properties_level;
+		linebreaks	: in boolean := false)
+		return string
+	is
+		use et_coordinates_formatting;
+		use ada.strings.unbounded;
+		result : unbounded_string;
+
+
+		-- If linebreaks are requested by the caller, then
+		-- this function returns a linefeed character on each call.
+		-- If no linefeeds are requested, then the return is an empty string:
+		function ins_LF return string is
+			use ada.characters.latin_1;
+		begin
+			if linebreaks then
+				return "" & LF;
+			else
+				return "";
+			end if;
+		end ins_LF;
+
+
+		unit : type_unit renames element (unit_cursor);
+
+	begin
+		case level is
+			when DEVICE_PROPERTIES_LEVEL_1 =>
+				result := result & get_unit_name (unit_cursor) & ins_LF;
+
+			when others =>
+				result := result & get_unit_name (unit_cursor)
+					& " position: " & get_position (unit, FORMAT_2) & ins_LF;
+
+			-- CS symbol model
+		end case;
+
+		return to_string (result);
+	end get_unit_properties;
+
+
+
+
+
+
 
 
 
