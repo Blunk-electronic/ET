@@ -88,6 +88,13 @@ package et_board_ops_devices is
 	end record;
 
 
+	-- Returns true if the given object is empty:
+	function is_empty (
+		object	: in type_object_electrical)
+		return boolean;
+
+
+
 	-- Returns the device name of the given object
 	-- as string in the form like "T1":
 	function get_device_name (

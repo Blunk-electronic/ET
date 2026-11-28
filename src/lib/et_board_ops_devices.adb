@@ -83,6 +83,20 @@ package body et_board_ops_devices is
 
 
 
+	function is_empty (
+		object	: in type_object_electrical)
+		return boolean
+	is
+		use pac_devices_electrical;
+	begin
+		if not has_element (object.cursor) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_empty;
+
+
 
 
 	function get_device_name (
@@ -251,7 +265,10 @@ package body et_board_ops_devices is
 			pragma unreferenced (module_name);
 			device_cursor : pac_devices_electrical.cursor := module.devices.first;
 		begin
-			while device_cursor /= pac_devices_electrical.no_element loop
+			while has_element (device_cursor) loop
+				log (text => "device " & get_device_name (device_cursor),
+					 level => log_threshold + 1);
+
 				case flag is
 					when PROPOSED =>
 						if is_proposed (device_cursor) then
@@ -285,6 +302,11 @@ package body et_board_ops_devices is
 			process		=> query_module'access);
 
 		log_indentation_down;
+
+		-- Output a warning in case nothing has been found:
+		if is_empty (result) then
+			log (SEVERITY_WARNING, "Nothing found !");
+		end if;
 
 		return result;
 	end get_first_device;
